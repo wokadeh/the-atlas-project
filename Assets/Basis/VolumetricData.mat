@@ -20,14 +20,14 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _Data:
-        m_Texture: {fileID: 11700000, guid: a4313a4fe86a7334997911c55b2ecf81, type: 2}
+        m_Texture: {fileID: 11700000, guid: 6a071e50b1679994d9ab8a2e37d20ca9, type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _DataMax: 1
     - _DataMin: 0
-    - _NormPerRay: 2
-    - _NormPerStep: 74
+    - _NormPerRay: 1
+    - _NormPerStep: 5
     - _Normalization: 2
     - _SliceAxis1Max: 1
     - _SliceAxis1Min: 0
@@ -36,8 +36,8 @@ Material:
     - _SliceAxis3Max: 1
     - _SliceAxis3Min: 0
     - _Steps: 256
-    - _StretchPower: 1.5
+    - _StretchPower: 1
     m_Colors:
     - _Axis: {r: 1, g: 3, b: 2, a: 1}
-    - _DataChannel: {r: 0, g: 0, b: 0, a: 1}
+    - _DataChannel: {r: 1, g: 0, b: 0, a: 0}
     - _TexFilling: {r: 1, g: 1, b: 1, a: 1}
