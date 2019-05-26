@@ -8,6 +8,8 @@ using UnityEngine.EventSystems;
 public class TransferFunctionControlPointUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler {
     [SerializeField] private Color m_HighlightColor;
 
+    public Color Color { get; set; }
+
     private TransferFunctionUI m_TransferFunctionUI;
     private RectTransform m_RectTransform;
     private Image m_Image;
@@ -20,8 +22,9 @@ public class TransferFunctionControlPointUI : MonoBehaviour, IPointerEnterHandle
         m_NormalColor = m_Image.color;
     }
 
-    public void Init(TransferFunctionUI transferFunctionUI) {
+    public void Init(TransferFunctionUI transferFunctionUI, Color color) {
         m_TransferFunctionUI = transferFunctionUI;
+        Color = color;
     }
 
     public void OnPointerEnter(PointerEventData eventData) {
@@ -48,7 +51,7 @@ public class TransferFunctionControlPointUI : MonoBehaviour, IPointerEnterHandle
     }
 
     public void OnDrag(PointerEventData eventData) {
-        m_RectTransform.position = eventData.position;
+        m_RectTransform.anchoredPosition = m_TransferFunctionUI.GetPointInBox(eventData.position);
     }
 
     public void OnEndDrag(PointerEventData eventData) {
