@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
+    // HACK: Hardcoded control point size
     private const int CONTROL_POINT_SIZE = 16;
 
     [SerializeField] private TransferFunctionControlPointUI m_ControlPointPrefab;
@@ -21,12 +22,17 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
         m_BoxBounds = CalculateBoxBounds();
 
         m_ColorPicker.onValueChanged.AddListener(OnColorPickerChanged);
+        m_ColorPicker.gameObject.SetActive(false);
 
         GenerateRandomControlPoints();
     }
 
     public void SelectPoint(TransferFunctionControlPointUI point) {
+        DeselectPoint();
+
         m_SelectedPoint = point;
+
+        m_ColorPicker.gameObject.SetActive(true);
         m_ColorPicker.CurrentColor = m_SelectedPoint.Color;
     }
 
@@ -35,43 +41,53 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
         m_ControlPoints.Remove(point);
     }
 
-    public Vector2 GetPointInBox(Vector2 position) {
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(m_RectTransform, position, null, out Vector2 localPoint);
+    public Vector2 LimitPositionToPointInBox(Vector2 position) {
+        Vector2 point = ConvertToLocalPointInBox(position);
+        Vector3 min = m_BoxBounds.min;
+        Vector3 max = m_BoxBounds.max;
 
-        Vector2 point = localPoint;
-
-        if (localPoint.x < m_BoxBounds.min.x) {
-            point.x = m_BoxBounds.min.x;
-        } else if (localPoint.x > m_BoxBounds.max.x) {
-            point.x = m_BoxBounds.max.x;
+        if (point.x < min.x) {
+            point.x = min.x;
+        } else if (point.x > max.x) {
+            point.x = max.x;
         }
 
-        if (localPoint.y < m_BoxBounds.min.y) {
-            point.y = m_BoxBounds.min.y;
-        } else if (localPoint.y > m_BoxBounds.max.y) {
-            point.y = m_BoxBounds.max.y;
+        if (point.y < min.y) {
+            point.y = min.y;
+        } else if (point.y > max.y) {
+            point.y = max.y;
         }
 
         return point;
     }
 
     public void OnPointerClick(PointerEventData eventData) {
-        if (eventData.button == PointerEventData.InputButton.Left) {
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(m_RectTransform, eventData.position, null, out Vector2 localPoint);
-            CreatePoint(localPoint);
+        if (eventData.button == PointerEventData.InputButton.Right) {
+            CreatePoint(LimitPositionToPointInBox(eventData.position));
+        } else {
+            DeselectPoint();
+        }
+    }
+
+    private void DeselectPoint() {
+        if (m_SelectedPoint) {
+            m_SelectedPoint.Deselect();
+
+            m_SelectedPoint = null;
+
+            m_ColorPicker.gameObject.SetActive(false);
         }
     }
 
     private void GenerateRandomControlPoints() {
         Bounds bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(m_RectTransform);
 
-        // HACK: Hardcoded control point size
         const int NUMBER_OF_POINTS = 10;
 
         float xStep = (bounds.size.x - CONTROL_POINT_SIZE) / NUMBER_OF_POINTS;
         float x = 0;
         for (int i = 0; i < NUMBER_OF_POINTS; i++) {
-            float y = Random.Range(0, bounds.size.y - CONTROL_POINT_SIZE) * 0;
+            float y = Random.Range(0, bounds.size.y - CONTROL_POINT_SIZE);
 
             float xPos = x - bounds.extents.x + CONTROL_POINT_SIZE / 2f;
             float yPos = y - bounds.extents.y + CONTROL_POINT_SIZE / 2f;
@@ -91,9 +107,9 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
         m_SelectedPoint.Color = color;
     }
 
-    private void CreatePoint(Vector2 position) {
+    private void CreatePoint(Vector2 pointInBox) {
         TransferFunctionControlPointUI point = Instantiate(m_ControlPointPrefab, transform);
-        point.GetComponent<RectTransform>().anchoredPosition = position;
+        point.GetComponent<RectTransform>().anchoredPosition = pointInBox;
         point.name = $"Transferfunction_Control_Point";
 
         point.Init(this, Color.white);
@@ -125,5 +141,10 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
         bounds.SetMinMax(min, max);
 
         return bounds;
+    }
+
+    private Vector2 ConvertToLocalPointInBox(Vector3 position) {
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(m_RectTransform, position, null, out Vector2 localPoint);
+        return localPoint;
     }
 }

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2897635193401462656}
   - component: {fileID: 2897635193401462662}
   - component: {fileID: 2897635193401462663}
+  - component: {fileID: 6958132204155991625}
   - component: {fileID: -8589558874434770781}
   m_Layer: 5
   m_Name: Transferfunction_Control_Point
@@ -59,7 +60,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.49803922}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -75,6 +76,21 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
+--- !u!114 &6958132204155991625
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2897635193401462657}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1573420865, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
+  m_EffectDistance: {x: 1, y: -1}
+  m_UseGraphicAlpha: 1
 --- !u!114 &-8589558874434770781
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -87,4 +103,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b77294e04b4594a4fb70afc75d1d0711, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_HighlightColor: {r: 0.48627448, g: 0.81792337, b: 1, a: 0.49803922}
+  m_HighlightColor: {r: 0.48627448, g: 0.81792337, b: 1, a: 1}
+  m_SelectionColor: {r: 0.2783019, g: 1, b: 0.3979982, a: 1}
