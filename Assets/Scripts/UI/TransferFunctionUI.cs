@@ -4,14 +4,13 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
-    // HACK: Hardcoded control point size
-    private const int CONTROL_POINT_SIZE = 16;
-
     [SerializeField] private TransferFunctionControlPointUI m_ControlPointPrefab;
     [SerializeField] private ColorPicker m_ColorPicker;
 
     private RectTransform m_RectTransform;
     private Bounds m_BoxBounds;
+    private Vector2 m_ControlPointSize;
+
     private List<TransferFunctionControlPointUI> m_ControlPoints;
     private TransferFunctionControlPointUI m_SelectedPoint;
 
@@ -20,6 +19,7 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
         m_RectTransform = GetComponent<RectTransform>();
 
         m_BoxBounds = CalculateBoxBounds();
+        m_ControlPointSize = m_ControlPointPrefab.GetComponent<RectTransform>().sizeDelta;
 
         m_ColorPicker.onValueChanged.AddListener(OnColorPickerChanged);
         m_ColorPicker.gameObject.SetActive(false);
@@ -89,13 +89,13 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
 
         const int NUMBER_OF_POINTS = 10;
 
-        float xStep = (bounds.size.x - CONTROL_POINT_SIZE) / NUMBER_OF_POINTS;
+        float xStep = (bounds.size.x - m_ControlPointSize.x) / NUMBER_OF_POINTS;
         float x = 0;
         for (int i = 0; i < NUMBER_OF_POINTS; i++) {
-            float y = Random.Range(0, bounds.size.y - CONTROL_POINT_SIZE);
+            float y = Random.Range(0, bounds.size.y - m_ControlPointSize.y);
 
-            float xPos = x - bounds.extents.x + CONTROL_POINT_SIZE / 2f;
-            float yPos = y - bounds.extents.y + CONTROL_POINT_SIZE / 2f;
+            float xPos = x - bounds.extents.x + m_ControlPointSize.x / 2f;
+            float yPos = y - bounds.extents.y + m_ControlPointSize.y / 2f;
 
             CreatePoint(new Vector2(xPos, yPos));
 
@@ -133,15 +133,16 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
     private Bounds CalculateBoxBounds() {
         Bounds bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(m_RectTransform);
 
-        float halfControlPointSize = CONTROL_POINT_SIZE / 2.0f;
+        float halfControlPointSizeX = m_ControlPointSize.x / 2.0f;
+        float halfControlPointSizeY = m_ControlPointSize.y / 2.0f;
 
         Vector3 min = bounds.min;
-        min.x += halfControlPointSize;
-        min.y += halfControlPointSize;
+        min.x += halfControlPointSizeX;
+        min.y += halfControlPointSizeY;
 
         Vector3 max = bounds.max;
-        max.x -= halfControlPointSize;
-        max.y -= halfControlPointSize;
+        max.x -= halfControlPointSizeX;
+        max.y -= halfControlPointSizeY;
 
         bounds.SetMinMax(min, max);
 
