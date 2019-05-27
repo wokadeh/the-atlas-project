@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311918, g: 0.3807398, b: 0.35872716, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -698,6 +698,11 @@ PrefabInstance:
     - target: {fileID: 7722299011466718046, guid: 9740d83b8dfbbd6438bd50aea6f6a81d,
         type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7722299011461202818, guid: 9740d83b8dfbbd6438bd50aea6f6a81d,
+        type: 3}
+      propertyPath: Setup.ShowAlpha
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7722299011444900980, guid: 9740d83b8dfbbd6438bd50aea6f6a81d,
@@ -1469,11 +1474,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 13.941908
-      objectReference: {fileID: 0}
-    - target: {fileID: 7722299011461202818, guid: 9740d83b8dfbbd6438bd50aea6f6a81d,
-        type: 3}
-      propertyPath: Setup.ShowAlpha
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7722299011461207152, guid: 9740d83b8dfbbd6438bd50aea6f6a81d, type: 3}

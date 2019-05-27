@@ -37,6 +37,11 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
     }
 
     public void DeletePoint(TransferFunctionControlPointUI point) {
+        // If we are deleting the currently selected point, deselect it first
+        if (m_SelectedPoint == point) {
+            DeselectPoint();
+        }
+
         Destroy(point.gameObject);
         m_ControlPoints.Remove(point);
     }
