@@ -17,9 +17,8 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
     private void Start() {
         m_ControlPoints = new List<TransferFunctionControlPointUI>();
         m_RectTransform = GetComponent<RectTransform>();
-
-        m_BoxBounds = CalculateBoxBounds();
         m_ControlPointSize = m_ControlPointPrefab.GetComponent<RectTransform>().sizeDelta;
+        m_BoxBounds = CalculateBoxBounds(m_ControlPointSize);
 
         m_ColorPicker.onValueChanged.AddListener(OnColorPickerChanged);
         m_ColorPicker.gameObject.SetActive(false);
@@ -130,11 +129,11 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
         m_ControlPoints.Clear();
     }
     
-    private Bounds CalculateBoxBounds() {
+    private Bounds CalculateBoxBounds(Vector2 controlPointSize) {
         Bounds bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(m_RectTransform);
 
-        float halfControlPointSizeX = m_ControlPointSize.x / 2.0f;
-        float halfControlPointSizeY = m_ControlPointSize.y / 2.0f;
+        float halfControlPointSizeX = controlPointSize.x / 2.0f;
+        float halfControlPointSizeY = controlPointSize.y / 2.0f;
 
         Vector3 min = bounds.min;
         min.x += halfControlPointSizeX;
