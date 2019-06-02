@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI.Extensions.ColorPicker;
 
 public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
     [SerializeField] private TransferFunctionControlPointUI m_ControlPointPrefab;
-    [SerializeField] private ColorPicker m_ColorPicker;
+    [SerializeField] private ColorPickerControl m_ColorPicker;
 
     private RectTransform m_RectTransform;
     private Bounds m_BoxBounds;
