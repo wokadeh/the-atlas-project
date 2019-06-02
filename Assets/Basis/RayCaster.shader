@@ -8,6 +8,8 @@ Shader "Custom/Ray Casting" {
 	Properties {
 		// the data cube
 		[NoScaleOffset] _Data ("Data Texture", 3D) = "" {}
+	//	_HistTex("Histogram Texture", 2D) = "white" {}
+		_TFTex("Transfer Function Texture", 2D) = "white" {}
 		_DataChannel ("Data Channel", Vector) = (0,0,0,1) // in which channel were the data value stored?
 		_Axis ("Axes order", Vector) = (1, 2, 3) // coordinate i=0,1,2 in Unity corresponds to coordinate _Axis[i]-1 in the data
 		_TexFilling ("Data filling factors", Vector) = (1, 1, 1) // if only a fraction of the data texture is to be sampled
@@ -29,7 +31,11 @@ Shader "Custom/Ray Casting" {
 
 	SubShader {
 		
-		Tags { "Queue" = "Transparent" }
+		Tags { "Queue" = "Transparent" "RenderType" = "Transparent" }
+		
+		LOD 100
+
+		Blend SrcAlpha OneMinusSrcAlpha
 
 		Pass {
 			Blend SrcAlpha OneMinusSrcAlpha
@@ -42,10 +48,12 @@ Shader "Custom/Ray Casting" {
 	        #pragma target 3.0
 			#pragma vertex vert
 			#pragma fragment frag
+			#pragma multi_compile_fog
 
 			#include "UnityCG.cginc"
 
 			sampler3D _Data;
+			sampler2D _TFTex;
 			float4 _DataChannel;
 			float3 _Axis;
 			float3 _TexFilling;
@@ -57,6 +65,8 @@ Shader "Custom/Ray Casting" {
 			float _NormPerStep;
 			float _NormPerRay;
 			float _Steps;
+
+
 
 			// calculates intersection between a ray and a box
 			// http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter3.htm
@@ -80,6 +90,8 @@ Shader "Custom/Ray Casting" {
 			    tFar = smallest_tMax;
 			    return hit;
 			}
+
+
 
 			struct vert_input {
 			    float4 pos : POSITION;
