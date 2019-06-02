@@ -18,15 +18,19 @@ public class TransferFunctionControlPointUI : MonoBehaviour, IPointerEnterHandle
     private bool m_IsDragging;
     private bool m_Selected;
 
-    private void Start() {
+    private void Awake() {
         m_RectTransform = GetComponent<RectTransform>();
         m_Image = GetComponent<Image>();
         m_NormalColor = m_Image.color;
     }
 
-    public void Init(TransferFunctionUI transferFunctionUI, Color color) {
+    public void Init(TransferFunctionUI transferFunctionUI, Color color, bool selected) {
         m_TransferFunctionUI = transferFunctionUI;
         Color = color;
+        if (selected) {
+            m_Selected = true;
+            m_Image.color = m_SelectionColor;
+        }
     }
 
     public void Deselect() {

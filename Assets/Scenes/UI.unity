@@ -1168,6 +1168,26 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7896698412405380273, guid: a3432e0ace7890448bdb8047508ef035,
+        type: 3}
+      propertyPath: m_ControlPointStartColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7896698412405380273, guid: a3432e0ace7890448bdb8047508ef035,
+        type: 3}
+      propertyPath: m_ControlPointStartColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7896698412405380273, guid: a3432e0ace7890448bdb8047508ef035,
+        type: 3}
+      propertyPath: m_ControlPointStartColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7896698412405380273, guid: a3432e0ace7890448bdb8047508ef035,
+        type: 3}
+      propertyPath: m_ControlPointStartColor.a
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7895008488138696048, guid: a3432e0ace7890448bdb8047508ef035,
         type: 3}
       propertyPath: m_IsActive

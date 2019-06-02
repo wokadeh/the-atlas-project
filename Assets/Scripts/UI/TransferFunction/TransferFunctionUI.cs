@@ -6,6 +6,7 @@ using UnityEngine.UI.Extensions;
 using UnityEngine.UI.Extensions.ColorPicker;
 
 public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
+    [SerializeField] private Color m_ControlPointStartColor;
     [SerializeField] private TransferFunctionControlPointUI m_ControlPointPrefab;
     [SerializeField] private ColorPickerControl m_ColorPicker;
     [SerializeField] private UILineRenderer m_LineRenderer;
@@ -55,11 +56,23 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
     public void RedrawLines() {
         m_ControlPoints = m_ControlPoints.OrderBy(p => p.transform.localPosition.x).ToList();
 
-        int pointCount = m_ControlPoints.Count;
+        // We add two extra points for the edges
+        int pointCount = m_ControlPoints.Count + 2;
         Vector2[] points = new Vector2[pointCount];
-        for (int i = 0; i < pointCount; i++) {
-            points[i] = m_ControlPoints[i].transform.localPosition;
+        for (int i = 0; i < m_ControlPoints.Count; i++) {
+            points[i + 1] = m_ControlPoints[i].transform.localPosition;
         }
+
+        // First and last point get derived from second and second last point respectively.
+        // We have to take into account that the bounds include the size of a control point
+        // which we do not want
+        Vector2 second = points[1];
+        second.x = m_BoxBounds.min.x - (m_ControlPointSize.x / 2f);
+        points[0] = second;
+
+        Vector2 secondLast = points[pointCount - 2];
+        secondLast.x = m_BoxBounds.max.x + (m_ControlPointSize.x / 2f);
+        points[pointCount - 1] = secondLast;
 
         m_LineRenderer.Points = points;
     }
@@ -86,7 +99,7 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
 
     public void OnPointerClick(PointerEventData eventData) {
         if (eventData.button == PointerEventData.InputButton.Right) {
-            CreatePoint(LimitPositionToPointInBox(eventData.position));
+            CreatePoint(LimitPositionToPointInBox(eventData.position), m_ControlPointStartColor, true);
         } else {
             DeselectPoint();
         }
@@ -108,14 +121,14 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
         const int NUMBER_OF_POINTS = 10;
 
         float xStep = (bounds.size.x - m_ControlPointSize.x) / NUMBER_OF_POINTS;
-        float x = 0;
+        float x = xStep / 2f;
         for (int i = 0; i < NUMBER_OF_POINTS; i++) {
             float y = Random.Range(0, bounds.size.y - m_ControlPointSize.y);
 
             float xPos = x - bounds.extents.x + m_ControlPointSize.x / 2f;
             float yPos = y - bounds.extents.y + m_ControlPointSize.y / 2f;
 
-            CreatePoint(new Vector2(xPos, yPos));
+            CreatePoint(new Vector2(xPos, yPos), Random.ColorHSV(), false);
 
             x += xStep;
         }
@@ -130,16 +143,19 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
         m_SelectedPoint.Color = color;
     }
 
-    private void CreatePoint(Vector2 pointInBox) {
+    private void CreatePoint(Vector2 pointInBox, Color color, bool select) {
         TransferFunctionControlPointUI point = Instantiate(m_ControlPointPrefab, transform);
         point.GetComponent<RectTransform>().anchoredPosition = pointInBox;
         point.name = $"Transferfunction_Control_Point";
-
-        point.Init(this, Color.white);
+        point.Init(this, color, select);
 
         m_ControlPoints.Add(point);
 
         RedrawLines();
+
+        if (select) {
+            SelectPoint(point);
+        }
     }
 
     private void ClearPoints() {
