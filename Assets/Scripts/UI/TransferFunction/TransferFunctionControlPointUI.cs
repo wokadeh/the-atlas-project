@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(Image))]
-public class TransferFunctionControlPointUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler {
+public class TransferFunctionControlPointUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IBeginDragHandler, IDragHandler, IEndDragHandler {
     [SerializeField] private Color m_HighlightColor;
     [SerializeField] private Color m_SelectionColor;
 
@@ -46,7 +46,7 @@ public class TransferFunctionControlPointUI : MonoBehaviour, IPointerEnterHandle
         }
     }
 
-    public void OnPointerClick(PointerEventData eventData) {
+    public void OnPointerDown(PointerEventData eventData) {
         if (eventData.button == PointerEventData.InputButton.Left) {
             m_Selected = true;
             m_Image.color = m_SelectionColor;
@@ -60,17 +60,16 @@ public class TransferFunctionControlPointUI : MonoBehaviour, IPointerEnterHandle
 
     public void OnBeginDrag(PointerEventData eventData) {
         m_IsDragging = true;
-        m_Image.color = m_HighlightColor;
         m_RectTransform.SetAsLastSibling();
     }
 
     public void OnDrag(PointerEventData eventData) {
         m_RectTransform.anchoredPosition = m_TransferFunctionUI.LimitPositionToPointInBox(eventData.position);
+        m_TransferFunctionUI.RedrawLines();
     }
 
     public void OnEndDrag(PointerEventData eventData) {
         m_IsDragging = false;
-        m_Image.color = DetermineFallbackColor(eventData.position);
     }
 
     private Color DetermineFallbackColor(Vector3 position) {

@@ -1,12 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI.Extensions;
 using UnityEngine.UI.Extensions.ColorPicker;
 
 public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
     [SerializeField] private TransferFunctionControlPointUI m_ControlPointPrefab;
     [SerializeField] private ColorPickerControl m_ColorPicker;
+    [SerializeField] private UILineRenderer m_LineRenderer;
 
     private RectTransform m_RectTransform;
     private Bounds m_BoxBounds;
@@ -23,6 +25,8 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
 
         m_ColorPicker.onValueChanged.AddListener(OnColorPickerChanged);
         m_ColorPicker.gameObject.SetActive(false);
+
+        m_LineRenderer.gameObject.SetActive(true);
 
         GenerateRandomControlPoints();
     }
@@ -44,6 +48,20 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
 
         Destroy(point.gameObject);
         m_ControlPoints.Remove(point);
+
+        RedrawLines();
+    }
+
+    public void RedrawLines() {
+        m_ControlPoints = m_ControlPoints.OrderBy(p => p.transform.localPosition.x).ToList();
+
+        int pointCount = m_ControlPoints.Count;
+        Vector2[] points = new Vector2[pointCount];
+        for (int i = 0; i < pointCount; i++) {
+            points[i] = m_ControlPoints[i].transform.localPosition;
+        }
+
+        m_LineRenderer.Points = points;
     }
 
     public Vector2 LimitPositionToPointInBox(Vector2 position) {
@@ -120,6 +138,8 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
         point.Init(this, Color.white);
 
         m_ControlPoints.Add(point);
+
+        RedrawLines();
     }
 
     private void ClearPoints() {
@@ -129,7 +149,7 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
         }
         m_ControlPoints.Clear();
     }
-    
+   
     private Bounds CalculateBoxBounds(Vector2 controlPointSize) {
         Bounds bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(m_RectTransform);
 
