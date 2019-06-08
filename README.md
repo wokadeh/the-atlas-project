@@ -12,6 +12,7 @@ Das Projekt basiert auf Unity 2019.1.1f1.
 Im Projekt werden unter anderem folgende Plugins eingesetzt:
 - StandaloneFileBrowser (https://github.com/gkngkc/UnityStandaloneFileBrowser)
 - unity-ui-extensions (https://bitbucket.org/UnityUIExtensions/unity-ui-extensions/src)
+- libtiff.net (https://github.com/BitMiracle/libtiff.net)
 
 ## Teammembers
 - Marco Winter
