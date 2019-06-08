@@ -2,6 +2,7 @@
 using System.Linq;
 using System.IO;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using BitMiracle.LibTiff.Classic;
 
@@ -26,8 +27,7 @@ public class DataLoaderFromTIFFs : IDataLoader {
         // We only search in the top directory for files with the ".tif" or ".tiff" ending
         List<string> paths = null;
         try { 
-            // TODO: Paths are not sorted correctly
-            paths = Directory.GetFiles(path, "*.*").Where(p => p.EndsWith(".tif") || p.EndsWith(".tiff")).OrderBy(s => s).ToList();
+            paths = Directory.GetFiles(path, "*.*").Where(p => p.EndsWith(".tif") || p.EndsWith(".tiff")).OrderBy(s => PadNumbers(s)).ToList();
         } catch(Exception e) {
             Debug.LogError($"[DataLoaderFromDisk] - Failed to get files from directory: {path} with exception:\n{e.GetType().Name} - {e.Message}!");
             return null;
@@ -97,5 +97,9 @@ public class DataLoaderFromTIFFs : IDataLoader {
         byte b = (byte)Tiff.GetB(bytes);
         byte a = (byte)Tiff.GetA(bytes);
         return new Color32(r, g, b, a);
+    }
+
+    private static string PadNumbers(string input) {
+        return Regex.Replace(input, "[0-9]+", match => match.Value.PadLeft(10, '0'));
     }
 }
