@@ -2,11 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
-
-public class DataLoader : MonoBehaviour {
+public class DataConverter : IDataConverter {
     [SerializeField] private int[] m_Size = new int[3] { 875, 656, 6 };
     [SerializeField] private List<Texture2D> m_DataTextures;
     [SerializeField] private Vector4 m_DataChannels;
@@ -20,16 +16,12 @@ public class DataLoader : MonoBehaviour {
 
         // Assign it to the material of the parent object
         try {
-            Material material = GetComponent<Renderer>().material;
-            material.SetTexture("_Data", data);
-            material.SetVector("_DataChannel", m_DataChannels);
+            //Material material = GetComponent<Renderer>().material;
+            //material.SetTexture("_Data", data);
+            //material.SetVector("_DataChannel", m_DataChannels);
         } catch {
             Debug.Log("Cannot attach the texture to the parent object");
         }
-
-#if UNITY_EDITOR
-        //AssetDatabase.CreateAsset(data, "Assets/Data/temperature.asset");
-#endif
     }
 
     private Color[] GetColorsFromTextures() {
@@ -45,5 +37,9 @@ public class DataLoader : MonoBehaviour {
         }
 
         return colors;
+    }
+
+    public Texture3D Convert(Texture2D[] textures) {
+        return null;
     }
 }
