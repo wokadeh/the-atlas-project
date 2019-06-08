@@ -16,7 +16,7 @@ public class DataConverter : IDataConverter {
         data.SetPixels(colors);
         data.Apply();
 
-        return null;
+        return data;
     }
 
     private Color[] GetColorsFromTextures(Texture2D[] textures, int width, int height, int depth) {

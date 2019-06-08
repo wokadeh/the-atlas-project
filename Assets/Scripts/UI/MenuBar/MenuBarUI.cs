@@ -4,6 +4,7 @@ using SFB;
 
 public class MenuBarUI : MonoBehaviour {
     [SerializeField] private DataManager m_DataManager;
+    [SerializeField] private VolumeRenderer m_VolumeRenderer;
     [SerializeField] private Button m_ImportDataButton;
 
     private void Start() {
@@ -14,7 +15,8 @@ public class MenuBarUI : MonoBehaviour {
         string[] folders = StandaloneFileBrowser.OpenFolderPanel(null, null, false);
         if (folders.Length == 1) {
             string folder = folders[0];
-            m_DataManager.Load(folder);
+            DataAsset data = m_DataManager.Load(folder);
+            m_VolumeRenderer.SetData(data);
         }
     }
 }

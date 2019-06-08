@@ -402,6 +402,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_DataManager: {fileID: 646576121}
+  m_VolumeRenderer: {fileID: 354824184}
   m_ImportDataButton: {fileID: 1219210624}
 --- !u!1 &354824183
 GameObject:
@@ -414,13 +415,26 @@ GameObject:
   - component: {fileID: 354824188}
   - component: {fileID: 354824187}
   - component: {fileID: 354824186}
+  - component: {fileID: 354824184}
   m_Layer: 0
   m_Name: Volume_Renderer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
+--- !u!114 &354824184
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 354824183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fda0d2f88e7bd1647ae81fef16280436, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!23 &354824186
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -473,13 +487,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 354824183}
-  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: -0.7071068, y: -0, z: 0.7071068, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 180}
 --- !u!1 &646576119
 GameObject:
   m_ObjectHideFlags: 0

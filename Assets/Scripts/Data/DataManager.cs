@@ -9,8 +9,9 @@ public class DataManager : MonoBehaviour {
         m_DataConverter = new DataConverter();
     }
 
-    public void Load(string path) {
+    public DataAsset Load(string path) {
         Texture2D[] textures = m_DataLoder.Load(path);
         Texture3D texture = m_DataConverter.Convert(textures);
+        return new DataAsset() { DataTexture = texture };
     }
 }
