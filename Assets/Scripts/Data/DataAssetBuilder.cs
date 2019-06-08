@@ -11,18 +11,18 @@ public class DataAssetBuilder : IDataAssetBuilder {
         int depth = textures.Length;
 
         // Create data texture
-        Texture3D dataTexture = BuildDataTexture(textures, width, height, depth);
-        Texture2D histogramTexture = BuildHistogramTexture(dataTexture.GetPixels());
+        Texture3D dataTexture = BuildDataTexture(textures, width, height, depth, out Color[] colors);
+        Texture2D histogramTexture = BuildHistogramTexture(colors);
 
         return new DataAsset() { Dimensions = new Vector3(width, height, depth), DataTexture = dataTexture, HistogramTexture = histogramTexture };
     }
 
-    private Texture3D BuildDataTexture(Texture2D[] textures, int width, int height, int depth) {
+    private Texture3D BuildDataTexture(Texture2D[] textures, int width, int height, int depth, out Color[] colors) {
         int size2d = width * height;
         int size3d = size2d * depth;
 
         // Get color data from all textures
-        Color[] colors = new Color[size3d];
+        colors = new Color[size3d];
         for (int i = 0; i < textures.Length; i++) {
             Texture2D texture = textures[i];
             Color[] pixels = texture.GetPixels();

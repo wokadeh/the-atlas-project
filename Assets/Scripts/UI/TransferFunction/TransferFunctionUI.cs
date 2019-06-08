@@ -2,14 +2,17 @@
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using UnityEngine.UI.Extensions;
 using UnityEngine.UI.Extensions.ColorPicker;
 
 public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
+    [SerializeField] private DataManager m_DataManager;
     [SerializeField] private Color m_ControlPointStartColor;
     [SerializeField] private TransferFunctionControlPointUI m_ControlPointPrefab;
     [SerializeField] private ColorPickerControl m_ColorPicker;
     [SerializeField] private UILineRenderer m_LineRenderer;
+    [SerializeField] private RawImage m_HistogramTexture;
 
     private RectTransform m_RectTransform;
     private Bounds m_BoxBounds;
@@ -75,6 +78,10 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
         points[pointCount - 1] = secondLast;
 
         m_LineRenderer.Points = points;
+    }
+
+    public void RedrawHistogram() {
+        m_HistogramTexture.material.SetTexture("_HistTex", m_DataManager.CurrentAsset.HistogramTexture);
     }
 
     public Vector2 LimitPositionToPointInBox(Vector2 position) {
