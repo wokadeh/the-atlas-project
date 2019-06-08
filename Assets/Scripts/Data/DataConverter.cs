@@ -1,45 +1,36 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class DataConverter : IDataConverter {
-    [SerializeField] private int[] m_Size = new int[3] { 875, 656, 6 };
-    [SerializeField] private List<Texture2D> m_DataTextures;
-    [SerializeField] private Vector4 m_DataChannels;
+    public Texture3D Convert(Texture2D[] textures) {
+        // NOTE: Here would be the data interpolation of layers, time or maybe even texture size.
+        //       For now we simply convert the 2D textures to a 3D texture.
 
-    private void Start() {
+        // HACK: We assume every texture has the same size as the first
+        int width = textures[0].width;
+        int height = textures[0].height;
+        int depth = textures.Length;
+
         // Create the texture
-        Color[] colors = GetColorsFromTextures();
-        Texture3D data = new Texture3D(m_Size[0], m_Size[1], m_Size[2], TextureFormat.R8, false);
+        Color[] colors = GetColorsFromTextures(textures, width, height, depth);
+        Texture3D data = new Texture3D(width, height, depth, TextureFormat.R8, false);
         data.SetPixels(colors);
         data.Apply();
 
-        // Assign it to the material of the parent object
-        try {
-            //Material material = GetComponent<Renderer>().material;
-            //material.SetTexture("_Data", data);
-            //material.SetVector("_DataChannel", m_DataChannels);
-        } catch {
-            Debug.Log("Cannot attach the texture to the parent object");
-        }
+        return null;
     }
 
-    private Color[] GetColorsFromTextures() {
-        int size2d = m_DataTextures[0].width * m_DataTextures[0].height;
-        int size3d = size2d * m_DataTextures.Count;
+    private Color[] GetColorsFromTextures(Texture2D[] textures, int width, int height, int depth) {
+        int size2d = width * height;
+        int size3d = size2d * depth;
 
         Color[] colors = new Color[size3d];
 
-        for (int i = 0; i < m_DataTextures.Count; i++) {
-            Texture2D texture = m_DataTextures[i];
+        for (int i = 0; i < textures.Length; i++) {
+            Texture2D texture = textures[i];
             Color[] pixels = texture.GetPixels();
             pixels.CopyTo(colors, i * size2d);
         }
 
         return colors;
-    }
-
-    public Texture3D Convert(Texture2D[] textures) {
-        return null;
     }
 }
