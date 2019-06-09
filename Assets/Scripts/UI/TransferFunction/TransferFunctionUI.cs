@@ -103,25 +103,33 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
     }
 
     private void RedrawLines() {
-        // We add two extra points for the edges
-        int pointCount = m_ControlPoints.Count + 2;
-        Vector2[] points = new Vector2[pointCount];
-        for (int i = 0; i < m_ControlPoints.Count; i++) {
-            points[i + 1] = m_ControlPoints[i].transform.localPosition;
+        // Because of line renderer weirdness we need to disable it when we do not want to draw anything
+        m_LineRenderer.gameObject.SetActive(m_ControlPoints.Count != 0);
+
+        if (m_ControlPoints.Count == 0) {
+            // If we have no control points, we do not want to draw anything
+            m_LineRenderer.Points = new Vector2[0];
+        } else {
+            // We add two extra points for the edges
+            int pointCount = m_ControlPoints.Count + 2;
+            Vector2[] points = new Vector2[pointCount];
+            for (int i = 0; i < m_ControlPoints.Count; i++) {
+                points[i + 1] = m_ControlPoints[i].transform.localPosition;
+            }
+
+            // First and last point get derived from second and second last point respectively.
+            // We have to take into account that the bounds include the size of a control point
+            // which we do not want
+            Vector2 second = points[1];
+            second.x = m_BoxBounds.min.x - (m_ControlPointSize.x / 2f);
+            points[0] = second;
+
+            Vector2 secondLast = points[pointCount - 2];
+            secondLast.x = m_BoxBounds.max.x + (m_ControlPointSize.x / 2f);
+            points[pointCount - 1] = secondLast;
+
+            m_LineRenderer.Points = points;
         }
-
-        // First and last point get derived from second and second last point respectively.
-        // We have to take into account that the bounds include the size of a control point
-        // which we do not want
-        Vector2 second = points[1];
-        second.x = m_BoxBounds.min.x - (m_ControlPointSize.x / 2f);
-        points[0] = second;
-
-        Vector2 secondLast = points[pointCount - 2];
-        secondLast.x = m_BoxBounds.max.x + (m_ControlPointSize.x / 2f);
-        points[pointCount - 1] = secondLast;
-
-        m_LineRenderer.Points = points;
     }
 
     private void RedrawHistogram() {
@@ -134,27 +142,35 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
     private TransferFunction GenerateTransferFunction() {
         TransferFunction function = new TransferFunction();
 
-        // NOTE: For the size we should need to take into account the size of the control points
-        Vector2 size = m_RectTransform.sizeDelta;
-        for (int i = 0; i < m_ControlPoints.Count; i++) {
-            TransferFunctionControlPointUI controlPoint = m_ControlPoints[i];
-            Transform transform = controlPoint.transform;
+        if (m_ControlPoints.Count > 0) {
+            // NOTE: For the size we should need to take into account the size of the control points
+            Vector2 size = m_RectTransform.sizeDelta;
+            for (int i = 0; i < m_ControlPoints.Count; i++) {
+                TransferFunctionControlPointUI controlPoint = m_ControlPoints[i];
+                Transform transform = controlPoint.transform;
 
-            // We need to normalize the x and y position
-            float data = (transform.localPosition.x + size.x / 2) / size.x;
-            float alpha = (transform.localPosition.y + size.y / 2) / size.y;
+                // We need to normalize the x and y position
+                float data = (transform.localPosition.x + size.x / 2) / size.x;
+                float alpha = (transform.localPosition.y + size.y / 2) / size.y;
 
-            function.AddControlPoint(new TFColourControlPoint(data, controlPoint.Color));
-            function.AddControlPoint(new TFAlphaControlPoint(data, alpha));
+                function.AddControlPoint(new TFColourControlPoint(data, controlPoint.Color));
+                function.AddControlPoint(new TFAlphaControlPoint(data, alpha));
 
-            // We create additional edge points for the first and last control point
-            if (i == 0) {
-                function.AddControlPoint(new TFColourControlPoint(0, controlPoint.Color));
-                function.AddControlPoint(new TFAlphaControlPoint(0, alpha));
-            } else if (i == m_ControlPoints.Count - 1) {
-                function.AddControlPoint(new TFColourControlPoint(1, controlPoint.Color));
-                function.AddControlPoint(new TFAlphaControlPoint(1, alpha));
+                // We create additional edge points for the first and last control point
+                if (i == 0) {
+                    function.AddControlPoint(new TFColourControlPoint(0, controlPoint.Color));
+                    function.AddControlPoint(new TFAlphaControlPoint(0, alpha));
+                }
+                if (i == m_ControlPoints.Count - 1) {
+                    function.AddControlPoint(new TFColourControlPoint(1, controlPoint.Color));
+                    function.AddControlPoint(new TFAlphaControlPoint(1, alpha));
+                }
             }
+        } else {
+            function.AddControlPoint(new TFColourControlPoint(0, Color.white));
+            function.AddControlPoint(new TFAlphaControlPoint(0, 1));
+            function.AddControlPoint(new TFColourControlPoint(1, Color.white));
+            function.AddControlPoint(new TFAlphaControlPoint(1, 1));
         }
 
         function.GenerateTexture();

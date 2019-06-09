@@ -52,11 +52,14 @@ public class TransferFunctionControlPointUI : MonoBehaviour, IPointerEnterHandle
 
     public void OnPointerDown(PointerEventData eventData) {
         if (eventData.button == PointerEventData.InputButton.Left) {
-            m_Selected = true;
-            m_Image.color = m_SelectionColor;
-            m_RectTransform.SetAsLastSibling();
+            // We do not want to select the same point twice
+            if (!m_Selected) {
+                m_Selected = true;
+                m_Image.color = m_SelectionColor;
+                m_RectTransform.SetAsLastSibling();
 
-            m_TransferFunctionUI.SelectPoint(this);
+                m_TransferFunctionUI.SelectPoint(this);
+            }
         } else if (eventData.button == PointerEventData.InputButton.Right) {
             m_TransferFunctionUI.DeletePoint(this);
         }
