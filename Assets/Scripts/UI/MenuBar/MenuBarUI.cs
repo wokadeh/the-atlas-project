@@ -18,7 +18,7 @@ public class MenuBarUI : MonoBehaviour {
             string folder = folders[0];
             DataAsset data = m_DataManager.Load(folder);
             m_VolumeRenderer.SetData(data);
-            m_TransferFunctionUI.RedrawHistogram();
+            m_TransferFunctionUI.Redraw();
         }
     }
 }

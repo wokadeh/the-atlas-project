@@ -51,15 +51,13 @@
 			{
                 float density = i.uv.x;
                 float histY = tex2D(_HistTex, float2(density, 0.0f)).r;
-				float4 tfCol = float4(1.0f, 1.0f, 1.0f, 0.25f); //tex2D(_TFTex, float2(density, 0.0f));
+				float4 tfCol = tex2D(_TFTex, float2(density, 0.0f));
                 float4 histCol = histY > i.uv.y ? float4(1.0f, 1.0f, 1.0f, 1.0f) : float4(0.0f, 0.0f, 0.0f, 0.0f);
 				
-				// What is this used for?!?
-                //float alpha = tfCol.a;
-                //if (i.uv.y > alpha)
-                //    tfCol.a = 0.0f;
+                float alpha = tfCol.a;
+				tfCol.a = alpha * step(i.uv.y, alpha) * step(i.uv.y, histY);
 
-                float4 col = histCol * 0.5f + tfCol * 0.7f;
+                float4 col = histCol * 0.4f + tfCol * 0.8f;
 				
                 return col;
 			}

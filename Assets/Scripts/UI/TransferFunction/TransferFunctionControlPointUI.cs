@@ -69,7 +69,7 @@ public class TransferFunctionControlPointUI : MonoBehaviour, IPointerEnterHandle
 
     public void OnDrag(PointerEventData eventData) {
         m_RectTransform.anchoredPosition = m_TransferFunctionUI.LimitPositionToPointInBox(eventData.position);
-        m_TransferFunctionUI.RedrawLines();
+        m_TransferFunctionUI.Redraw();
     }
 
     public void OnEndDrag(PointerEventData eventData) {
