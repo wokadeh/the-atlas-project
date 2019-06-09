@@ -85,7 +85,7 @@ public class DataLoaderFromTIFFs : IDataLoader {
             // Create actual texture with special format
             Texture2D texture = new Texture2D(width, height, TEXTURE_FORMAT, TEXTURE_MIPMAPS);
             texture.SetPixels32(colors);
-            texture.Apply();
+            // We do not need to Apply() the textures because we don't need to load them onto the gpu
 
             return texture;
         }

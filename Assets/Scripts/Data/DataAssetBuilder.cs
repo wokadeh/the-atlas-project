@@ -14,6 +14,11 @@ public class DataAssetBuilder : IDataAssetBuilder {
         Texture3D dataTexture = BuildDataTexture(textures, width, height, depth, out Color[] colors);
         Texture2D histogramTexture = BuildHistogramTexture(colors);
 
+        // We have taken ownership over the textures and now that the processing is over we can destroy them
+        for (int i = 0; i < textures.Length; i++) {
+            Object.Destroy(textures[i]);
+        }
+
         return new DataAsset() { Dimensions = new Vector3(width, height, depth), DataTexture = dataTexture, HistogramTexture = histogramTexture };
     }
 
