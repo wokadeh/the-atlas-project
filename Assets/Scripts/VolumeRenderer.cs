@@ -11,4 +11,8 @@ public class VolumeRenderer : MonoBehaviour {
     public void SetData(DataAsset data) {
         m_Renderer.material.SetTexture("_Data", data.DataTexture);
     }
+
+    public void SetTransferFunction(Texture2D transferFunction) {
+        m_Renderer.material.SetTexture("_TFTex", transferFunction);
+    }
 }

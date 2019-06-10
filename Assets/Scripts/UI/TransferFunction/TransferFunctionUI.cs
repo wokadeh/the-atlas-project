@@ -8,6 +8,7 @@ using UnityEngine.UI.Extensions.ColorPicker;
 
 public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
     [SerializeField] private DataManager m_DataManager;
+    [SerializeField] private VolumeRenderer m_VolumeRenderer;
     [SerializeField] private Color m_ControlPointStartColor;
     [SerializeField] private TransferFunctionControlPointUI m_ControlPointPrefab;
     [SerializeField] private ColorPickerControl m_ColorPicker;
@@ -134,8 +135,12 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
 
     private void RedrawHistogram() {
         if (m_DataManager.CurrentAsset != null) {
+            var tex = GenerateTransferFunction().GetTexture();
+
             m_HistogramTexture.material.SetTexture("_HistTex", m_DataManager.CurrentAsset.HistogramTexture);
-            m_HistogramTexture.material.SetTexture("_TFTex", GenerateTransferFunction().GetTexture());
+            m_HistogramTexture.material.SetTexture("_TFTex", tex);
+
+            m_VolumeRenderer.SetTransferFunction(tex);
         }
     }
 
