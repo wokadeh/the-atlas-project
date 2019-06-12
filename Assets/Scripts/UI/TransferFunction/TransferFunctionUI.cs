@@ -18,23 +18,10 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
     private RectTransform m_RectTransform;
     private Bounds m_BoxBounds;
     private Vector2 m_ControlPointSize;
+    private bool m_Initialized;
 
     private List<TransferFunctionControlPointUI> m_ControlPoints;
     private TransferFunctionControlPointUI m_SelectedPoint;
-
-    private void Start() {
-        m_ControlPoints = new List<TransferFunctionControlPointUI>();
-        m_RectTransform = GetComponent<RectTransform>();
-        m_ControlPointSize = m_ControlPointPrefab.GetComponent<RectTransform>().sizeDelta;
-        m_BoxBounds = CalculateBoxBounds(m_ControlPointSize);
-
-        m_ColorPicker.onValueChanged.AddListener(OnColorPickerChanged);
-        m_ColorPicker.gameObject.SetActive(false);
-
-        m_LineRenderer.gameObject.SetActive(true);
-
-        GenerateRandomControlPoints();
-    }
 
     public void SelectPoint(TransferFunctionControlPointUI point) {
         DeselectPoint();
@@ -58,8 +45,13 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
     }
 
     public void Redraw() {
+        if (!m_Initialized) {
+            Initialize();
+        }
+
         // We first need to correctly order the lines
-        m_ControlPoints = m_ControlPoints.OrderBy(p => p.transform.localPosition.x).ToList();
+        var s = m_ControlPoints.OrderBy(p => p.transform.localPosition.x);
+        m_ControlPoints = s.ToList();
 
         RedrawLines();
         RedrawHistogram();
@@ -91,6 +83,22 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
         } else {
             DeselectPoint();
         }
+    }
+
+    private void Initialize() {
+        m_Initialized = true;
+
+        m_ControlPoints = new List<TransferFunctionControlPointUI>();
+        m_RectTransform = GetComponent<RectTransform>();
+        m_ControlPointSize = m_ControlPointPrefab.GetComponent<RectTransform>().sizeDelta;
+        m_BoxBounds = CalculateBoxBounds(m_ControlPointSize);
+
+        m_ColorPicker.onValueChanged.AddListener(OnColorPickerChanged);
+        m_ColorPicker.gameObject.SetActive(false);
+
+        m_LineRenderer.gameObject.SetActive(true);
+
+        GenerateRandomControlPoints();
     }
 
     private void DeselectPoint() {
@@ -242,6 +250,7 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
         float halfControlPointSizeX = controlPointSize.x / 2.0f;
         float halfControlPointSizeY = controlPointSize.y / 2.0f;
 
+        // We need to include the size of the control points or otherwise their image goes outside the box
         Vector3 min = bounds.min;
         min.x += halfControlPointSizeX;
         min.y += halfControlPointSizeY;

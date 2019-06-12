@@ -31,7 +31,7 @@ Material:
     - _DataMax: 1
     - _DataMin: 0
     - _NormPerRay: 1
-    - _NormPerStep: 5
+    - _NormPerStep: 10
     - _Normalization: 2
     - _SliceAxis1Max: 1
     - _SliceAxis1Min: 0
