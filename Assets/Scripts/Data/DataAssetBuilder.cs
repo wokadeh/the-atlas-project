@@ -1,55 +1,50 @@
 ﻿using UnityEngine;
 
 public class DataAssetBuilder : IDataAssetBuilder {
-    public DataAsset Build(Texture2D[] textures) {
+    public DataAsset Build(Color[][] colors) {
         // NOTE: Here would be the data interpolation of layers, time or maybe even texture size.
         //       For now we simply convert the 2D textures to a 3D texture.
 
         // HACK: We assume every texture has the same size as the first
-        int width = textures[0].width;
-        int height = textures[0].height;
-        int depth = textures.Length;
+        int width = DataManager.TIFF_WIDTH;
+        int height = DataManager.TIFF_HEIGHT;
+        int depth = colors.Length;
 
         // Create data texture
-        Texture3D dataTexture = BuildDataTexture(textures, width, height, depth, out Color[] colors);
-        Texture2D histogramTexture = BuildHistogramTexture(colors);
-
-        // We have taken ownership over the textures and now that the processing is over we can destroy them
-        for (int i = 0; i < textures.Length; i++) {
-            Object.Destroy(textures[i]);
-        }
+        Texture3D dataTexture = BuildDataTexture(colors, width, height, depth, out Color[] data);
+        Texture2D histogramTexture = BuildHistogramTexture(data);
 
         return new DataAsset() { Dimensions = new Vector3(width, height, depth), DataTexture = dataTexture, HistogramTexture = histogramTexture };
     }
 
-    private Texture3D BuildDataTexture(Texture2D[] textures, int width, int height, int depth, out Color[] colors) {
+    private Texture3D BuildDataTexture(Color[][] colors, int width, int height, int depth, out Color[] data) {
         int size2d = width * height;
         int size3d = size2d * depth;
 
         // Get color data from all textures
-        colors = new Color[size3d];
-        for (int i = 0; i < textures.Length; i++) {
-            Texture2D texture = textures[i];
-            Color[] pixels = texture.GetPixels();
-            pixels.CopyTo(colors, i * size2d);
+        data = new Color[size3d];
+        for (int i = 0; i < colors.Length; i++) {
+            Color[] pixels = colors[i];
+            pixels.CopyTo(data, i * size2d);
+            colors[i] = null;
         }
 
         Texture3D dataTexture = new Texture3D(width, height, depth, TextureFormat.R8, false);
-        dataTexture.SetPixels(colors);
+        dataTexture.SetPixels(data);
         dataTexture.Apply();
 
         return dataTexture;
     }
 
-    private Texture2D BuildHistogramTexture(Color[] dataColors) {
+    private Texture2D BuildHistogramTexture(Color[] data) {
         int samples = 256;
         int[] values = new int[samples];
         Color[] colors = new Color[samples];
         Texture2D histogram = new Texture2D(samples, 1, TextureFormat.RFloat, false);
 
         int maxFrequency = 0;
-        for (int i = 0; i < dataColors.Length; i++) {
-            int value = (int)(dataColors[i].r * (samples - 1));
+        for (int i = 0; i < data.Length; i++) {
+            int value = (int)(data[i].r * (samples - 1));
             values[value] += 1;
             maxFrequency = Mathf.Max(maxFrequency, values[value]);
         }

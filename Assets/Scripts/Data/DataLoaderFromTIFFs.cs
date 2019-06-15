@@ -11,59 +11,63 @@ public class DataLoaderFromTIFFs : IDataLoader {
         public TiffException(string message) : base(message) { }
     }
 
-    private const int TEXTURE_WIDTH  = 875;
-    private const int TEXTURE_HEIGHT = 656;
-    private const TextureFormat TEXTURE_FORMAT = TextureFormat.RGBA32;
-    private const bool TEXTURE_MIPMAPS = false;
-
     // TODO: We need some sort of meta data for the tiffs because we don't know what sort of data we are loading in
 
-    public Texture2D[] Load(string path) {
+    public Color[][][] Load(string path) {
         if (Directory.Exists(path) == false) {
             Debug.LogError($"[DataLoaderFromDisk] - Trying to load data from the directory: {path} that does not exist!");
             return null;
         }
 
         // We only search in the top directory for files with the ".tif" or ".tiff" ending
-        string[] paths = null;
-        try { 
-            paths = Directory.GetFiles(path, "*.*").Where(p => p.EndsWith(".tif") || p.EndsWith(".tiff")).OrderBy(s => PadNumbers(s)).ToArray();
+        string[] directories = null;
+        try {
+            directories = Directory.GetDirectories(path);
         } catch(Exception e) {
             Debug.LogError($"[DataLoaderFromDisk] - Failed to get files from directory: {path} with exception:\n{e.GetType().Name} - {e.Message}!");
             return null;
         }
 
-        // Load in each file as a texture
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-        Texture2D[] textures = LoadTiffs(paths);
+
+        int length = directories.Length;
+        Color[][][] colors = new Color[length][][];
+        string[] paths = null;
+        // Load the tiffs from every directory
+        for (int i = 0; i < length; i++) {
+            string directory = directories[i];
+            paths = Directory.GetFiles(directory, "*.*").Where(p => p.EndsWith(".tif") || p.EndsWith(".tiff")).OrderBy(s => PadNumbers(s)).ToArray();
+            colors[i] = LoadTiffs(paths);
+        }
+
         Debug.Log($"[DataLoaderFromDisk] - Loading of tiffs took {(stopwatch.ElapsedMilliseconds / 1000.0f).ToString("0.00")} seconds.");
 
-        return textures;
+        return colors;
     }
 
-    private Texture2D[] LoadTiffs(string[] paths) {
+    private Color[][] LoadTiffs(string[] paths) {
         int length = paths.Length;
-        Texture2D[] textures = new Texture2D[length];
+        Color[][] colors = new Color[length][];
         
         // HACK: For now we are only loading tiffs with a certain hardcoded width and height
-        // To reduce memory usage we create the buffers here and reuse them for each load
+
+        // To reduce memory usage we create the buffer here and reuse it for each load
         // which works because every image is the same size
-        int[] raster = new int[TEXTURE_WIDTH * TEXTURE_HEIGHT];
-        Color32[] colors = new Color32[TEXTURE_WIDTH * TEXTURE_HEIGHT];
+        int[] raster = new int[DataManager.TIFF_WIDTH * DataManager.TIFF_HEIGHT];
 
         for (int i = 0; i < length; i++) {
             string path = paths[i];
             try {
-                textures[i] = LoadTiff(path, raster, colors);
+                colors[i] = LoadTiff(path, raster);
             } catch (Exception e) {
                 Debug.LogError($"[DataLoaderFromDisk] - Failed to load tiff at paht: {path} with exception:\n{e.GetType().Name} - {e.Message}!");
                 return null;
             }
         }
-        return textures;
+        return colors;
     }
 
-    private Texture2D LoadTiff(string path, int[] raster, Color32[] colors) {
+    private Color[] LoadTiff(string path, int[] raster) {
         using (Tiff image = Tiff.Open(path, "r")) {
             // Find the width and height of the image
             FieldValue[] value = image.GetField(TiffTag.IMAGEWIDTH);
@@ -71,18 +75,20 @@ public class DataLoaderFromTIFFs : IDataLoader {
 
             value = image.GetField(TiffTag.IMAGELENGTH);
             int height = value[0].ToInt();
-            
-            if (width != TEXTURE_WIDTH) {
-                throw new TiffException($"Tiff does not have the expected width of: {TEXTURE_WIDTH}");
+
+            if (width != DataManager.TIFF_WIDTH) {
+                throw new TiffException($"Tiff does not have the expected width of: {DataManager.TIFF_WIDTH}");
             }
-            if (height != TEXTURE_HEIGHT) {
-                throw new TiffException($"Tiff does not have the expected height of: {TEXTURE_HEIGHT}");
+            if (height != DataManager.TIFF_HEIGHT) {
+                throw new TiffException($"Tiff does not have the expected height of: {DataManager.TIFF_HEIGHT}");
             }
 
             // Read the image into the raster buffer
             if (!image.ReadRGBAImage(width, height, raster)) {
                 throw new TiffException("Failed to read pixels from tiff!");
             }
+
+            Color[] colors = new Color[width * height];
 
             // We convert the raster to colors
             for (int x = 0; x < width; x++) {
@@ -92,16 +98,11 @@ public class DataLoaderFromTIFFs : IDataLoader {
                 }
             }
 
-            // Create actual texture with special format
-            Texture2D texture = new Texture2D(width, height, TEXTURE_FORMAT, TEXTURE_MIPMAPS);
-            texture.SetPixels32(colors);
-            // We do not need to Apply() the textures because we don't need to load them onto the gpu
-
-            return texture;
+            return colors;
         }
     }
 
-    private Color32 GetColorFromBytes(int bytes) {
+    private Color GetColorFromBytes(int bytes) {
         byte r = (byte)Tiff.GetR(bytes);
         byte g = (byte)Tiff.GetG(bytes);
         byte b = (byte)Tiff.GetB(bytes);
