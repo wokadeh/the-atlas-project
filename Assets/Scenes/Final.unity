@@ -12957,6 +12957,8 @@ MonoBehaviour:
   m_DataManager: {fileID: 631215805}
   m_VolumeRenderer: {fileID: 1023572782}
   m_TransferFunctionUI: {fileID: 541401439}
+  m_TransferFunctionUIPanel: {fileID: 1472509994}
+  m_TimelineUIPanel: {fileID: 1373890070}
   m_ImportDataButton: {fileID: 1521639635}
   m_ImportScreen: {fileID: 266806260}
   m_ImportPorgressBar: {fileID: 754122528}

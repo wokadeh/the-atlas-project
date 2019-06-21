@@ -11,16 +11,18 @@ public class DataManager : MonoBehaviour {
         Depth16
     }
 
-    private IMetaDataReader m_MetaDataReader;
-    private IDataLoader m_DataLoder;
-    private IDataAssetBuilder m_DataAssetBuilder;
-
     private Dictionary<string, List<DataAsset>> m_DataAssets;
     public IReadOnlyList<DataAsset> DataAssets => m_DataAssets[CurrentVariable];
+
+    public event Action<DataAsset> OnDataAssetChanged;
 
     public IMetaData MetaData { get; private set; }
     public string CurrentVariable { get; private set; }
     public DataAsset CurrentAsset { get; private set; }
+
+    private IMetaDataReader m_MetaDataReader;
+    private IDataLoader m_DataLoder;
+    private IDataAssetBuilder m_DataAssetBuilder;
 
     private void Start() {
         m_MetaDataReader = new MetaDataReader();
@@ -33,6 +35,7 @@ public class DataManager : MonoBehaviour {
 
     public void SetCurrentAsset(DataAsset asset) {
         CurrentAsset = asset;
+        OnDataAssetChanged?.Invoke(asset);
     }
 
     public void SetCurrentVariable(string variable) {

@@ -13,6 +13,8 @@ public class DataImportUI : MonoBehaviour {
     [SerializeField] private DataManager m_DataManager;
     [SerializeField] private VolumeRenderer m_VolumeRenderer;
     [SerializeField] private TransferFunctionUI m_TransferFunctionUI;
+    [SerializeField] private GameObject m_TransferFunctionUIPanel;
+    [SerializeField] private GameObject m_TimelineUIPanel;
     [SerializeField] private Button m_ImportDataButton;
     [SerializeField] private GameObject m_ImportScreen;
     [SerializeField] private Image m_ImportPorgressBar;
@@ -24,6 +26,11 @@ public class DataImportUI : MonoBehaviour {
 
     private void ImportData() {
         string[] files = StandaloneFileBrowser.OpenFilePanel("Open data xml", null, FILE_FILTER, false);
+
+        // This is a little hackey but works for now
+        m_TransferFunctionUIPanel.SetActive(false);
+        m_TimelineUIPanel.SetActive(false);
+
         if (files.Length == 1) {
             StartCoroutine(ImportDataCoroutine(files[0]));
         }

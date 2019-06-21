@@ -97,7 +97,7 @@ public class TimelineUI : MonoBehaviour {
 
             // Reset timeline if we want to loop the animation
             if (f == m_TimelineSlider.maxValue && m_ShouldLoop) {
-                f = 0;
+                f = -1;
             }
         }
 

@@ -23,6 +23,10 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
     private List<TransferFunctionControlPointUI> m_ControlPoints;
     private TransferFunctionControlPointUI m_SelectedPoint;
 
+    private void Start() {
+        m_DataManager.OnDataAssetChanged += asset => RedrawHistogram();
+    }
+
     public void SelectPoint(TransferFunctionControlPointUI point) {
         DeselectPoint();
 
@@ -78,10 +82,12 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
     }
 
     public void OnPointerClick(PointerEventData eventData) {
-        if (eventData.button == PointerEventData.InputButton.Right) {
-            CreatePoint(LimitPositionToPointInBox(eventData.position), m_ControlPointStartColor, true);
-        } else {
-            DeselectPoint();
+        if (m_DataManager.CurrentAsset != null) {
+            if (eventData.button == PointerEventData.InputButton.Right) {
+                CreatePoint(LimitPositionToPointInBox(eventData.position), m_ControlPointStartColor, true);
+            } else {
+                DeselectPoint();
+            }
         }
     }
 
