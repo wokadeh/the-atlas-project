@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.IO;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using BitMiracle.LibTiff.Classic;
@@ -11,63 +10,56 @@ public class DataLoaderFromTIFFs : IDataLoader {
         public TiffException(string message) : base(message) { }
     }
 
-    // TODO: We need some sort of meta data for the tiffs because we don't know what sort of data we are loading in
+    private int m_Width;
+    private int m_Height;
+    private int m_Levels;
 
-    public Color[][][] Load(string path) {
-        if (Directory.Exists(path) == false) {
-            Debug.LogError($"[DataLoaderFromDisk] - Trying to load data from the directory: {path} that does not exist!");
-            return null;
+    // For performance reasons these arrays are reused and therefore refilled with new data when calling "Load" again
+    private int[] m_Raster;
+    private byte[][] m_Buffer;
+
+    public DataLoaderFromTIFFs(int width, int height, int levels) {
+        m_Width = width;
+        m_Height = height;
+        m_Levels = levels;
+
+        // The raster and buffer for tiff loading can be reused and therefore need only to be created once
+        int size = width * height;
+        m_Raster = new int[size];
+        m_Buffer = new byte[levels][];
+        for (int i = 0; i < levels; i++) {
+            m_Buffer[i] = new byte[size];
         }
-
-        // We only search in the top directory for files with the ".tif" or ".tiff" ending
-        string[] directories = null;
-        try {
-            directories = Directory.GetDirectories(path);
-        } catch(Exception e) {
-            Debug.LogError($"[DataLoaderFromDisk] - Failed to get files from directory: {path} with exception:\n{e.GetType().Name} - {e.Message}!");
-            return null;
-        }
-
-        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-
-        int length = directories.Length;
-        Color[][][] colors = new Color[length][][];
-        string[] paths = null;
-        // Load the tiffs from every directory
-        for (int i = 0; i < length; i++) {
-            string directory = directories[i];
-            paths = Directory.GetFiles(directory, "*.*").Where(p => p.EndsWith(".tif") || p.EndsWith(".tiff")).OrderBy(s => PadNumbers(s)).ToArray();
-            colors[i] = LoadTiffs(paths);
-        }
-
-        Debug.Log($"[DataLoaderFromDisk] - Loading of tiffs took {(stopwatch.ElapsedMilliseconds / 1000.0f).ToString("0.00")} seconds.");
-
-        return colors;
     }
 
-    private Color[][] LoadTiffs(string[] paths) {
-        int length = paths.Length;
-        Color[][] colors = new Color[length][];
-        
-        // HACK: For now we are only loading tiffs with a certain hardcoded width and height
+    public byte[][] Load8Bit(string path) {
+        // Get all tiffs in the directory and sort them appropriately
+        string[] files = Directory.GetFiles(path, "*.*").Where(p => p.EndsWith(".tif") || p.EndsWith(".tiff")).OrderBy(s => PadNumbers(s)).ToArray();
 
-        // To reduce memory usage we create the buffer here and reuse it for each load
-        // which works because every image is the same size
-        int[] raster = new int[DataManager.TIFF_WIDTH * DataManager.TIFF_HEIGHT];
+        // Check the amount of files matches the expected levels
+        if (files.Length != m_Levels) {
+            Debug.Log($"[DataLoaderFromTIFFs] - Trying to load a data set which does not contain {m_Levels} tiff levels!");
+            return null;
+        }
 
-        for (int i = 0; i < length; i++) {
-            string path = paths[i];
+        // Load in all tiffs
+        for (int i = 0; i < files.Length; i++) {
+            string file = files[i];
             try {
-                colors[i] = LoadTiff(path, raster);
-            } catch (Exception e) {
-                Debug.LogError($"[DataLoaderFromDisk] - Failed to load tiff at paht: {path} with exception:\n{e.GetType().Name} - {e.Message}!");
-                return null;
+                LoadTiff8Bit(file, i);
+            } catch(Exception e) {
+                Debug.LogError($"[DataLoaderFromTIFFs] - Failed to read tiff: '{file}' with exception:\n{e.GetType().Name} - {e.Message}!");
             }
         }
-        return colors;
+
+        return m_Buffer;
     }
 
-    private Color[] LoadTiff(string path, int[] raster) {
+    public short[][] Load16Bit(string path) {
+        throw new NotImplementedException();
+    }
+
+    private void LoadTiff8Bit(string path, int level) {
         using (Tiff image = Tiff.Open(path, "r")) {
             // Find the width and height of the image
             FieldValue[] value = image.GetField(TiffTag.IMAGEWIDTH);
@@ -76,38 +68,33 @@ public class DataLoaderFromTIFFs : IDataLoader {
             value = image.GetField(TiffTag.IMAGELENGTH);
             int height = value[0].ToInt();
 
-            if (width != DataManager.TIFF_WIDTH) {
-                throw new TiffException($"Tiff does not have the expected width of: {DataManager.TIFF_WIDTH}");
+            if (width != m_Width) {
+                throw new TiffException($"Tiff does not have the expected width of: {m_Width}");
             }
-            if (height != DataManager.TIFF_HEIGHT) {
-                throw new TiffException($"Tiff does not have the expected height of: {DataManager.TIFF_HEIGHT}");
+            if (height != m_Height) {
+                throw new TiffException($"Tiff does not have the expected height of: {m_Height}");
             }
 
             // Read the image into the raster buffer
-            if (!image.ReadRGBAImage(width, height, raster)) {
+            if (!image.ReadRGBAImage(width, height, m_Raster)) {
                 throw new TiffException("Failed to read pixels from tiff!");
             }
 
-            Color[] colors = new Color[width * height];
-
-            // We convert the raster to colors
+            // We convert the raster to bytes
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
                     int index = y * width + x;
-                    colors[index] = GetColorFromBytes(raster[index]);
+
+                    m_Buffer[level][index] = GetByteFromBytes(m_Raster[index]);
                 }
             }
-
-            return colors;
         }
     }
 
-    private Color GetColorFromBytes(int bytes) {
-        byte r = (byte)Tiff.GetR(bytes);
-        byte g = (byte)Tiff.GetG(bytes);
-        byte b = (byte)Tiff.GetB(bytes);
-        byte a = (byte)Tiff.GetA(bytes);
-        return new Color32(r, g, b, a);
+    private byte GetByteFromBytes(int bytes) {
+        // It is not important from which channel (r,g,b) we take the byte
+        // as all three contain the same for a tiff with a bit depth of 8
+        return (byte)Tiff.GetR(bytes);
     }
 
     private static string PadNumbers(string input) {

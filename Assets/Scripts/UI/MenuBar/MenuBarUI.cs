@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using SFB;
+using System;
 
 public class MenuBarUI : MonoBehaviour {
     private static readonly ExtensionFilter[] FILE_FILTER = new ExtensionFilter[] {
@@ -32,10 +33,15 @@ public class MenuBarUI : MonoBehaviour {
         yield return null;
         yield return null;
 
-        DataAsset data = m_DataManager.Load(file);
-        m_VolumeRenderer.SetData(data);
-        m_TransferFunctionUI.Redraw();
-
-        m_LoadingScreen.SetActive(false);
+        m_DataManager.Load(file, new Progress<float>(progress => {
+            // TODO: Show progress bar
+            Debug.Log($"Progress report: {progress}");
+        }), (success, asset) => {
+            if (success) {
+                m_VolumeRenderer.SetData(asset);
+                m_TransferFunctionUI.Redraw();
+            }
+            m_LoadingScreen.SetActive(false);
+        });
     }
 }

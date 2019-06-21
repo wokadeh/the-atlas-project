@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-
-public interface IDataLoader {
-    Color[][][] Load(string path);
+﻿public interface IDataLoader {
+    byte[][] Load8Bit(string path);
+    short[][] Load16Bit(string path);
 }
