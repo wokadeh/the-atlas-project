@@ -1,10 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using SFB;
-using System;
+using TMPro;
 
-public class MenuBarUI : MonoBehaviour {
+public class DataImportUI : MonoBehaviour {
     private static readonly ExtensionFilter[] FILE_FILTER = new ExtensionFilter[] {
         new ExtensionFilter("Xml File", "xml")
     };
@@ -13,7 +14,9 @@ public class MenuBarUI : MonoBehaviour {
     [SerializeField] private VolumeRenderer m_VolumeRenderer;
     [SerializeField] private TransferFunctionUI m_TransferFunctionUI;
     [SerializeField] private Button m_ImportDataButton;
-    [SerializeField] private GameObject m_LoadingScreen;
+    [SerializeField] private GameObject m_ImportScreen;
+    [SerializeField] private Image m_ImportPorgressBar;
+    [SerializeField] private TMP_Text m_ImportProgressBarText;
 
     private void Start() {
         m_ImportDataButton.onClick.AddListener(ImportData);
@@ -27,21 +30,24 @@ public class MenuBarUI : MonoBehaviour {
     }
 
     private IEnumerator ImportDataCoroutine(string file) {
-        m_LoadingScreen.SetActive(true);
+        m_ImportPorgressBar.fillAmount = 0;
+        m_ImportProgressBarText.text = "0 %";
+        m_ImportScreen.SetActive(true);
 
-        // We are waiting for two frames so that unity has time to redraw the ui
+        // We are waiting for two frames so that unity has enough time to redraw the ui
+        // which apparently it needs or otherwise the positions are off...
         yield return null;
         yield return null;
 
         m_DataManager.Load(file, new Progress<float>(progress => {
-            // TODO: Show progress bar
-            Debug.Log($"Progress report: {progress}");
+            m_ImportPorgressBar.fillAmount = progress;
+            m_ImportProgressBarText.text = $"{(progress * 100).ToString("0")} %";
         }), (success, asset) => {
             if (success) {
                 m_VolumeRenderer.SetData(asset);
                 m_TransferFunctionUI.Redraw();
             }
-            m_LoadingScreen.SetActive(false);
+            m_ImportScreen.SetActive(false);
         });
     }
 }
