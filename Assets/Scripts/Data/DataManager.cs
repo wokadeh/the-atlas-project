@@ -8,6 +8,7 @@ public class DataManager : MonoBehaviour {
 
     [SerializeField] private FilterMode m_DataTextureFilterMode;
 
+    private IMetaDataReader m_MetaDataReader;
     private IDataLoader m_DataLoder;
     private IDataAssetBuilder m_DataAssetBuilder;
 
@@ -17,12 +18,15 @@ public class DataManager : MonoBehaviour {
     public DataAsset CurrentAsset { get; private set; }
 
     private void Start() {
+        m_MetaDataReader = new MetaDataReader();
         m_DataLoder = new DataLoaderFromTIFFs();
         m_DataAssetBuilder = new DataAssetBuilder();
         m_DataAssets = new List<DataAsset>();
     }
 
     public DataAsset Load(string path) {
+        IMetaData metaData = m_MetaDataReader.Read(path);
+
         Color[][][] colors = m_DataLoder.Load(path);
 
         // Try end clear out all the temporary memory that has been piling up until now
