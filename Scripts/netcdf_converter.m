@@ -85,9 +85,11 @@ function create_meta_data(meta_data_file_name, variables, base_directory)
     document = com.mathworks.xml.XMLUtils.createDocument('variables');
     root = document.getDocumentElement;
     
-    % Hardcoded for now might change in the future
+    % Hardcoded for now but that might change in the future
     root.setAttribute('bit_depth', '8');
-    
+    root.setAttribute('width', '875');
+	root.setAttribute('height', '656');
+	
     for i = 1 : length(variables)
         % Create element for variable
         variable = variables(i);
