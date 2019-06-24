@@ -11,9 +11,13 @@ public class DataManager : MonoBehaviour {
         Depth16
     }
 
+    [SerializeField] private VolumeRenderer m_VolumeRenderer;
+    [SerializeField] private TransferFunctionUI m_TransferFunctionUI;
+
     private Dictionary<string, List<DataAsset>> m_DataAssets;
     public IReadOnlyList<DataAsset> DataAssets => m_DataAssets[CurrentVariable];
 
+    public event Action OnNewImport;
     public event Action<DataAsset> OnDataAssetChanged;
 
     public IMetaData MetaData { get; private set; }
@@ -29,7 +33,7 @@ public class DataManager : MonoBehaviour {
         m_DataAssets = new Dictionary<string, List<DataAsset>>();
     }
 
-    public void Load(string file, IProgress<float> progress, Action<bool, DataAsset> callback) {
+    public void Load(string file, IProgress<float> progress, Action callback) {
         StartCoroutine(LoadCoroutine(file, progress, callback));
     }
 
@@ -40,9 +44,14 @@ public class DataManager : MonoBehaviour {
 
     public void SetCurrentVariable(string variable) {
         CurrentVariable = variable;
+
+        SetCurrentAsset(DataAssets.First());
+
+        // Set new data
+        m_VolumeRenderer.SetData(CurrentAsset);
     }
 
-    private IEnumerator LoadCoroutine(string file, IProgress<float> progress, Action<bool, DataAsset> callback) {
+    private IEnumerator LoadCoroutine(string file, IProgress<float> progress, Action callback) {
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
         // Read in meta data
@@ -53,7 +62,7 @@ public class DataManager : MonoBehaviour {
             bitDepth = GetBitDepth(metaData);
         } catch (Exception e) {
             Debug.LogError($"[DataManager] - Failed to read meta data: '{file}' with exception:\n{e.GetType().Name} - {e.Message}!");
-            callback?.Invoke(false, null);
+            callback?.Invoke();
         }
 
         // TODO: Load level count from meta data
@@ -74,7 +83,7 @@ public class DataManager : MonoBehaviour {
                 })));
             } else {
                 Debug.LogError($"[DataManager] - Trying to load variable: '{variable.Name}' but the corresponding directory does not exist!");
-                callback?.Invoke(false, null);
+                callback?.Invoke();
             }
         }
 
@@ -82,20 +91,25 @@ public class DataManager : MonoBehaviour {
 
         MetaData = metaData;
         CurrentVariable = m_DataAssets.First().Key;
-        CurrentAsset = m_DataAssets[CurrentVariable][0];
+        CurrentAsset = DataAssets.First();
 
-        callback?.Invoke(true, CurrentAsset);
+        // Set new data
+        m_VolumeRenderer.SetData(CurrentAsset);
+        m_TransferFunctionUI.Redraw();
+
+        OnNewImport?.Invoke();
+
+        callback?.Invoke();
     }
 
     private IEnumerator LoadVariable(IDataLoader loader, IDataAssetBuilder builder, string folder, List<DataAsset> assets, BitDepth bitDepth, IProgress<float> progress) {
         // We assume every directory is a time stamp which contains the level tiffs
         string[] directories = Directory.GetDirectories(folder);
 
-        // TODO: Callback
         for (int i = 0; i < directories.Length; i++) {
             string directory = directories[i];
 
-            DataAsset asset = null;
+            DataAsset asset;
             switch (bitDepth) {
                 case BitDepth.Depth8: asset = builder.Build8Bit(loader.Load8Bit(directory)); break;
                 case BitDepth.Depth16: asset = builder.Build16Bit(loader.Load16Bit(directory)); break;

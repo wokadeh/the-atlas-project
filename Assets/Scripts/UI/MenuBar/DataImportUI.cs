@@ -11,8 +11,6 @@ public class DataImportUI : MonoBehaviour {
     };
 
     [SerializeField] private DataManager m_DataManager;
-    [SerializeField] private VolumeRenderer m_VolumeRenderer;
-    [SerializeField] private TransferFunctionUI m_TransferFunctionUI;
     [SerializeField] private GameObject m_TransferFunctionUIPanel;
     [SerializeField] private GameObject m_TimelineUIPanel;
     [SerializeField] private Button m_ImportDataButton;
@@ -49,11 +47,7 @@ public class DataImportUI : MonoBehaviour {
         m_DataManager.Load(file, new Progress<float>(progress => {
             m_ImportPorgressBar.fillAmount = progress;
             m_ImportProgressBarText.text = $"{(progress * 100).ToString("0")} %";
-        }), (success, asset) => {
-            if (success) {
-                m_VolumeRenderer.SetData(asset);
-                m_TransferFunctionUI.Redraw();
-            }
+        }), () => {
             m_ImportScreen.SetActive(false);
         });
     }
