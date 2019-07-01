@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: VolumetricRendering
-  m_Shader: {fileID: 4800000, guid: 049fd2c33ad2b5f47984159b5eb9f5cb, type: 3}
+  m_Name: VolumetricSphericalRendering
+  m_Shader: {fileID: 4800000, guid: 137c70651a2d3c247aec98a40bd3629c, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 5
   m_EnableInstancingVariants: 0
@@ -49,5 +49,5 @@ Material:
     - _DataChannel: {r: 1, g: 0, b: 0, a: 0}
     - _LatitudeBounds: {r: -90, g: 90, b: 0, a: 0}
     - _LongitudeBounds: {r: -180, g: 180, b: 0, a: 0}
-    - _Test: {r: 1, g: 2, b: 3, a: 1}
+    - _Test: {r: 0, g: 0, b: 0, a: 1}
     - _TexFilling: {r: 1, g: 1, b: 1, a: 1}
