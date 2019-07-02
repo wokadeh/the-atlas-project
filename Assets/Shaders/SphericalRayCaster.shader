@@ -10,16 +10,13 @@ Shader "Custom/Spherical Ray Casting" {
 		[NoScaleOffset] _Data ("Data Texture", 3D) = "" {}
 	//	_HistTex("Histogram Texture", 2D) = "white" {}
 		_TFTex("Transfer Function Texture", 2D) = "white" {}
-		_SphereRadius("Sphere Radius", Range(0,0.5)) = 0.5
+		_OuterSphereRadius("Outer Sphere Radius", Range(0.4,1)) = 0.5
+		_InnerSphereRadius("Inner Sphere Radius", Range(0,0.4)) = 0.4
 		_EarthRadius("Earth Radius", Float) = 0.5
-		_Mode("Mode", Range(0,1)) = 0
-		_Test("Test", Vector) = (0,0,0)
 		_LongitudeBounds("Longitude Bounds", Vector) = (-180, 180, 0, 0)
-		_LatitudeBounds("Longitude Bounds", Vector) = (-90, 90, 0, 0)
-		_AltitudeBounds("Longitude Bounds", Vector) = (0, 37, 0, 0)
+		_LatitudeBounds("Latitude Bounds", Vector) = (-90, 90, 0, 0)
+		_AltitudeBounds("Altitude Bounds", Vector) = (0, 37, 0, 0)
 		_DataChannel ("Data Channel", Vector) = (0,0,0,1) // in which channel were the data value stored?
-		_Axis ("Axes order", Vector) = (1, 2, 3) // coordinate i=0,1,2 in Unity corresponds to coordinate _Axis[i]-1 in the data
-		_TexFilling ("Data filling factors", Vector) = (1, 1, 1) // if only a fraction of the data texture is to be sampled
 		// data slicing and thresholding (X, Y, Z are user coordinates)
 		_SliceAxis1Min ("Slice along axis X: min", Range(0,1)) = 0
 		_SliceAxis1Max ("Slice along axis X: max", Range(0,1)) = 1
@@ -61,16 +58,13 @@ Shader "Custom/Spherical Ray Casting" {
 
 			sampler3D _Data;
 			sampler2D _TFTex;
-			float _SphereRadius;
+			float _OuterSphereRadius;
+			float _InnerSphereRadius;
 			float _EarthRadius;
-			float3 _Test;
-			float _Mode;
-			float _LongitudeBounds;
-			float _LatitudeBounds;
-			float _AltitudeBounds;
+			float2 _LongitudeBounds;
+			float2 _LatitudeBounds;
+			float2 _AltitudeBounds;
 			float4 _DataChannel;
-			float3 _Axis;
-			float3 _TexFilling;
 			float _SliceAxis1Min, _SliceAxis1Max;
 			float _SliceAxis2Min, _SliceAxis2Max;
 			float _SliceAxis3Min, _SliceAxis3Max;
@@ -80,35 +74,12 @@ Shader "Custom/Spherical Ray Casting" {
 			float _NormPerRay;
 			float _Steps;
 
-			// calculates intersection between a ray and a box
-			// http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter3.htm
-			bool IntersectBox(float3 ray_o, float3 ray_d, float3 boxMin, float3 boxMax, out float tNear, out float tFar)
-			{
-			    // compute intersection of ray with all six bbox planes
-			    float3 invR = 1.0 / ray_d;
-			    float3 tBot = invR * (boxMin.xyz - ray_o);
-			    float3 tTop = invR * (boxMax.xyz - ray_o);
-			    // re-order intersections to find smallest and largest on each axis
-			    float3 tMin = min (tTop, tBot);
-			    float3 tMax = max (tTop, tBot);
-			    // find the largest tMin and the smallest tMax
-			    float2 t0 = max (tMin.xx, tMin.yz);
-			    float largest_tMin = max (t0.x, t0.y);
-			    t0 = min (tMax.xx, tMax.yz);
-			    float smallest_tMax = min (t0.x, t0.y);
-			    // check for hit
-			    bool hit = (largest_tMin <= smallest_tMax);
-			    tNear = largest_tMin;
-			    tFar = smallest_tMax;
-			    return hit;
-			}
-
 			bool intersect_sphere(float3 ray_o, float3 ray_d, float radius, out float tNear, out float tFar) {
 				float3 origin = ray_o;
 				float3 direction = ray_d;
 
 				float b = 2 * (origin.x * direction.x + origin.y * direction.y + origin.z * direction.z);
-				float c = origin.x * origin.x + origin.y * origin.y + origin.z * origin.z - _SphereRadius * _SphereRadius;
+				float c = origin.x * origin.x + origin.y * origin.y + origin.z * origin.z - radius * radius;
 
 				float d = b * b - 4 * c;
 
@@ -158,8 +129,7 @@ Shader "Custom/Spherical Ray Casting" {
 			float4 get_data(float3 pos) {
 				// sample texture (pos is normalized in [0,1])
 				float3 posTex = pos;
-				//float3 posTex = float3(pos[_Axis[0]-1],pos[_Axis[1]-1],pos[_Axis[2]-1]);
-				//posTex = (posTex-0.5) * _TexFilling + 0.5;
+
 				float4 data4 = tex3Dlod(_Data, float4(posTex,0));
 				float data = _DataChannel[0]*data4.r + _DataChannel[1]*data4.g + _DataChannel[2]*data4.b + _DataChannel[3]*data4.a;
 				// slice and threshold
@@ -190,46 +160,26 @@ Shader "Custom/Spherical Ray Casting" {
 			}
 
 			float3 convert_to_texture(float3 spherical) {
-				float2 longitude_bounds = _LongitudeBounds;
-				float2 latitude_bounds = _LatitudeBounds;
-				float2 altitude_bounds = _AltitudeBounds;
-
-				float u = (spherical.x - longitude_bounds.x) / (longitude_bounds.y - longitude_bounds.x);
-				float v = (spherical.y - latitude_bounds.x) / (latitude_bounds.y - latitude_bounds.x);
-				float s = (spherical.z - altitude_bounds.x) / (altitude_bounds.y - altitude_bounds.x);
+				float u = (spherical.x - _LongitudeBounds.x) / (_LongitudeBounds.y - _LongitudeBounds.x);
+				float v = (spherical.y - _LatitudeBounds.x) / (_LatitudeBounds.y - _LatitudeBounds.x);
+				float s = (spherical.z - _AltitudeBounds.x) / (_AltitudeBounds.y - _AltitudeBounds.x);
 
 				return float3(u, v, s);
 			}
 
 			// fragment program
 			float4 frag(frag_input i) : COLOR {
-			    i.ray_d = normalize(i.ray_d);
-			    // calculate eye ray intersection with cube bounding box
-				//float3 boxMin = { -0.5, -0.5, -0.5 };
-				//float3 boxMax = {  0.5,  0.5,  0.5 };
-			    //float tNear, tFar;
-			    //bool hit = IntersectBox(i.ray_o, i.ray_d, boxMin, boxMax, tNear, tFar);
-			    //if (!hit) discard;
-			    //if (tNear < 0.0) tNear = 0.0;
-			    //// calculate intersection points
-			    //float3 pNear = i.ray_o + i.ray_d*tNear;
-			    //float3 pFar  = i.ray_o + i.ray_d*tFar;
-			    //// convert to texture space
-				//pNear = pNear + 0.5;
-				//pFar  = pFar  + 0.5;
-				
+				i.ray_d = normalize(i.ray_d);
+
 				// calculate eye ray intersection with sphere bounding box
-				float radius = 0.6f;
 				float tNear, tFar;
-				bool hit = intersect_sphere(i.ray_o, i.ray_d, radius, tNear, tFar);
+				bool hit = intersect_sphere(i.ray_o, i.ray_d, _OuterSphereRadius, tNear, tFar);
 				if (!hit) discard;
 				if (tNear < 0.0) tNear = 0.0;
 				float3 pNear = i.ray_o + i.ray_d * tNear;
 				float3 pFar = i.ray_o + i.ray_d * tFar;
-				//pNear = pNear + 0.5;
-				//pFar = pFar + 0.5;
 
-			    // march along ray inside the cube, accumulating color
+				// march along ray inside the cube, accumulating color
 				float3 ray_pos = pNear;
 				float3 ray_dir = pFar - pNear;
 
@@ -237,18 +187,11 @@ Shader "Custom/Spherical Ray Casting" {
 				float4 ray_col = 0;
 
 				[loop]
-				for(int k = 0; k < _Steps; k++)
+				for (int k = 0; k < _Steps; k++)
 				{
-					float4 voxel_col;
 					float3 spherical = convert_to_spherical(ray_pos);
-					if (_Mode > 0.5f) {
-						float3 tex_coord = convert_to_texture(spherical);
-						tex_coord += _Test;
-						voxel_col = get_data(tex_coord);
-					} else {
-						spherical += _Test;
-						voxel_col = get_data(spherical);
-					}
+					float3 tex_coord = convert_to_texture(spherical);
+					float4 voxel_col = get_data(tex_coord);
 
 					float density = voxel_col.r;
 
@@ -257,18 +200,14 @@ Shader "Custom/Spherical Ray Casting" {
 					tf_col.a = _NormPerStep * length(ray_step) * pow(tf_col.a,_StretchPower);
 
 					ray_col.rgb = ray_col.rgb + (1 - ray_col.a) * tf_col.a * tf_col.rgb;
-					ray_col.a   = ray_col.a   + (1 - ray_col.a) * tf_col.a;
+					ray_col.a = ray_col.a + (1 - ray_col.a) * tf_col.a;
 
 					ray_pos += ray_step;
-
-					// Necessary?
-					//if (ray_pos.x < 0 || ray_pos.y < 0 || ray_pos.z < 0) break;
-					//if (ray_pos.x > 1 || ray_pos.y > 1 || ray_pos.z > 1) break;
 				}
 
 				ray_col *= _NormPerRay;
 				ray_col = clamp(ray_col,0,1);
-		    	
+
 				return ray_col;
 			}
 

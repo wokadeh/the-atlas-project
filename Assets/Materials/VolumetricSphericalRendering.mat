@@ -31,10 +31,13 @@ Material:
     - _DataMax: 1
     - _DataMin: 0
     - _EarthRadius: -0.5
+    - _InnerSphereRadius: 0.4
+    - _Mode: 0
     - _NormPerRay: 1
-    - _NormPerStep: 10
+    - _NormPerStep: 15
     - _Normalization: 2
-    - _SliceAxis1Max: 0.862
+    - _OuterSphereRadius: 0.5
+    - _SliceAxis1Max: 1
     - _SliceAxis1Min: 0
     - _SliceAxis2Max: 1
     - _SliceAxis2Min: 0
@@ -42,12 +45,12 @@ Material:
     - _SliceAxis3Min: 0
     - _SphereRadius: 0.5
     - _Steps: 256
-    - _StretchPower: 1
+    - _StretchPower: 1.35
     m_Colors:
-    - _AltitudeBounds: {r: 0, g: 37, b: 0, a: 0}
+    - _AltitudeBounds: {r: 0.9, g: 1, b: 0, a: 0}
     - _Axis: {r: 1, g: 3, b: 2, a: 1}
     - _DataChannel: {r: 1, g: 0, b: 0, a: 0}
-    - _LatitudeBounds: {r: -90, g: 90, b: 0, a: 0}
-    - _LongitudeBounds: {r: -180, g: 180, b: 0, a: 0}
+    - _LatitudeBounds: {r: -1.571, g: 1.571, b: 0, a: 0}
+    - _LongitudeBounds: {r: -1.571, g: 1.571, b: 0, a: 0}
     - _Test: {r: 0, g: 0, b: 0, a: 1}
     - _TexFilling: {r: 1, g: 1, b: 1, a: 1}
