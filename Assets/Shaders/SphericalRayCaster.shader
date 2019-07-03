@@ -162,7 +162,7 @@ Shader "Custom/Spherical Ray Casting" {
 			float3 convert_to_texture(float3 spherical) {
 				float u = (spherical.x - _LongitudeBounds.x) / (_LongitudeBounds.y - _LongitudeBounds.x);
 				float v = (spherical.y - _LatitudeBounds.x) / (_LatitudeBounds.y - _LatitudeBounds.x);
-				float s = (spherical.z - _AltitudeBounds.x) / (_AltitudeBounds.y - _AltitudeBounds.x);
+				float s = 1 - ((spherical.z - _AltitudeBounds.x) / (_AltitudeBounds.y - _AltitudeBounds.x));
 
 				return float3(u, v, s);
 			}
