@@ -2,10 +2,17 @@
 
 [RequireComponent(typeof(MeshRenderer))]
 public class VolumeRenderer : MonoBehaviour {
+    public VolumeRendererMode Mode { get; private set; }
+    
     private MeshRenderer m_Renderer;
 
     private void Start() {
         m_Renderer = GetComponent<MeshRenderer>();
+    }
+
+    public void SetMode(VolumeRendererMode mode) {
+        Mode = mode;
+        // TODO: Implement accordingly
     }
 
     public void SetData(DataAsset data) {

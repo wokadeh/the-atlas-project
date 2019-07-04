@@ -162,7 +162,6 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
         TransferFunction function = new TransferFunction();
 
         if (m_ControlPoints.Count > 0) {
-            // NOTE: For the size we should need to take into account the size of the control points
             Vector2 size = m_RectTransform.sizeDelta;
             for (int i = 0; i < m_ControlPoints.Count; i++) {
                 TransferFunctionControlPointUI controlPoint = m_ControlPoints[i];
