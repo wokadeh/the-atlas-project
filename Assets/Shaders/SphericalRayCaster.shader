@@ -153,7 +153,7 @@ Shader "Custom/Spherical Ray Casting" {
 			float3 convert_to_spherical(float3 pos) {
 				float radius = _EarthRadius;
 				float rho = sqrt(pos.x * pos.x + pos.y * pos.y + pos.z * pos.z);
-				float longitude = atan(pos.y / pos.x);
+				float longitude = atan2(pos.x, pos.y);
 				float latitude = asin(pos.z / rho);
 				float altitude = rho - radius;
 				return float3(longitude, latitude, altitude);
