@@ -21,18 +21,15 @@ public class PrepareRenderMode : MonoBehaviour
             ground.enabled = true;
             sphere.enabled = false;
             m_VolumeRenderer.GetComponent<MeshRenderer>().material.shader = Shader.Find("Custom/Ray Casting");
-            m_VolumeRenderer.transform.rotation = Quaternion.identity;
-            m_VolumeRenderer.transform.rotation = Quaternion.Euler(180, 180, 0);
             m_VolumeRenderer.transform.localScale = new Vector3(1f, 0.2f, 0.75f);
-
-        }else if (m_VolumeRenderer.Mode == VolumeRendererMode.Spherical)
+            m_VolumeRenderer.transform.rotation = Quaternion.identity;
+        } else if (m_VolumeRenderer.Mode == VolumeRendererMode.Spherical)
         {
             ground.enabled = false;
             sphere.enabled = true;
             m_VolumeRenderer.GetComponent<MeshRenderer>().material.shader = Shader.Find("Custom/Spherical Ray Casting");
             m_VolumeRenderer.transform.localScale = new Vector3(1f, 1f, 1f);
-            m_VolumeRenderer.transform.rotation = Quaternion.identity;
-            m_VolumeRenderer.transform.rotation = Quaternion.Euler(90, 0, 0);
+            m_VolumeRenderer.transform.rotation = Quaternion.Euler(-90, 0, 0);
         }
     }
 }
