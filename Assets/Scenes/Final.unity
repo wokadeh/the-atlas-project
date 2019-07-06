@@ -3829,6 +3829,7 @@ GameObject:
   m_Component:
   - component: {fileID: 631215806}
   - component: {fileID: 631215805}
+  - component: {fileID: 631215807}
   m_Layer: 0
   m_Name: SCRIPTS
   m_TagString: Untagged
@@ -3864,6 +3865,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &631215807
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 631215804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e471b79f93b5f074987cdd8d3e832590, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_VolumeRenderer: {fileID: 1023572782}
+  m_Groundplane: {fileID: 258605664}
+  m_EarthSphere: {fileID: 1920428496}
 --- !u!1 &636235223
 GameObject:
   m_ObjectHideFlags: 0
