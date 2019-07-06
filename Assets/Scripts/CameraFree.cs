@@ -16,11 +16,11 @@
 public class CameraFree : MonoBehaviour
 {
 
-    public float movementSpeed = 0.1f;
-    public float fastMovementSpeed = 0.2f;
-    public float freeLookSensitivity = 0.1f;
-    public float zoomSensitivity = 0.1f;
-    public float fastZoomSensitivity = 0.2f;
+    public float movementSpeed = 0.5f;
+    public float fastMovementSpeed = 1f;
+    public float freeLookSensitivity = 0.5f;
+    public float zoomSensitivity = 0.25f;
+    public float fastZoomSensitivity = 0.5f;
     private bool looking = false;
 
     void Update()

@@ -196,7 +196,7 @@ Shader "Custom/Spherical Ray Casting" {
 					float density = voxel_col.r;
 					if (density == 0) count = count + 1;
 					if (density != 0) count = 0;
-					if (count > 10) break;
+					if (count > 20) break;
 					float4 tf_col = get_transfer_function(density);
 
 					tf_col.a = _NormPerStep * length(ray_step) * pow(tf_col.a,_StretchPower);
