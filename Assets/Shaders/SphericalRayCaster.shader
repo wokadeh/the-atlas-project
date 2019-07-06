@@ -185,7 +185,7 @@ Shader "Custom/Spherical Ray Casting" {
 
 				float3 ray_step = normalize(ray_dir) * sqrt(3) / _Steps;
 				float4 ray_col = 0;
-
+				int count = 0;
 				[loop]
 				for (int k = 0; k < _Steps; k++)
 				{
@@ -194,7 +194,9 @@ Shader "Custom/Spherical Ray Casting" {
 					float4 voxel_col = get_data(tex_coord);
 
 					float density = voxel_col.r;
-
+					if (density == 0) count = count + 1;
+					if (density != 0) count = 0;
+					if (count > 10) break;
 					float4 tf_col = get_transfer_function(density);
 
 					tf_col.a = _NormPerStep * length(ray_step) * pow(tf_col.a,_StretchPower);
