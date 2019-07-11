@@ -12,6 +12,7 @@ public class MetaDataReader : IMetaDataReader {
         public int BitDepth { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
+        public int Levels { get; set; }
 
         public IList<IVariable> Variables { get; set; }
     }
@@ -23,6 +24,7 @@ public class MetaDataReader : IMetaDataReader {
     private const string BIT_DEPTH_ATTRIBUTE = "bit_depth";
     private const string WIDTH_ATTRIBUTE = "width";
     private const string HEIGHT_ATTRIBUTE = "height";
+    private const string LEVELS_ATTRIBUTE = "levels";
 
     private const string VARIABLE_ELEMENT = "variable";
     private const string VARIABLE_NAME_ATTRIBUTE = "name";
@@ -36,6 +38,7 @@ public class MetaDataReader : IMetaDataReader {
         int bitDepth = ReadAttribute(root, BIT_DEPTH_ATTRIBUTE);
         int width = ReadAttribute(root, WIDTH_ATTRIBUTE);
         int height = ReadAttribute(root, HEIGHT_ATTRIBUTE);
+        int levels = ReadAttribute(root, LEVELS_ATTRIBUTE);
 
         // Read in variables
         IList<IVariable> variables = new List<IVariable>();
@@ -58,6 +61,7 @@ public class MetaDataReader : IMetaDataReader {
             BitDepth = bitDepth,
             Width = width,
             Height = height,
+            Levels = levels,
 
             Variables = variables
         };

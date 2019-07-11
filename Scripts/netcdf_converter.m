@@ -3,9 +3,10 @@ base_directory = 'data';
 meta_data_file_name = 'data.xml';
 
 variables = get_netcdf_data_variables(netcdf_file_name);
+level_count = get_netcdf_level_count(netcdf_file_name);
 create_base_directory(base_directory);
+create_meta_data(meta_data_file_name, variables, level_count, base_directory);
 create_tiffs(netcdf_file_name, base_directory, variables);
-create_meta_data(meta_data_file_name, variables, base_directory);
 
 function create_tiffs(netcdf_file_name, base_directory, variables)
     % Those four variables are hardcoded because they are expected to be in
@@ -81,14 +82,19 @@ function variables = get_netcdf_data_variables(netcdf_file_name)
     netcdf.close(netcdf_id);
 end
 
-function create_meta_data(meta_data_file_name, variables, base_directory)
+function level_count = get_netcdf_level_count(netcdf_file_name)
+	level_count = length(ncread(netcdf_file_name, 'level'));
+end
+
+function create_meta_data(meta_data_file_name, variables, level_count, base_directory)
     document = com.mathworks.xml.XMLUtils.createDocument('variables');
     root = document.getDocumentElement;
     
-    % Hardcoded for now but that might change in the future
+    % Bit depth, width and height are hardcoded for now but that will probably change
     root.setAttribute('bit_depth', '8');
     root.setAttribute('width', '875');
 	root.setAttribute('height', '656');
+	root.setAttribute('levels', int2str(level_count));
 	
     for i = 1 : length(variables)
         % Create element for variable

@@ -25,8 +25,6 @@ public class DataManager : MonoBehaviour {
     public DataAsset CurrentAsset { get; private set; }
 
     private IMetaDataReader m_MetaDataReader;
-    private IDataLoader m_DataLoder;
-    private IDataAssetBuilder m_DataAssetBuilder;
 
     private void Start() {
         m_MetaDataReader = new MetaDataReader();
@@ -65,9 +63,8 @@ public class DataManager : MonoBehaviour {
             callback?.Invoke();
         }
 
-        // TODO: Load level count from meta data
-        IDataLoader loader = new DataLoaderFromTIFFs(metaData.Width, metaData.Height, 37);
-        IDataAssetBuilder builder = new DataAssetBuilder(metaData.Width, metaData.Height, 37);
+        IDataLoader loader = new DataLoaderFromTIFFs(metaData.Width, metaData.Height, metaData.Levels);
+        IDataAssetBuilder builder = new DataAssetBuilder(metaData.Width, metaData.Height, metaData.Levels);
 
         for (int i = 0; i < metaData.Variables.Count; i++) {
             IVariable variable = metaData.Variables[i];
@@ -104,6 +101,7 @@ public class DataManager : MonoBehaviour {
 
     private IEnumerator LoadVariable(IDataLoader loader, IDataAssetBuilder builder, string folder, List<DataAsset> assets, BitDepth bitDepth, IProgress<float> progress) {
         // We assume every directory is a time stamp which contains the level tiffs
+        // We also assume that they are correctly ordered
         string[] directories = Directory.GetDirectories(folder);
 
         for (int i = 0; i < directories.Length; i++) {

@@ -147,7 +147,7 @@ Shader "Custom/Spherical Ray Casting" {
 			}
 
 			float4 get_transfer_function(float density) {
-				return tex2D(_TFTex, float2(density, 0));
+				return tex2Dlod(_TFTex, float4(density, 0, 0, 0));
 			}
 
 			float3 convert_to_spherical(float3 pos) {
@@ -186,6 +186,7 @@ Shader "Custom/Spherical Ray Casting" {
 				float3 ray_step = normalize(ray_dir) * sqrt(3) / _Steps;
 				float4 ray_col = 0;
 				int count = 0;
+
 				[loop]
 				for (int k = 0; k < _Steps; k++)
 				{
