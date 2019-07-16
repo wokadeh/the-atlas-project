@@ -1,4 +1,4 @@
-netcdf_file_name = 'download.nc';
+netcdf_file_name = 'C:\Users\Alexander\Downloads\COPERNICUS\2018_01-03_00061218_1-1000_gp_pv_tp_vv_vr.nc';
 base_directory = 'data';
 meta_data_file_name = 'data.xml';
 
