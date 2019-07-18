@@ -44,7 +44,7 @@ public class DataImportUI : MonoBehaviour {
         yield return null;
         yield return null;
 
-        m_DataManager.Load(file, new Progress<float>(progress => {
+        m_DataManager.ImportData(file, new Progress<float>(progress => {
             m_ImportPorgressBar.fillAmount = progress;
             m_ImportProgressBarText.text = $"{(progress * 100).ToString("0")} %";
         }), () => {
