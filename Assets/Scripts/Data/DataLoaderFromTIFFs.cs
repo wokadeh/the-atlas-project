@@ -12,22 +12,22 @@ public class DataLoaderFromTIFFs : IDataLoader {
 
     private int m_Width;
     private int m_Height;
-    private int m_BitDepth;
+    private int m_Levels;
 
     // For performance reasons these arrays are reused and therefore refilled with new data when calling "Load" again
     private int[] m_Raster;
     private byte[][] m_Buffer;
 
-    public DataLoaderFromTIFFs(int _width, int _height, int _bitDepth) {
+    public DataLoaderFromTIFFs(int _width, int _height, int _bithDepth) {
         m_Width = _width;
         m_Height = _height;
-        m_BitDepth = _bitDepth;
+        m_Levels = _bithDepth;
 
         // The raster and buffer for tiff loading can be reused and therefore need only to be created once
         int size = _width * _height;
         m_Raster = new int[size];
-        m_Buffer = new byte[_bitDepth][];
-        for (int i = 0; i < _bitDepth; i++) {
+        m_Buffer = new byte[_bithDepth][];
+        for (int i = 0; i < _bithDepth; i++) {
             m_Buffer[i] = new byte[size];
         }
     }
@@ -37,8 +37,8 @@ public class DataLoaderFromTIFFs : IDataLoader {
         string[] files = Directory.GetFiles(path, "*.*").Where(p => p.EndsWith(".tif") || p.EndsWith(".tiff")).OrderBy(s => PadNumbers(s)).ToArray();
 
         // Check the amount of files matches the expected levels
-        if (files.Length != m_BitDepth) {
-            Debug.Log($"[DataLoaderFromTIFFs] - Trying to load a data set which does not contain {m_BitDepth} tiff levels!");
+        if (files.Length != m_Levels) {
+            Debug.Log($"[DataLoaderFromTIFFs] - Trying to load a data set which does not contain {m_Levels} tiff levels!");
             return null;
         }
 

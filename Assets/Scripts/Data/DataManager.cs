@@ -113,7 +113,7 @@ public class DataManager : MonoBehaviour {
         }
 
         // TODO: Load level count from meta data
-        IDataLoader loader = new DataLoaderFromTIFFs(metaData.Width, metaData.Height, metaData.BitDepth);
+        IDataLoader tiffLoader = new DataLoaderFromTIFFs(metaData.Width, metaData.Height, metaData.BitDepth);
         m_EarthDataFrameBuilder = new EarthDataFrameBuilder(metaData.Width, metaData.Height, metaData.BitDepth);
 
         for (int i = 0; i < metaData.Variables.Count; i++) {
@@ -124,7 +124,7 @@ public class DataManager : MonoBehaviour {
 
             string folder = Path.Combine(Path.GetDirectoryName(_projectFilePath), variable.Name.ToLower());
             if (Directory.Exists(folder)) {
-                yield return StartCoroutine(ImportVariableRoutine(loader, folder, m_DataAssets[variable.Name], bitDepth, new Progress<float>(value => {
+                yield return StartCoroutine(ImportVariableRoutine(tiffLoader, folder, m_DataAssets[variable.Name], bitDepth, new Progress<float>(value => {
                     // Do overall progress report
                     float progression = i / (float)metaData.Variables.Count;
                     _progress.Report(progression + (value / metaData.Variables.Count));
