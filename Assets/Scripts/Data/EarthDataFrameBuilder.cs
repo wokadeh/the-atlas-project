@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public class DataAssetBuilder : IDataAssetBuilder {
+public class EarthDataFrameBuilder : IDataAssetBuilder {
     private const int HISTOGRAM_SAMPLES = 256;
 
     private int m_Width;
@@ -14,7 +14,7 @@ public class DataAssetBuilder : IDataAssetBuilder {
     private int[] m_HistogramValuesBuffer;
     private Color[] m_HistogramColorBuffer;
 
-    public DataAssetBuilder(int width, int height, int depth) {
+    public EarthDataFrameBuilder(int width, int height, int depth) {
         m_Width = width;
         m_Height = height;
         m_Depth = depth;
@@ -26,17 +26,17 @@ public class DataAssetBuilder : IDataAssetBuilder {
         m_HistogramColorBuffer = new Color[HISTOGRAM_SAMPLES];
     }
 
-    public DataAsset Build8Bit(byte[][] data) {
+    public EarthDataFrame Build8Bit(byte[][] data) {
         int depth = data.Length;
 
         // Create data texture
         Texture3D dataTexture = BuildDataTexture(data);
         Texture2D histogramTexture = BuildHistogramTexture();
 
-        return new DataAsset() { Dimensions = new Vector3(m_Width, m_Height, depth), DataTexture = dataTexture, HistogramTexture = histogramTexture };
+        return new EarthDataFrame() { Dimensions = new Vector3(m_Width, m_Height, depth), DataTexture = dataTexture, HistogramTexture = histogramTexture };
     }
 
-    public DataAsset Build16Bit(short[][] data) {
+    public EarthDataFrame Build16Bit(short[][] data) {
         throw new NotImplementedException();
     }
 

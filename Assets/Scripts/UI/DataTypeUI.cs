@@ -20,10 +20,10 @@ public class DataTypeUI : MonoBehaviour {
         }
 
         // Create toggles for all variables
-        foreach (IVariable variable in m_DataManager.MetaData.Variables) {
+        foreach (IVariable variable in m_DataManager.m_MetaData.Variables) {
             string name = variable.Name;
             Toggle toggle = Instantiate(m_DataTypeTogglePrefab, transform);
-            toggle.isOn = name == m_DataManager.CurrentVariable;
+            toggle.isOn = name == m_DataManager.m_CurrentVariable;
 
             TMP_Text label = toggle.transform.Find("Label").GetComponent<TMP_Text>();
             label.text = name;
@@ -51,7 +51,7 @@ public class DataTypeUI : MonoBehaviour {
 
         m_DataManager.OnNewImport += OnNewImport;
 
-        if (m_DataManager.CurrentAsset != null) {
+        if (m_DataManager.m_CurrentAsset != null) {
             OnNewImport();
         }
 

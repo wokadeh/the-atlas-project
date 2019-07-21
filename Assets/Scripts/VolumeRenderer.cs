@@ -15,7 +15,7 @@ public class VolumeRenderer : MonoBehaviour {
         // TODO: Implement accordingly
     }
 
-    public void SetData(DataAsset data) {
+    public void SetData(EarthDataFrame data) {
         m_Renderer.material.SetTexture("_Data", data.DataTexture);
     }
 

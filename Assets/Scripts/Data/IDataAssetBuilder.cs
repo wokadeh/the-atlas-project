@@ -1,4 +1,4 @@
 ﻿public interface IDataAssetBuilder {
-    DataAsset Build8Bit(byte[][] data);
-    DataAsset Build16Bit(short[][] data);
+    EarthDataFrame Build8Bit(byte[][] data);
+    EarthDataFrame Build16Bit(short[][] data);
 }
