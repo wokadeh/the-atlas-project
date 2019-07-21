@@ -42,7 +42,7 @@ public class EarthDataFrameBuilder : IEarthDataFrameBuilder {
 
     private Texture3D BuildDataTexture(byte[][] data) {
         int size2d = m_Width * m_Height;
-
+        Debug.Log(m_3DBuffer.Length + " m_3DBuffer length, " + " Width: " + m_Width + " Height: " + m_Height + " Size2d: " + size2d);
         // Get color data from all textures
         for (int i = 0; i < data.Length; i++) {
             // Fill 2d color buffer with data
@@ -53,6 +53,7 @@ public class EarthDataFrameBuilder : IEarthDataFrameBuilder {
                     m_2DBuffer[index] = new Color32(value, 0, 0, 0);
                 }
             }
+            
             m_2DBuffer.CopyTo(m_3DBuffer, i * size2d);
         }
 
