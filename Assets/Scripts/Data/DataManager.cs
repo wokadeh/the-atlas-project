@@ -28,29 +28,29 @@ public class DataManager : MonoBehaviour {
     private IMetaDataManager m_MetaDataReader;
 
     private IDataLoader m_DataLoder;
-    private IDataAssetBuilder m_EarthDataFrameBuilder;
+    private IEarthDataFrameBuilder m_EarthDataFrameBuilder;
 
     private void Start() {
         m_MetaDataReader = new MetaDataManager();
         m_DataAssets = new Dictionary<string, List<EarthDataFrame>>();
     }
 
-    public void ImportData(string file, IProgress<float> progress, Action callback) {
-        StartCoroutine(ImportDataCoroutine(file, progress, callback));
+    public void ImportData(string _projectFilePath, IProgress<float> _progress, Action _callback) {
+        StartCoroutine(ImportDataCoroutine(_projectFilePath, _progress, _callback));
     }
 
-    public void SaveProject(string file, IProgress<float> progress, Action callback)
+    public void SaveProject(string _projectFilePath, IProgress<float> _progress, Action _callback)
     {
-        StartCoroutine(SaveProjectCoroutine(file, progress, callback));
+        StartCoroutine(SaveProjectCoroutine(_projectFilePath, _progress, _callback));
     }
 
-    public void SetCurrentAsset(EarthDataFrame asset) {
-        m_CurrentAsset = asset;
-        OnDataAssetChanged?.Invoke(asset);
+    public void SetCurrentAsset(EarthDataFrame _earthDataFrame) {
+        m_CurrentAsset = _earthDataFrame;
+        OnDataAssetChanged?.Invoke(_earthDataFrame);
     }
 
-    public void SetCurrentVariable(string variable) {
-        m_CurrentVariable = variable;
+    public void SetCurrentVariable(string _variable) {
+        m_CurrentVariable = _variable;
 
         SetCurrentAsset(DataAssets.First());
 
@@ -58,67 +58,58 @@ public class DataManager : MonoBehaviour {
         m_VolumeRenderer.SetData(m_CurrentAsset);
     }
 
-    private IEnumerator SaveProjectCoroutine(string projectFilePath, IProgress<float> progress, Action callback)
+    private IEnumerator SaveProjectCoroutine(string _projectFilePath, IProgress<float> _progress, Action _callback)
     {
+        // 1. Write new xml file with all previous data (bitdepth, levels, etc.)
+        try
+        {
+           m_MetaDataReader.Write(_projectFilePath, m_MetaData, m_DataAssets);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[DataManager] - Failed to save meta data: '{_projectFilePath}' with exception:\n{e.GetType().Name} - {e.Message}!");
+            _callback?.Invoke();
+        }
+        
+        // 2. write 3dTexture assets to folders of variables
 
-        // Load Data
-        IMetaData metaData = m_MetaData;
-        // 1. write new xml file with all previous data (bitdepth, levels, etc.)
-        // 2. write location of 3dTexture assets
-
-
-        // Read in meta data
-        //IMetaData metaData = null;
-        //BitDepth bitDepth = BitDepth.Depth8;
-        //try
-        //{
-        //    metaData = m_MetaDataReader.Read(projectFilePath);
-        //    bitDepth = GetBitDepth(metaData);
-        //}
-        //catch (Exception e)
-        //{
-        //    Debug.LogError($"[DataManager] - Failed to read meta data: '{projectFilePath}' with exception:\n{e.GetType().Name} - {e.Message}!");
-        //    callback?.Invoke();
-        //}
-
+        // USE DIRECTORY!
+        
         for (int i = 0; i < m_MetaData.Variables.Count; i++)
         {
             IVariable variable = m_MetaData.Variables[i];
 
-            string variablePath = "/unity/" + variable.Name;
+            string variablePath = variable.Name + Globals.TEXTURE3D_FOLDER_NAME;
 
+            // Only create if it does not exist, yet
             if (!Directory.Exists(variablePath))
             {
                 Directory.CreateDirectory(variablePath);
-
-                yield return StartCoroutine(SaveVariableRoutine(variable, variablePath, m_MetaData.BitDepth, new Progress<float>(value => {
-                    // Do overall progress report
-                    float progression = i / (float)m_MetaData.Variables.Count;
-                    progress.Report(progression + (value / m_MetaData.Variables.Count));
-                })));
             }
-            else
-            {
-                Debug.LogError($"[DataManager] - The folder '{variable.Name}' already exists. Abort saving!");
-                callback?.Invoke();
-            }
+            yield return StartCoroutine(SaveVariableRoutine(variable, variablePath, new Progress<float>(value => {
+                // Do overall progress report
+                float progression = i / (float)m_MetaData.Variables.Count;
+                _progress.Report(progression + (value / m_MetaData.Variables.Count));
+            })));
         }
 
-        callback?.Invoke();
+        // 2. write 2dTexture from Histo to folders of variables
+
+        _callback?.Invoke();
     }
 
-    private IEnumerator ImportDataCoroutine(string file, IProgress<float> progress, Action callback) {
+    private IEnumerator ImportDataCoroutine(string _projectFilePath, IProgress<float> _progress, Action _callback) {
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
         // Read in meta data
         IMetaData metaData = null;
         BitDepth bitDepth = BitDepth.Depth8;
         try {
-            metaData = m_MetaDataReader.Read(file);
+            metaData = m_MetaDataReader.Read(_projectFilePath);
             bitDepth = GetBitDepth(metaData);
         } catch (Exception e) {
-            Debug.LogError($"[DataManager] - Failed to read meta data: '{file}' with exception:\n{e.GetType().Name} - {e.Message}!");
-            callback?.Invoke();
+            Debug.LogError($"[DataManager] - Failed to read meta data: '{_projectFilePath}' with exception:\n{e.GetType().Name} - {e.Message}!");
+            _callback?.Invoke();
         }
 
         // TODO: Load level count from meta data
@@ -131,16 +122,16 @@ public class DataManager : MonoBehaviour {
             // For each variable there is a list of all textures that are used
             m_DataAssets[variable.Name] = new List<EarthDataFrame>();
 
-            string folder = Path.Combine(Path.GetDirectoryName(file), variable.Name.ToLower());
+            string folder = Path.Combine(Path.GetDirectoryName(_projectFilePath), variable.Name.ToLower());
             if (Directory.Exists(folder)) {
                 yield return StartCoroutine(ImportVariableRoutine(loader, folder, m_DataAssets[variable.Name], bitDepth, new Progress<float>(value => {
                     // Do overall progress report
                     float progression = i / (float)metaData.Variables.Count;
-                    progress.Report(progression + (value / metaData.Variables.Count));
+                    _progress.Report(progression + (value / metaData.Variables.Count));
                 })));
             } else {
                 Debug.LogError($"[DataManager] - Trying to load variable: '{variable.Name}' but the corresponding directory does not exist!");
-                callback?.Invoke();
+                _callback?.Invoke();
             }
         }
 
@@ -156,51 +147,51 @@ public class DataManager : MonoBehaviour {
 
         OnNewImport?.Invoke();
 
-        callback?.Invoke();
+        _callback?.Invoke();
     }
 
-    private IEnumerator SaveVariableRoutine(IVariable variable, string variablePath, int bitDepth, IProgress<float> progress)
+    private IEnumerator SaveVariableRoutine(IVariable _variable, string _variablePath, IProgress<float> _progress)
     {
         int i = 0;
-        foreach (EarthDataFrame asset in m_DataAssets[variable.Name])
+        foreach (EarthDataFrame asset in m_DataAssets[_variable.Name])
         {
-            AssetDatabase.CreateAsset(asset.DataTexture, variablePath + "/" + asset.DataTexture.name + ".asset");
+            AssetDatabase.CreateAsset(asset.DataTexture, _variablePath + "/" + asset.DataTexture.name + ".asset");
 
             // Report progress
             float progression = (i + 1) / (float)m_DataAssets.Count;
-            progress.Report(progression);
+            _progress.Report(progression);
             i++;
             yield return null;
         }
         yield return null;
     }
 
-    private IEnumerator ImportVariableRoutine(IDataLoader loader, string folder, List<EarthDataFrame> assets, BitDepth bitDepth, IProgress<float> progress) {
+    private IEnumerator ImportVariableRoutine(IDataLoader _loader, string _projectFolder, List<EarthDataFrame> _earthFrameList, BitDepth _bitDepth, IProgress<float> _progress) {
         // We assume every directory is a time stamp which contains the level tiffs
-        string[] directories = Directory.GetDirectories(folder);
+        string[] directories = Directory.GetDirectories(_projectFolder);
 
         for (int i = 0; i < directories.Length; i++) {
             string directory = directories[i];
 
             EarthDataFrame asset;
-            switch (bitDepth) {
-                case BitDepth.Depth8: asset = m_EarthDataFrameBuilder.Build8Bit(loader.Load8Bit(directory)); break;
-                case BitDepth.Depth16: asset = m_EarthDataFrameBuilder.Build16Bit(loader.Load16Bit(directory)); break;
+            switch (_bitDepth) {
+                case BitDepth.Depth8: asset = m_EarthDataFrameBuilder.Build8Bit(_loader.Load8Bit(directory)); break;
+                case BitDepth.Depth16: asset = m_EarthDataFrameBuilder.Build16Bit(_loader.Load16Bit(directory)); break;
                 default: yield break;
             }
-            assets.Add(asset);
+            _earthFrameList.Add(asset);
 
             // Report progress
             float progression = (i + 1) / (float)directories.Length;
-            progress.Report(progression);
+            _progress.Report(progression);
             yield return null;
         }
 
         yield return null;
     }
 
-    private BitDepth GetBitDepth(IMetaData metaData) {
-        switch (metaData.BitDepth) {
+    private BitDepth GetBitDepth(IMetaData _metaData) {
+        switch (_metaData.BitDepth) {
             case 8: return BitDepth.Depth8;
             case 16: return BitDepth.Depth16;
             default: throw new Exception("Failed to determine bit depth!");

@@ -20,7 +20,7 @@ public class MetaDataManager : IMetaDataManager {
         public string Name { get; set; }
     }
 
-    public void Write(string _projectFilePath, MetaData _metaData)
+    public void Write(string _projectFilePath, IMetaData _metaData, Dictionary<string, List<EarthDataFrame>> _dataAssets)
     {
         try
         {
@@ -36,15 +36,28 @@ public class MetaDataManager : IMetaDataManager {
             root.SetAttribute(Globals.LEVELS_ATTRIBUTE, _metaData.Levels.ToString());
 
             // Add node for each variable
-            foreach (Variable var in _metaData.Variables)
+            foreach( Variable var in _metaData.Variables)
             {
                 XmlElement varNode = document.CreateElement(Globals.VARIABLE_ELEMENT);
                 varNode.SetAttribute(Globals.VARIABLE_NAME_ATTRIBUTE, var.Name);
                 root.AppendChild(varNode);
+
+                // Go through every element in the list of earthDataFrames for each variable
+                foreach( EarthDataFrame earthDataFrame in _dataAssets[var.Name])
+                {
+                    XmlElement earthFrameDataNode = document.CreateElement(Globals.EARTH_DATA_FRAME_ELEMENT);
+                    earthFrameDataNode.SetAttribute(Globals.EARTH_DATA_FRAME_DIM_X_ATTRIBUTE, earthDataFrame.Dimensions.x.ToString());
+                    earthFrameDataNode.SetAttribute(Globals.EARTH_DATA_FRAME_DIM_Y_ATTRIBUTE, earthDataFrame.Dimensions.y.ToString());
+                    earthFrameDataNode.SetAttribute(Globals.EARTH_DATA_FRAME_DIM_Z_ATTRIBUTE, earthDataFrame.Dimensions.z.ToString());
+
+                    earthFrameDataNode.SetAttribute(Globals.EARTH_DATA_FRAME_DATA_TEXTURE_NAME_ATTRIBUTE, earthDataFrame.DataTexture.ToString());
+                    earthFrameDataNode.SetAttribute(Globals.EARTH_DATA_FRAME_HISTO_TEXTURE_NAME_ATTRIBUTE, earthDataFrame.HistogramTexture.ToString());
+
+
+                }
+                // @TODO: Go through every node in the transfer functions for each variable
+                // foreach( )
             }
-            // Add names for each earthDataFrame
-
-
         }
         catch (Exception e)
         {
@@ -91,14 +104,14 @@ public class MetaDataManager : IMetaDataManager {
         };
     }
 
-    private int ReadAttribute(XmlElement _relement, string _name) {
+    private int ReadAttribute(XmlElement _relement, string name) {
         int attribute;
-        if (_relement.HasAttribute(_name)) {
-            if (!int.TryParse(_relement.GetAttribute(_name), out attribute)) {
-                throw new MetaDataException($"Failed to read '{_name}' attribute!");
+        if (_relement.HasAttribute(name)) {
+            if (!int.TryParse(_relement.GetAttribute(name), out attribute)) {
+                throw new MetaDataException($"Failed to read '{name}' attribute!");
             }
         } else {
-            throw new MetaDataException($"Xml file has no '{_name}' attribute!");
+            throw new MetaDataException($"Xml file has no '{name}' attribute!");
         }
         return attribute;
     }

@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public class EarthDataFrameBuilder : IDataAssetBuilder {
+public class EarthDataFrameBuilder : IEarthDataFrameBuilder {
     private const int HISTOGRAM_SAMPLES = 256;
 
     private int m_Width;

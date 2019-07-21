@@ -2,5 +2,5 @@
 
 public interface IMetaDataManager {
     IMetaData Read(string _fileName);
-    IMetaData Write(string _projectFilePath, MetaDataManager.MetaData _metaData, Dictionary<string, List<EarthDataFrame>> _dataAssets);
+    void Write(string _projectFilePath, IMetaData _metaData, Dictionary<string, List<EarthDataFrame>> _dataAssets);
 }

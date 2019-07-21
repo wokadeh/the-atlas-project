@@ -12,22 +12,22 @@ public class DataLoaderFromTIFFs : IDataLoader {
 
     private int m_Width;
     private int m_Height;
-    private int m_Levels;
+    private int m_BitDepth;
 
     // For performance reasons these arrays are reused and therefore refilled with new data when calling "Load" again
     private int[] m_Raster;
     private byte[][] m_Buffer;
 
-    public DataLoaderFromTIFFs(int width, int height, int levels) {
-        m_Width = width;
-        m_Height = height;
-        m_Levels = levels;
+    public DataLoaderFromTIFFs(int _width, int _height, int _bitDepth) {
+        m_Width = _width;
+        m_Height = _height;
+        m_BitDepth = _bitDepth;
 
         // The raster and buffer for tiff loading can be reused and therefore need only to be created once
-        int size = width * height;
+        int size = _width * _height;
         m_Raster = new int[size];
-        m_Buffer = new byte[levels][];
-        for (int i = 0; i < levels; i++) {
+        m_Buffer = new byte[_bitDepth][];
+        for (int i = 0; i < _bitDepth; i++) {
             m_Buffer[i] = new byte[size];
         }
     }
@@ -37,8 +37,8 @@ public class DataLoaderFromTIFFs : IDataLoader {
         string[] files = Directory.GetFiles(path, "*.*").Where(p => p.EndsWith(".tif") || p.EndsWith(".tiff")).OrderBy(s => PadNumbers(s)).ToArray();
 
         // Check the amount of files matches the expected levels
-        if (files.Length != m_Levels) {
-            Debug.Log($"[DataLoaderFromTIFFs] - Trying to load a data set which does not contain {m_Levels} tiff levels!");
+        if (files.Length != m_BitDepth) {
+            Debug.Log($"[DataLoaderFromTIFFs] - Trying to load a data set which does not contain {m_BitDepth} tiff levels!");
             return null;
         }
 
@@ -55,7 +55,7 @@ public class DataLoaderFromTIFFs : IDataLoader {
         return m_Buffer;
     }
 
-    public short[][] Load16Bit(string path) {
+    public short[][] Load16Bit(string _projectFolder) {
         throw new NotImplementedException();
     }
 
@@ -91,13 +91,13 @@ public class DataLoaderFromTIFFs : IDataLoader {
         }
     }
 
-    private byte GetByteFromBytes(int bytes) {
+    private byte GetByteFromBytes(int _bytes) {
         // It is not important from which channel (r,g,b) we take the byte
         // as all three contain the same for a tiff with a bit depth of 8
-        return (byte)Tiff.GetR(bytes);
+        return (byte)Tiff.GetR(_bytes);
     }
 
-    private static string PadNumbers(string input) {
-        return Regex.Replace(input, "[0-9]+", match => match.Value.PadLeft(10, '0'));
+    private static string PadNumbers(string _input) {
+        return Regex.Replace(_input, "[0-9]+", match => match.Value.PadLeft(10, '0'));
     }
 }
