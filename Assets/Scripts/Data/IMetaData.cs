@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 
 public interface IMetaData {
+    int DataName { get; }
     int BitDepth { get; }
     int Width { get; }
     int Height { get; }

@@ -26,22 +26,23 @@ public class ProjectSaveUI : MonoBehaviour
 
     private void SaveProject()
     {
-        string projectFilePath = StandaloneFileBrowser.SaveFilePanel("Save project at...", "", "myProject", FILE_FILTER);
+        string[] folders = StandaloneFileBrowser.OpenFolderPanel("Save project at...", "", false);
+        string projectFolderPath = folders[0];
 
         // This is a little hackey but works for now
         m_TransferFunctionUIPanel.SetActive(false);
 
-        StartCoroutine(SaveProjectCoroutine(projectFilePath));
+        StartCoroutine(SaveProjectCoroutine(projectFolderPath));
     }
 
-    private IEnumerator SaveProjectCoroutine(string projectFilePath)
+    private IEnumerator SaveProjectCoroutine(string _projectFolderPath)
     {
         // We are waiting for two frames so that unity has enough time to redraw the ui
         // which apparently it needs or otherwise the positions are off...
         yield return null;
         yield return null;
 
-        m_DataManager.SaveProject(projectFilePath, new Progress<float>(progress => {
+        m_DataManager.SaveProject(_projectFolderPath, new Progress<float>(progress => {
             m_SaveProgressBar.fillAmount = progress;
             m_SaveProgressBarText.text = $"{(progress * 100).ToString("0")} %";
         }), () => {

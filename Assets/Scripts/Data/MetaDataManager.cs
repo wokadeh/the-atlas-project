@@ -12,6 +12,7 @@ public class MetaDataManager : IMetaDataManager {
     }
 
     public class MetaData : IMetaData {
+        public int DataName { get; set; }
         public int BitDepth { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
@@ -39,6 +40,7 @@ public class MetaDataManager : IMetaDataManager {
             XmlElement root = document.DocumentElement;
 
             // Set main attributes
+            root.SetAttribute(Globals.DATA_NAME_ATTRIBUTE, _metaData.DataName.ToString());
             root.SetAttribute(Globals.BIT_DEPTH_ATTRIBUTE, _metaData.BitDepth.ToString());
             root.SetAttribute(Globals.WIDTH_ATTRIBUTE, _metaData.Width.ToString());
             root.SetAttribute(Globals.HEIGHT_ATTRIBUTE, _metaData.Height.ToString());
@@ -90,6 +92,7 @@ public class MetaDataManager : IMetaDataManager {
         XmlElement root = document.DocumentElement;
 
         // Read in bit depth, width and height
+        int dataName = ReadAttribute(root, Globals.DATA_NAME_ATTRIBUTE);
         int bitDepth = ReadAttribute(root, Globals.BIT_DEPTH_ATTRIBUTE);
         int width = ReadAttribute(root, Globals.WIDTH_ATTRIBUTE);
         int height = ReadAttribute(root, Globals.HEIGHT_ATTRIBUTE);
@@ -113,6 +116,7 @@ public class MetaDataManager : IMetaDataManager {
         }
 
         return new MetaData() {
+            DataName = dataName,
             BitDepth = bitDepth,
             Width = width,
             Height = height,
