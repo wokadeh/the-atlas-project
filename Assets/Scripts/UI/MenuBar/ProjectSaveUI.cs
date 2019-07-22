@@ -26,20 +26,16 @@ public class ProjectSaveUI : MonoBehaviour
 
     private void SaveProject()
     {
-        string projectFilePath = StandaloneFileBrowser.SaveFilePanel("myProject", "", "myName", FILE_FILTER);
+        string projectFilePath = StandaloneFileBrowser.SaveFilePanel("Save project at...", "", "myProject", FILE_FILTER);
 
         // This is a little hackey but works for now
         m_TransferFunctionUIPanel.SetActive(false);
 
-        if (projectFilePath.Length == 1)
-        {
-            StartCoroutine(SaveProjectCoroutine(projectFilePath));
-        }
+        StartCoroutine(SaveProjectCoroutine(projectFilePath));
     }
 
     private IEnumerator SaveProjectCoroutine(string projectFilePath)
     {
-
         // We are waiting for two frames so that unity has enough time to redraw the ui
         // which apparently it needs or otherwise the positions are off...
         yield return null;

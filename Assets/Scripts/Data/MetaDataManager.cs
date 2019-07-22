@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Xml;
 
+using System.Security.AccessControl;
+using System.IO;
+using Microsoft.Win32.SafeHandles;
+
 public class MetaDataManager : IMetaDataManager {
     private class MetaDataException : Exception {
         public MetaDataException(string message) : base(message) { }
@@ -20,13 +24,18 @@ public class MetaDataManager : IMetaDataManager {
         public string Name { get; set; }
     }
 
+
     public void Write(string _projectFilePath, IMetaData _metaData, Dictionary<string, List<EarthDataFrame>> _dataAssets)
     {
         try
         {
             // Create root
             XmlDocument document = new XmlDocument();
-            document.Save(_projectFilePath);
+            document.CreateXmlDeclaration("1.0", "utf-8", "");
+
+            //Create the root element and 
+            //add it to the document.
+            document.AppendChild(document.CreateElement(Globals.ROOT_NODE));
             XmlElement root = document.DocumentElement;
 
             // Set main attributes
@@ -36,14 +45,14 @@ public class MetaDataManager : IMetaDataManager {
             root.SetAttribute(Globals.LEVELS_ATTRIBUTE, _metaData.Levels.ToString());
 
             // Add node for each variable
-            foreach( Variable var in _metaData.Variables)
+            foreach (Variable var in _metaData.Variables)
             {
                 XmlElement varNode = document.CreateElement(Globals.VARIABLE_ELEMENT);
                 varNode.SetAttribute(Globals.VARIABLE_NAME_ATTRIBUTE, var.Name);
                 root.AppendChild(varNode);
 
                 // Go through every element in the list of earthDataFrames for each variable
-                foreach( EarthDataFrame earthDataFrame in _dataAssets[var.Name])
+                foreach (EarthDataFrame earthDataFrame in _dataAssets[var.Name])
                 {
                     XmlElement earthFrameDataNode = document.CreateElement(Globals.EARTH_DATA_FRAME_ELEMENT);
                     earthFrameDataNode.SetAttribute(Globals.EARTH_DATA_FRAME_DIM_X_ATTRIBUTE, earthDataFrame.Dimensions.x.ToString());
@@ -58,17 +67,26 @@ public class MetaDataManager : IMetaDataManager {
                 // @TODO: Go through every node in the transfer functions for each variable
                 // foreach( )
             }
+
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+
+            // Save the document to a file and auto-indent the output.
+            XmlWriter writer = XmlWriter.Create(_projectFilePath, settings);
+
+            document.PreserveWhitespace = true;
+            document.Save(writer);
         }
         catch (Exception e)
         {
-            throw new MetaDataException($"Failed to save file '{_projectFilePath}' because of '{e}' !");
+            throw new MetaDataException($"[MetaDataManager] - Failed to save file '{_projectFilePath}' because of '{e}' !");
         }
     }
 
-    public IMetaData Read(string _path)
+    public IMetaData Read(string _projectFilePath)
     {
         XmlDocument document = new XmlDocument();
-        document.Load(_path);
+        document.Load(_projectFilePath);
         XmlElement root = document.DocumentElement;
 
         // Read in bit depth, width and height

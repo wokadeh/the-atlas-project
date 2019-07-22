@@ -21,5 +21,5 @@ public struct Globals
 
     public const string EARTH_DATA_FRAME_TF_NODE_NAME_ATTRIBUTE = "tf_node";
 
-    public const string TEXTURE3D_FOLDER_NAME = "/texture3D";
+    public const string TEXTURE3D_FOLDER_NAME = "\\texture3D";
 }

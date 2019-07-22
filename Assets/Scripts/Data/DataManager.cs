@@ -64,34 +64,43 @@ public class DataManager : MonoBehaviour {
         try
         {
            m_MetaDataReader.Write(_projectFilePath, m_MetaData, m_DataAssets);
+
+            Debug.Log("Successfully wrote project to: " + _projectFilePath);
         }
         catch (Exception e)
         {
             Debug.LogError($"[DataManager] - Failed to save meta data: '{_projectFilePath}' with exception:\n{e.GetType().Name} - {e.Message}!");
             _callback?.Invoke();
         }
-        
-        // 2. write 3dTexture assets to folders of variables
 
-        // USE DIRECTORY!
-        
-        for (int i = 0; i < m_MetaData.Variables.Count; i++)
-        {
-            IVariable variable = m_MetaData.Variables[i];
+        //// 2. write 3dTexture assets to folders of variables
+        //for (int i = 0; i < m_MetaData.Variables.Count; i++)
+        //{
 
-            string variablePath = variable.Name + Globals.TEXTURE3D_FOLDER_NAME;
+        //    IVariable variable = m_MetaData.Variables[i];
 
-            // Only create if it does not exist, yet
-            if (!Directory.Exists(variablePath))
-            {
-                Directory.CreateDirectory(variablePath);
-            }
-            yield return StartCoroutine(SaveVariableRoutine(variable, variablePath, new Progress<float>(value => {
-                // Do overall progress report
-                float progression = i / (float)m_MetaData.Variables.Count;
-                _progress.Report(progression + (value / m_MetaData.Variables.Count));
-            })));
-        }
+        //    Debug.Log("pos 1: count variable " + variable.Name);
+
+        //    // Temperature/texture3D
+        //    string variablePath = _projectFilePath + "\\"  + variable.Name + Globals.TEXTURE3D_FOLDER_NAME;
+
+        //    Debug.Log("pos 2: set path " + variablePath);
+
+        //    // Only create if it does not exist, yet
+        //    if (!Directory.Exists(variablePath))
+        //    {
+        //        Debug.Log("pos 3: try to create directory " + variablePath);
+        //        Directory.CreateDirectory(variablePath);
+        //        Debug.Log("pos 4: created directory " + variablePath);
+        //    }
+        //    yield return StartCoroutine(SaveVariableRoutine(variable, variablePath, new Progress<float>(value => {
+        //        // Do overall progress report
+        //        Debug.Log("pos 5: trying to save it... ");
+        //        float progression = i / (float)m_MetaData.Variables.Count;
+        //        _progress.Report(progression + (value / m_MetaData.Variables.Count));
+        //    })));
+        //}
+        yield return 0; 
 
         // 2. write 2dTexture from Histo to folders of variables
 

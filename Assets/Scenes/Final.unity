@@ -15179,6 +15179,7 @@ GameObject:
   - component: {fileID: 2106828607}
   - component: {fileID: 2106828608}
   - component: {fileID: 2106828609}
+  - component: {fileID: 2106828610}
   m_Layer: 5
   m_Name: UI
   m_TagString: Untagged
@@ -15300,13 +15301,9 @@ MonoBehaviour:
   m_TransferFunctionUIPanel: {fileID: 1472509994}
   m_TimelineUIPanel: {fileID: 1373890070}
   m_ImportDataButton: {fileID: 1521639635}
-  m_SaveProjectButton: {fileID: 680398326}
   m_ImportScreen: {fileID: 266806260}
-  m_SaveProjectScreen: {fileID: 1881308787}
   m_ImportProgressBar: {fileID: 754122528}
-  m_SaveProjectProgressBar: {fileID: 640115987}
   m_ImportProgressBarText: {fileID: 967031404}
-  m_SaveProjectProgressBarText: {fileID: 1257543}
 --- !u!114 &2106828609
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15325,6 +15322,24 @@ MonoBehaviour:
   m_SphericalModeButton: {fileID: 1893975017}
   m_SphericalModeButtonImage: {fileID: 1893975018}
   m_EnabledColor: {r: 0.4862745, g: 0.81960785, b: 1, a: 1}
+--- !u!114 &2106828610
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2106828602}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a66f531bde3c1346aa2930fad454521, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_DataManager: {fileID: 631215805}
+  m_TransferFunctionUIPanel: {fileID: 1472509994}
+  m_SaveScreen: {fileID: 1881308787}
+  m_SaveProgressBar: {fileID: 640115987}
+  m_SaveProgressBarText: {fileID: 1257543}
+  m_SaveProjectButton: {fileID: 680398326}
 --- !u!1 &2145012249
 GameObject:
   m_ObjectHideFlags: 0
