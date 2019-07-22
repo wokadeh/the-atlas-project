@@ -34,7 +34,7 @@ Material:
     - _InnerSphereRadius: 0.4
     - _Mode: 0
     - _NormPerRay: 1
-    - _NormPerStep: 50
+    - _NormPerStep: 250
     - _Normalization: 2
     - _OuterSphereRadius: 0.5
     - _SliceAxis1Max: 1
@@ -44,7 +44,7 @@ Material:
     - _SliceAxis3Max: 1
     - _SliceAxis3Min: 0
     - _SphereRadius: 0.5
-    - _Steps: 512
+    - _Steps: 1024
     - _StretchPower: 1.5
     m_Colors:
     - _AltitudeBounds: {r: 0.9, g: 1, b: 0, a: 0}
