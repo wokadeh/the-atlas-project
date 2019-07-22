@@ -82,7 +82,7 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
     }
 
     public void OnPointerClick(PointerEventData eventData) {
-        if (m_DataManager.CurrentAsset != null) {
+        if (m_DataManager.m_CurrentAsset != null) {
             if (eventData.button == PointerEventData.InputButton.Right) {
                 CreatePoint(LimitPositionToPointInBox(eventData.position), m_ControlPointStartColor, true);
             } else {
@@ -148,10 +148,10 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
     }
 
     private void RedrawHistogram() {
-        if (m_DataManager.CurrentAsset != null) {
+        if (m_DataManager.m_CurrentAsset != null) {
             var tex = GenerateTransferFunction().GetTexture();
 
-            m_HistogramTexture.material.SetTexture("_HistTex", m_DataManager.CurrentAsset.HistogramTexture);
+            m_HistogramTexture.material.SetTexture("_HistTex", m_DataManager.m_CurrentAsset.HistogramTexture);
             m_HistogramTexture.material.SetTexture("_TFTex", tex);
 
             m_VolumeRenderer.SetTransferFunction(tex);

@@ -33,7 +33,7 @@ public class TimelineUI : MonoBehaviour {
     }
 
     private void OnEnable() {
-        if (m_DataManager.CurrentAsset != null) {
+        if (m_DataManager.m_CurrentAsset != null) {
             m_TimelineSlider.minValue = 0;
             m_TimelineSlider.maxValue = m_DataManager.DataAssets.Count - 1;
             m_TimelineSlider.wholeNumbers = true;
@@ -82,7 +82,7 @@ public class TimelineUI : MonoBehaviour {
             return;
         }
 
-        DataAsset asset = m_DataManager.DataAssets[(int)value];
+        EarthDataFrame asset = m_DataManager.DataAssets[(int)value];
         m_DataManager.SetCurrentAsset(asset);
         m_VolumeRenderer.SetData(asset);
     }

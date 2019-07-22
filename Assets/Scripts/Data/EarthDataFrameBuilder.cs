@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public class DataAssetBuilder : IDataAssetBuilder {
+public class EarthDataFrameBuilder : IEarthDataFrameBuilder {
     private const int HISTOGRAM_SAMPLES = 256;
 
     private int m_Width;
@@ -14,7 +14,7 @@ public class DataAssetBuilder : IDataAssetBuilder {
     private int[] m_HistogramValuesBuffer;
     private Color[] m_HistogramColorBuffer;
 
-    public DataAssetBuilder(int width, int height, int depth) {
+    public EarthDataFrameBuilder(int width, int height, int depth) {
         m_Width = width;
         m_Height = height;
         m_Depth = depth;
@@ -26,23 +26,22 @@ public class DataAssetBuilder : IDataAssetBuilder {
         m_HistogramColorBuffer = new Color[HISTOGRAM_SAMPLES];
     }
 
-    public DataAsset Build8Bit(byte[][] data) {
+    public EarthDataFrame Build8Bit(byte[][] data) {
         int depth = data.Length;
 
         // Create data texture
         Texture3D dataTexture = BuildDataTexture(data);
         Texture2D histogramTexture = BuildHistogramTexture();
 
-        return new DataAsset() { Dimensions = new Vector3(m_Width, m_Height, depth), DataTexture = dataTexture, HistogramTexture = histogramTexture };
+        return new EarthDataFrame() { Dimensions = new Vector3(m_Width, m_Height, depth), DataTexture = dataTexture, HistogramTexture = histogramTexture };
     }
 
-    public DataAsset Build16Bit(short[][] data) {
+    public EarthDataFrame Build16Bit(short[][] data) {
         throw new NotImplementedException();
     }
 
     private Texture3D BuildDataTexture(byte[][] data) {
         int size2d = m_Width * m_Height;
-
         // Get color data from all textures
         for (int i = 0; i < data.Length; i++) {
             // Fill 2d color buffer with data
@@ -53,6 +52,7 @@ public class DataAssetBuilder : IDataAssetBuilder {
                     m_2DBuffer[index] = new Color32(value, 0, 0, 0);
                 }
             }
+            
             m_2DBuffer.CopyTo(m_3DBuffer, i * size2d);
         }
 

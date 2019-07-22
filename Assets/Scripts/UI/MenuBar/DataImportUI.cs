@@ -15,7 +15,7 @@ public class DataImportUI : MonoBehaviour {
     [SerializeField] private GameObject m_TimelineUIPanel;
     [SerializeField] private Button m_ImportDataButton;
     [SerializeField] private GameObject m_ImportScreen;
-    [SerializeField] private Image m_ImportPorgressBar;
+    [SerializeField] private Image m_ImportProgressBar;
     [SerializeField] private TMP_Text m_ImportProgressBarText;
 
     private void Start() {
@@ -35,7 +35,7 @@ public class DataImportUI : MonoBehaviour {
     }
 
     private IEnumerator ImportDataCoroutine(string file) {
-        m_ImportPorgressBar.fillAmount = 0;
+        m_ImportProgressBar.fillAmount = 0;
         m_ImportProgressBarText.text = "0 %";
         m_ImportScreen.SetActive(true);
 
@@ -44,8 +44,8 @@ public class DataImportUI : MonoBehaviour {
         yield return null;
         yield return null;
 
-        m_DataManager.Load(file, new Progress<float>(progress => {
-            m_ImportPorgressBar.fillAmount = progress;
+        m_DataManager.ImportData(file, new Progress<float>(progress => {
+            m_ImportProgressBar.fillAmount = progress;
             m_ImportProgressBarText.text = $"{(progress * 100).ToString("0")} %";
         }), () => {
             m_ImportScreen.SetActive(false);
