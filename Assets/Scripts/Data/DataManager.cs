@@ -112,9 +112,8 @@ public class DataManager : MonoBehaviour {
             _callback?.Invoke();
         }
 
-        // TODO: Load level count from meta data
-        IDataLoader tiffLoader = new DataLoaderFromTIFFs(metaData.Width, metaData.Height, metaData.BitDepth);
-        m_EarthDataFrameBuilder = new EarthDataFrameBuilder(metaData.Width, metaData.Height, metaData.BitDepth);
+        IDataLoader tiffLoader = new DataLoaderFromTIFFs(metaData.Width, metaData.Height, metaData.Levels);
+        m_EarthDataFrameBuilder = new EarthDataFrameBuilder(metaData.Width, metaData.Height, metaData.Levels);
 
         for (int i = 0; i < metaData.Variables.Count; i++) {
             IVariable variable = metaData.Variables[i];
