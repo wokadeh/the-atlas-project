@@ -65,7 +65,7 @@ public class DataManager : MonoBehaviour {
         // Warning! Make sure always MetaData has been filled by importing/loading!!!!
         try
         {
-           
+            string filePath = _projectFolderPath + m_MetaData.DataName;
            m_MetaDataReader.Write(_projectFolderPath, m_MetaData, m_DataAssets);
 
             Debug.Log("Successfully wrote project to: " + _projectFolderPath);
