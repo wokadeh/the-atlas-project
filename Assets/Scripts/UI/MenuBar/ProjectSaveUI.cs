@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using SFB;
 using TMPro;
+using System.IO;
 
 public class ProjectSaveUI : MonoBehaviour
 {
@@ -26,8 +27,11 @@ public class ProjectSaveUI : MonoBehaviour
 
     private void SaveProject()
     {
-        string[] folders = StandaloneFileBrowser.OpenFolderPanel("Save project at...", "", false);
+        string[] folders = StandaloneFileBrowser.OpenFolderPanel("Save project at...", Directory.GetCurrentDirectory(), false);
+
         string projectFolderPath = folders[0];
+
+        Debug.Log("[ProjectSaveUI] - selected folder " + projectFolderPath);
 
         // This is a little hackey but works for now
         m_TransferFunctionUIPanel.SetActive(false);
