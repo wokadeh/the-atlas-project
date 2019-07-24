@@ -2,7 +2,6 @@
 
 public struct Globals
 {
-    public const string DATA_NAME_ATTRIBUTE = "name";
     public const string BIT_DEPTH_ATTRIBUTE = "bit_depth";
     public const string WIDTH_ATTRIBUTE = "width";
     public const string HEIGHT_ATTRIBUTE = "height";
