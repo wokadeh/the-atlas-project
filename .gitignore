@@ -54,13 +54,18 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
-
-*.tif
-
-Data/
+
+
+*.tif
+
+
+
+Data/
+
 
 *.tif
 
 Data/
 
 *.xml
+Assets/Saved_Projects/

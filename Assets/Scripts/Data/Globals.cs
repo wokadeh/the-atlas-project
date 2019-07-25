@@ -2,6 +2,9 @@
 
 public struct Globals
 {
+    public const string SAVE_PROJECTS_PATH = "Assets/Saved_Projects/";
+    public const string TEXTURE3D_FOLDER_NAME = "texture3D/";
+
     public const string BIT_DEPTH_ATTRIBUTE = "bit_depth";
     public const string WIDTH_ATTRIBUTE = "width";
     public const string HEIGHT_ATTRIBUTE = "height";
@@ -21,5 +24,4 @@ public struct Globals
 
     public const string EARTH_DATA_FRAME_TF_NODE_NAME_ATTRIBUTE = "tf_node";
 
-    public const string TEXTURE3D_FOLDER_NAME = "\\texture3D";
 }

@@ -30,12 +30,14 @@ public class DataManager : MonoBehaviour {
     private IDataLoader m_DataLoder;
     private IEarthDataFrameBuilder m_EarthDataFrameBuilder;
 
-    private void Start() {
+    private void Start()
+    {
         m_MetaDataReader = new MetaDataManager();
         m_DataAssets = new Dictionary<string, List<EarthDataFrame>>();
     }
 
-    public void ImportData(string _projectFilePath, IProgress<float> _progress, Action _callback) {
+    public void ImportData(string _projectFilePath, IProgress<float> _progress, Action _callback)
+    {
         StartCoroutine(ImportDataCoroutine(_projectFilePath, _progress, _callback));
     }
 
@@ -49,7 +51,8 @@ public class DataManager : MonoBehaviour {
         OnDataAssetChanged?.Invoke(_earthDataFrame);
     }
 
-    public void SetCurrentVariable(string _variable) {
+    public void SetCurrentVariable(string _variable)
+    {
         m_CurrentVariable = _variable;
 
         SetCurrentAsset(DataAssets.First());
@@ -63,50 +66,49 @@ public class DataManager : MonoBehaviour {
         // 1. Write new xml file with all previous data (bitdepth, levels, etc.)
 
         // Warning! Make sure always MetaData has been filled by importing/loading!!!!
+        string projectFolderPath = _projectFolderPath + m_MetaData.DataName;
+
+        Debug.Log("Project folder path is " + projectFolderPath);
+        Debug.Log("meta data name is " + m_MetaData.DataName);
         try
         {
-            string filePath = _projectFolderPath + m_MetaData.DataName + ".xml";
+            // Only create if it does not exist, yet
+            if (!Directory.Exists(projectFolderPath))
+            {
+                Directory.CreateDirectory(projectFolderPath);
+            }
+            string filePath = projectFolderPath + "/" + m_MetaData.DataName + ".xml";
 
-            Debug.Log("[DataManager] - Trying to write project XML to to: " + filePath);
-            
             m_MetaDataReader.Write(filePath, m_MetaData, m_DataAssets);
 
             Debug.Log("[DataManager] - Successfully wrote project XML to: " + filePath);
         }
         catch (Exception e)
         {
-            Debug.LogError($"[DataManager] - Failed to save meta data: '{_projectFolderPath}' with exception:\n{e.GetType().Name} - {e.Message}!");
+            Debug.LogError($"[DataManager] - Failed to save meta data: '{projectFolderPath}' with exception:\n{e.GetType().Name} - {e.Message}!");
             _callback?.Invoke();
         }
 
         //// 2. write 3dTexture assets to folders of variables
         for (int i = 0; i < m_MetaData.Variables.Count; i++)
         {
-
             IVariable variable = m_MetaData.Variables[i];
 
-            Debug.Log("pos 1: count variable " + variable.Name);
+            string variablePath = Globals.SAVE_PROJECTS_PATH + "/" + m_MetaData.DataName + "/" + variable.Name;
 
             // Temperature/texture3D
-            string variablePath = _projectFolderPath + "\\" + variable.Name + Globals.TEXTURE3D_FOLDER_NAME;
-
-            Debug.Log("pos 2: set path " + variablePath);
-
-            // Only create if it does not exist, yet
             if (!Directory.Exists(variablePath))
             {
-                Debug.Log("pos 3: try to create directory " + variablePath);
                 Directory.CreateDirectory(variablePath);
-                Debug.Log("pos 4: created directory " + variablePath);
             }
-            //    yield return StartCoroutine(SaveVariableRoutine(variable, variablePath, new Progress<float>(value => {
-            //        // Do overall progress report
-            //        Debug.Log("pos 5: trying to save it... ");
-            //        float progression = i / (float)m_MetaData.Variables.Count;
-            //        _progress.Report(progression + (value / m_MetaData.Variables.Count));
-            //    })));
+
+            yield return StartCoroutine(SaveVariableRoutine(variable, variablePath, new Progress<float>(value =>
+            {
+                // Do overall progress report
+                float progression = i / (float)m_MetaData.Variables.Count;
+                _progress.Report(progression + (value / m_MetaData.Variables.Count));
+            })));
         }
-        yield return 0; 
 
         // 2. write 2dTexture from Histo to folders of variables
 
@@ -166,10 +168,24 @@ public class DataManager : MonoBehaviour {
 
     private IEnumerator SaveVariableRoutine(IVariable _variable, string _variablePath, IProgress<float> _progress)
     {
+        string textureAssetPath = _variablePath + "/" + Globals.TEXTURE3D_FOLDER_NAME;
+        // Only create if it does not exist, yet
+        if (!Directory.Exists(textureAssetPath))
+        {
+            Directory.CreateDirectory(textureAssetPath);
+        }
+
         int i = 0;
         foreach (EarthDataFrame asset in m_DataAssets[_variable.Name])
         {
-            AssetDatabase.CreateAsset(asset.DataTexture, _variablePath + "/" + asset.DataTexture.name + ".asset");
+            string timeString = "00-00-00";
+            string dateString = "2019-01-01";
+            string assetName = _variable.Name + "_" + timeString + "_" + dateString;
+            string assetPath = textureAssetPath + "/";
+
+            Debug.Log("pos 6: trying to create asset at " + assetPath + assetName + ".asset");
+
+            AssetDatabase.CreateAsset(asset.DataTexture, assetPath + assetName + ".asset");
 
             // Report progress
             float progression = (i + 1) / (float)m_DataAssets.Count;

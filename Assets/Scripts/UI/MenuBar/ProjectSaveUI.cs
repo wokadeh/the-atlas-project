@@ -27,16 +27,20 @@ public class ProjectSaveUI : MonoBehaviour
 
     private void SaveProject()
     {
-        string[] folders = StandaloneFileBrowser.OpenFolderPanel("Save project at...", Directory.GetCurrentDirectory(), false);
+        string[] folders = StandaloneFileBrowser.OpenFolderPanel("Save project at...", Directory.GetCurrentDirectory() + "/" + Globals.SAVE_PROJECTS_PATH, false);
 
-        string projectFolderPath = folders[0];
+        // Only continue, if one folder was selected
+        if(folders.Length > 0)
+        {
+            string projectFolderPath = folders[0] + "/";
 
-        Debug.Log("[ProjectSaveUI] - selected folder " + projectFolderPath);
+            Debug.Log("[ProjectSaveUI] - Selected folder is " + projectFolderPath);
 
-        // This is a little hackey but works for now
-        m_TransferFunctionUIPanel.SetActive(false);
+            // This is a little hackey but works for now
+            m_TransferFunctionUIPanel.SetActive(false);
 
-        StartCoroutine(SaveProjectCoroutine(projectFolderPath));
+            this.StartCoroutine(SaveProjectCoroutine(projectFolderPath));
+        }
     }
 
     private IEnumerator SaveProjectCoroutine(string _projectFolderPath)
