@@ -7,17 +7,15 @@
 % INPUT: Set your wishes! 
 BIT_DEPTH = 8;
 DATA_DIR = 'C:\Users\wokad\Documents\Projects\Uniy_Clouds_n_Bones\Data\';
-
 FILE_NAME = '2018-01-00061218-1-1000_sdfdsf';
-TIFF_DIR = DATA_DIR; %'../Data/';
 FILE_SURFIX = '.nc';
 FILE = strcat( FILE_NAME, FILE_SURFIX );
 DATA_FILE_PATH = strcat( DATA_DIR, FILE );
-FOLDER_NAME = strcat(FILE_NAME, '_', int2str( BIT_DEPTH ), 'bit')
-BASE_FOLDER_NAME = strcat( TIFF_DIR, FOLDER_NAME);
+FOLDER_NAME = strcat(FILE_NAME, '_', int2str( BIT_DEPTH ), 'bit');
 
+TIFF_DIR = '../Data/';
 META_DATA_NAME = strcat( FOLDER_NAME, '___META_DATA___');
-META_DATA_FILE_NAME =  strcat( BASE_FOLDER_NAME, '/', META_DATA_NAME, '.xml' );
+META_DATA_FILE_NAME =  strcat( META_DATA_NAME, '.xml' );
 
 % --------------------------------------------------------------------------------------------------------------------
 
@@ -43,18 +41,17 @@ if( length( TIME_DIM ) > 0 )
     TIME_INTERVAL = TIME_DIM(2,1) - TIME_DIM(1,1);
 end
 
-ncdisp( DATA_FILE_PATH )
-createBaseDirectory( BASE_FOLDER_NAME );
-createMetaData( META_DATA_FILE_NAME, META_DATA_NAME, VARIABLES, TIME_DIM, BIT_DEPTH, length( LONGITUDE_DIM ), length( LATITUDE_DIM ), length( LEVEL_DIM ), TIME_INTERVAL );
-createData(VARIABLES, DATA_FILE_PATH, TIFF_DIR, FOLDER_NAME, TIME_DIM, LEVEL_DIM, BIT_DEPTH, UINT_DIM );
+createBaseDirectory( TIFF_DIR );
+createMetaData( META_DATA_FILE_NAME, META_DATA_NAME, FILE_NAME, VARIABLES, FOLDER_NAME, TIME_DIM, BIT_DEPTH, length( LONGITUDE_DIM ), length( LATITUDE_DIM ), length( LEVEL_DIM ), TIME_INTERVAL );
+createData(VARIABLES, DATA_FILE_PATH, TIFF_DIR, FOLDER_NAME, variableName, TIME_DIM, LEVEL_DIM, BIT_DEPTH, UINT_DIM );
 
 % -------------- END Intro -----------------------------------------------------------------------------------------
 
-function createData(variables, dataFilePath, tiffDir, FolderName, timeDim, levelDim, bitDepth, uintDim)
+function createData(variables, dataFilePath, tiffDir, FolderName, variableName, timeDim, levelDim, bitDepth, uintDim)
 % Run for all variables
     for i = 1 : length( variables )
         variableName = variables( i );
-        createTiffFilesForVariables( dataFilePath, tiffDir, FolderName, variableName, timeDim, levelDim, bitDepth, uintDim );
+        createTiffFilesForVariables( dataFilePath, TIFF_DIR, FOLDER_NAME, variableName, TIME_DIM, LEVEL_DIM, BIT_DEPTH, UINT_DIM );
     end
 end
 
@@ -131,7 +128,7 @@ function debugFileBithDeth( valuesImage, uintDim )
     end
 end
 
-function createMetaData( metaDataFileName, metaDataName, variables, timeDim, bitDepth, width, height, levels, timeInterval )
+function createMetaData( metaDataFileName, metaDataName, fileName, variables, tiffDirectory, timeDim, bitDepth, width, height, levels, timeInterval )
     document = com.mathworks.xml.XMLUtils.createDocument( strcat( 'root_', metaDataName ) );
     root = document.getDocumentElement;
     
@@ -141,8 +138,8 @@ function createMetaData( metaDataFileName, metaDataName, variables, timeDim, bit
 	root.setAttribute( 'height', int2str( height ) );
     root.setAttribute( 'levels', int2str( levels ) );
     root.setAttribute( 'time_interval', int2str( timeInterval ) );
-    root.setAttribute( 'start_datetime', num2str( makeTimeStamp( 1, timeDim ) ) );
-    root.setAttribute( 'end_datetime', num2str( makeTimeStamp( length( timeDim ) - 1, timeDim ) ) );
+    root.setAttribute( 'start_datetime', datestr( makeTimeStamp( 1, timeDim ) ) );
+    root.setAttribute( 'end_datetime', datestr( makeTimeStamp( length( timeDim ) - 1, timeDim ) ) );
 	
     for v = 1 : length( variables )
         % Create element for variable
@@ -160,15 +157,12 @@ function createMetaData( metaDataFileName, metaDataName, variables, timeDim, bit
             timestamp = makeTimeStamp( timeStep, timeDim );
 
             time_stamp_element = document.createElement( 'timestamp' );
-            time_stamp_element.setAttribute('name', num2str( timestamp ));
-            
-            variable_element.appendChild( time_stamp_element );
+            time_stamp_element.setAttribute('name', datestr( timestamp ));
         end 
     end
     
     % Write xml to disk
-    xmlOutputFile = metaDataFileName
-    xmlwrite( xmlOutputFile, document );
+    xmlwrite( strcat( tiffDirectory, '/', fileName, '/', metaDataFileName ), document );
 end
 
 % Retrieves a list of all actual data variable names in a netcdf file
@@ -196,10 +190,9 @@ function variables = getNETCDFDataVariables( netcdfFileName )
 end
 
 function createBaseDirectory( tiffDirectory )
-    if( exist( tiffDirectory, 'dir' ) ) 
-       rmdir( tiffDirectory, 's' ); 
-    end
-    tiffDirectory
+%     if( exist( tiffDirectory, 'dir' ) ) 
+%        rmdir( tiffDirectory, 's' ); 
+%     end
     mkdir( tiffDirectory );
 end
 
