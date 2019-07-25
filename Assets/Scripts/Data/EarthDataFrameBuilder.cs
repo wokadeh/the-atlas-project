@@ -2,7 +2,7 @@
 using UnityEngine;
 
 public class EarthDataFrameBuilder : IEarthDataFrameBuilder {
-    private const int HISTOGRAM_SAMPLES = 256;
+    
 
     private int m_Width;
     private int m_Height;
@@ -22,8 +22,8 @@ public class EarthDataFrameBuilder : IEarthDataFrameBuilder {
         m_3DBuffer = new Color[m_Width * m_Height * m_Depth];
         m_2DBuffer = new Color[m_Width * m_Height];
 
-        m_HistogramValuesBuffer = new int[HISTOGRAM_SAMPLES];
-        m_HistogramColorBuffer = new Color[HISTOGRAM_SAMPLES];
+        m_HistogramValuesBuffer = new int[Globals.HISTOGRAM_SAMPLES];
+        m_HistogramColorBuffer = new Color[Globals.HISTOGRAM_SAMPLES];
     }
 
     public EarthDataFrame Build8Bit(byte[][] data) {
@@ -64,16 +64,16 @@ public class EarthDataFrameBuilder : IEarthDataFrameBuilder {
     }
 
     private Texture2D BuildHistogramTexture() {
-        Texture2D histogram = new Texture2D(HISTOGRAM_SAMPLES, 1, TextureFormat.RFloat, false);
+        Texture2D histogram = new Texture2D(Globals.HISTOGRAM_SAMPLES, 1, TextureFormat.RFloat, false);
 
         int maxFrequency = 0;
         for (int i = 0; i < m_3DBuffer.Length; i++) {
-            int value = (int)(m_3DBuffer[i].r * (HISTOGRAM_SAMPLES - 1));
+            int value = (int)(m_3DBuffer[i].r * (Globals.HISTOGRAM_SAMPLES - 1));
             m_HistogramValuesBuffer[value] += 1;
             maxFrequency = Mathf.Max(maxFrequency, m_HistogramValuesBuffer[value]);
         }
 
-        for (int i = 0; i < HISTOGRAM_SAMPLES; i++) {
+        for (int i = 0; i < Globals.HISTOGRAM_SAMPLES; i++) {
             float value = Mathf.Log10((float)m_HistogramValuesBuffer[i]) / Mathf.Log10((float)maxFrequency);
             m_HistogramColorBuffer[i] = new Color(value, 0.0f, 0.0f, 1.0f);
         }

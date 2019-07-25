@@ -17,12 +17,22 @@ public class MetaDataManager : IMetaDataManager {
         public int Width { get; set; }
         public int Height { get; set; }
         public int Levels { get; set; }
+        public float StartDateTimeNumber { get; set; }
+        public float EndDateTimeNumber { get; set; }
+        public int TimeInterval { get; set; }
 
         public IList<IVariable> Variables { get; set; }
+        public IList<IList<ITimestamp>> Timestamps { get; set; }
     }
 
     private class Variable : IVariable {
         public string Name { get; set; }
+    }
+
+    private class Timestamp : ITimestamp
+    {
+        public string Name { get; set; }
+        public float Value { get; set; }
     }
 
 
@@ -44,6 +54,9 @@ public class MetaDataManager : IMetaDataManager {
             root.SetAttribute(Globals.WIDTH_ATTRIBUTE, _metaData.Width.ToString());
             root.SetAttribute(Globals.HEIGHT_ATTRIBUTE, _metaData.Height.ToString());
             root.SetAttribute(Globals.LEVELS_ATTRIBUTE, _metaData.Levels.ToString());
+            root.SetAttribute(Globals.START_DATETIME_ATTRIBUTE, _metaData.StartDateTimeNumber.ToString());
+            root.SetAttribute(Globals.END_DATETIME_ATTRIBUTE, _metaData.EndDateTimeNumber.ToString());
+            root.SetAttribute(Globals.TIME_INTERVAL_ATTRIBUTE, _metaData.TimeInterval.ToString());
 
             // Add node for each variable
             foreach (Variable var in _metaData.Variables)
@@ -52,18 +65,21 @@ public class MetaDataManager : IMetaDataManager {
                 varNode.SetAttribute(Globals.VARIABLE_NAME_ATTRIBUTE, var.Name);
                 root.AppendChild(varNode);
 
+                int i = 0;
                 // Go through every element in the list of earthDataFrames for each variable
                 foreach (EarthDataFrame earthDataFrame in _dataAssets[var.Name])
                 {
                     XmlElement earthFrameDataNode = document.CreateElement(Globals.EARTH_DATA_FRAME_ELEMENT);
+
+                    earthFrameDataNode.SetAttribute(Globals.TIMESTAMP_LIST_ATTRIBUTE, _metaData.Timestamps[i].ToString());
+
                     earthFrameDataNode.SetAttribute(Globals.EARTH_DATA_FRAME_DIM_X_ATTRIBUTE, earthDataFrame.Dimensions.x.ToString());
                     earthFrameDataNode.SetAttribute(Globals.EARTH_DATA_FRAME_DIM_Y_ATTRIBUTE, earthDataFrame.Dimensions.y.ToString());
                     earthFrameDataNode.SetAttribute(Globals.EARTH_DATA_FRAME_DIM_Z_ATTRIBUTE, earthDataFrame.Dimensions.z.ToString());
 
-                    earthFrameDataNode.SetAttribute(Globals.EARTH_DATA_FRAME_DATA_TEXTURE_NAME_ATTRIBUTE, earthDataFrame.DataTexture.ToString());
-                    earthFrameDataNode.SetAttribute(Globals.EARTH_DATA_FRAME_HISTO_TEXTURE_NAME_ATTRIBUTE, earthDataFrame.HistogramTexture.ToString());
 
-
+                    varNode.AppendChild(earthFrameDataNode);
+                    i++;
                 }
                 // @TODO: Go through every node in the transfer functions for each variable
                 // foreach( )
@@ -92,24 +108,47 @@ public class MetaDataManager : IMetaDataManager {
 
         // Read in bit depth, width and height
         string dataName = root.Name;
-        int bitDepth = ReadAttribute(root, Globals.BIT_DEPTH_ATTRIBUTE);
-        int width = ReadAttribute(root, Globals.WIDTH_ATTRIBUTE);
-        int height = ReadAttribute(root, Globals.HEIGHT_ATTRIBUTE);
-        int levels = ReadAttribute(root, Globals.LEVELS_ATTRIBUTE);
+        int bitDepth = this.ReadIntegerAttribute(root, Globals.BIT_DEPTH_ATTRIBUTE);
+        int width = this.ReadIntegerAttribute(root, Globals.WIDTH_ATTRIBUTE);
+        int height = this.ReadIntegerAttribute(root, Globals.HEIGHT_ATTRIBUTE);
+        int levels = this.ReadIntegerAttribute(root, Globals.LEVELS_ATTRIBUTE);
+        float startDateTime = this.ReadFloatAttribute(root, Globals.START_DATETIME_ATTRIBUTE);
+        float endDateTime = this.ReadFloatAttribute(root, Globals.END_DATETIME_ATTRIBUTE);
+        int timeInterval = this.ReadIntegerAttribute(root, Globals.TIME_INTERVAL_ATTRIBUTE);
 
         // Read in variables
         IList<IVariable> variables = new List<IVariable>();
+        IList<IList<ITimestamp>> timestamps = new List<IList<ITimestamp>>();
+
         if (root.ChildNodes.Count == 0) {
             throw new MetaDataException($"Trying to read meta data with no variables!");
         }
-        foreach (XmlNode node in root.ChildNodes) {
-            if (node.Name == Globals.VARIABLE_ELEMENT) {
+        foreach (XmlNode varNode in root.ChildNodes)
+        {
+            if (varNode.Name == Globals.VARIABLE_ELEMENT) {
                 // Read name from variable node
-                string name = node.Attributes[Globals.VARIABLE_NAME_ATTRIBUTE].Value;
-                if (name != null) {
-                    variables.Add(new Variable() { Name = name });
+                string varNodeName = varNode.Attributes[Globals.VARIABLE_NAME_ATTRIBUTE].Value;
+                if (varNodeName != null) {
+                    variables.Add(new Variable() { Name = varNodeName });
+
+                    // Create a new list for timestamps
+                    timestamps.Add( new List<ITimestamp>());
                 } else {
                     throw new MetaDataException($"Failed to read '{Globals.VARIABLE_NAME_ATTRIBUTE}' attribute from variable!");
+                }
+
+                foreach (XmlNode timestampNode in varNode.ChildNodes)
+                {
+                    float timestampNodeValue = float.Parse(timestampNode.Attributes[Globals.TIMESTAMP_LIST_ATTRIBUTE].Value);
+                    if (timestampNodeValue != 0)
+                    {
+                        // fill last list with timestamps
+                        //timestamps[timestamps.Count - 1].Add(new Timestamp() { Value = timestampNodeValue });
+                    }
+                    else
+                    {
+                        throw new MetaDataException($"Failed to read '{Globals.TIMESTAMP_LIST_ATTRIBUTE}' attribute from timestamp!");
+                    }
                 }
             }
         }
@@ -120,19 +159,39 @@ public class MetaDataManager : IMetaDataManager {
             Width = width,
             Height = height,
             Levels = levels,
-
+            StartDateTimeNumber = startDateTime,
+            EndDateTimeNumber = endDateTime,
+            TimeInterval = timeInterval,
+            Timestamps = timestamps,
             Variables = variables
         };
     }
 
-    private int ReadAttribute(XmlElement _relement, string name) {
+    private int ReadIntegerAttribute(XmlElement _relement, string _name) {
         int attribute;
-        if (_relement.HasAttribute(name)) {
-            if (!int.TryParse(_relement.GetAttribute(name), out attribute)) {
-                throw new MetaDataException($"Failed to read '{name}' attribute!");
+        if (_relement.HasAttribute(_name)) {
+            if (!int.TryParse(_relement.GetAttribute(_name), out attribute)) {
+                throw new MetaDataException($"Failed to read '{_name}' attribute!");
             }
         } else {
-            throw new MetaDataException($"Xml file has no '{name}' attribute!");
+            throw new MetaDataException($"Xml file has no '{_name}' attribute!");
+        }
+        return attribute;
+    }
+
+    private float ReadFloatAttribute(XmlElement _relement, string _name)
+    {
+        float attribute;
+        if (_relement.HasAttribute(_name))
+        {
+            if (!float.TryParse(_relement.GetAttribute(_name), out attribute))
+            {
+                throw new MetaDataException($"Failed to read '{_name}' attribute!");
+            }
+        }
+        else
+        {
+            throw new MetaDataException($"Xml file has no '{_name}' attribute!");
         }
         return attribute;
     }

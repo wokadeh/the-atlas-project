@@ -68,8 +68,6 @@ public class DataManager : MonoBehaviour {
         // Warning! Make sure always MetaData has been filled by importing/loading!!!!
         string projectFolderPath = _projectFolderPath + m_MetaData.DataName;
 
-        Debug.Log("Project folder path is " + projectFolderPath);
-        Debug.Log("meta data name is " + m_MetaData.DataName);
         try
         {
             // Only create if it does not exist, yet
@@ -123,7 +121,7 @@ public class DataManager : MonoBehaviour {
         BitDepth bitDepth = BitDepth.Depth8;
         try {
             metaData = m_MetaDataReader.Read(_projectFilePath);
-            bitDepth = GetBitDepth(metaData);
+            bitDepth = this.GetBitDepth(metaData);
         } catch (Exception e) {
             Debug.LogError($"[DataManager] - Failed to read meta data: '{_projectFilePath}' with exception:\n{e.GetType().Name} - {e.Message}!");
             _callback?.Invoke();
@@ -178,9 +176,8 @@ public class DataManager : MonoBehaviour {
         int i = 0;
         foreach (EarthDataFrame asset in m_DataAssets[_variable.Name])
         {
-            string timeString = "00-00-00";
-            string dateString = "2019-01-01";
-            string assetName = _variable.Name + "_" + timeString + "_" + dateString;
+            string dateTimeString = m_MetaData.Timestamps[i].ToString();
+            string assetName = Globals.TEXTURE3D_PREFEX + _variable.Name + "_" + dateTimeString;
             string assetPath = textureAssetPath + "/";
 
             Debug.Log("pos 6: trying to create asset at " + assetPath + assetName + ".asset");
