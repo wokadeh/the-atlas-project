@@ -31,8 +31,7 @@ public class MetaDataManager : IMetaDataManager {
 
     private class Timestamp : ITimestamp
     {
-        public string Name { get; set; }
-        public float Value { get; set; }
+        public string Value { get; set; }
     }
 
 
@@ -58,6 +57,7 @@ public class MetaDataManager : IMetaDataManager {
             root.SetAttribute(Globals.END_DATETIME_ATTRIBUTE, _metaData.EndDateTimeNumber.ToString());
             root.SetAttribute(Globals.TIME_INTERVAL_ATTRIBUTE, _metaData.TimeInterval.ToString());
 
+            int j = 0;
             // Add node for each variable
             foreach (Variable var in _metaData.Variables)
             {
@@ -71,7 +71,11 @@ public class MetaDataManager : IMetaDataManager {
                 {
                     XmlElement earthFrameDataNode = document.CreateElement(Globals.EARTH_DATA_FRAME_ELEMENT);
 
-                    earthFrameDataNode.SetAttribute(Globals.TIMESTAMP_DATETIME_ATTRIBUTE, _metaData.Timestamps[i].ToString());
+                    string currentTimeStamp = _metaData.Timestamps[j][i].Value;
+
+                   Log.Info(this, "save timestamp to XML: " + currentTimeStamp);
+
+                    earthFrameDataNode.SetAttribute(Globals.TIMESTAMP_DATETIME_ATTRIBUTE, currentTimeStamp);
 
                     earthFrameDataNode.SetAttribute(Globals.EARTH_DATA_FRAME_DIM_X_ATTRIBUTE, earthDataFrame.Dimensions.x.ToString());
                     earthFrameDataNode.SetAttribute(Globals.EARTH_DATA_FRAME_DIM_Y_ATTRIBUTE, earthDataFrame.Dimensions.y.ToString());
@@ -83,6 +87,8 @@ public class MetaDataManager : IMetaDataManager {
                 }
                 // @TODO: Go through every node in the transfer functions for each variable
                 // foreach( )
+
+                j++;
             }
 
             XmlWriterSettings settings = new XmlWriterSettings();
@@ -117,8 +123,8 @@ public class MetaDataManager : IMetaDataManager {
         int timeInterval = Utils.ReadIntegerAttribute(root, Globals.TIME_INTERVAL_ATTRIBUTE);
 
         // Read in variables
-        IList<IVariable> variables = new List<IVariable>();
-        IList<IList<ITimestamp>> timestamps = new List<IList<ITimestamp>>();
+        IList<IVariable> variablesList = new List<IVariable>();
+        IList<IList<ITimestamp>> timestampList = new List<IList<ITimestamp>>();
 
         if (root.ChildNodes.Count == 0)
         {
@@ -129,11 +135,15 @@ public class MetaDataManager : IMetaDataManager {
             if (varNode.Name == Globals.VARIABLE_ELEMENT) {
                 // Read name from variable node
                 string varNodeName = varNode.Attributes[Globals.VARIABLE_NAME_ATTRIBUTE].Value;
+                List<ITimestamp> varTimestampList = new List<ITimestamp>();
+
                 if (varNodeName != null) {
-                    variables.Add(new Variable() { Name = varNodeName });
+                    variablesList.Add(new Variable() { Name = varNodeName });
+
+                    Log.Info(this, "Checking variable " + variablesList[0]);
 
                     // Create a new list for timestamps
-                    timestamps.Add( new List<ITimestamp>());
+                    timestampList.Add(varTimestampList);
                 } else
                 {
                     Log.ThrowValueNotFoundException(this, Globals.VARIABLE_NAME_ATTRIBUTE);
@@ -161,18 +171,15 @@ public class MetaDataManager : IMetaDataManager {
                         float timestampNodeValue = float.Parse(timestampNode.Attributes[Globals.TIMESTAMP_DATETIME_ATTRIBUTE].Value);
 
                         Log.Info(this, "Reading timestamp " + timestampNodeValue.ToString());
-                        if (timestampNodeValue != 0)
-                        {
-                            // fill last list with timestamps
-                            timestamps[timestamps.Count - 1].Add(new Timestamp() { Value = timestampNodeValue });
-                        }
-                        else
-                        {
-                            //throw new Log.MetaDataException($"[MetaDataManager] - Failed to read '{Globals.TIMESTAMP_DATETIME_ATTRIBUTE}' attribute from timestamp!");
-                            Log.ThrowMetaDataException(this, "Failed to read " + Globals.TIMESTAMP_DATETIME_ATTRIBUTE + " attribute from timestamp!");
-                        }
+                        // fill last list with timestamps
+                        varTimestampList.Add(new Timestamp() { Value = timestampNodeValue.ToString() });
+
+                        Log.Info(this, "Checking timestamp " + timestampList[0][0]);
+                        Log.Info(this, "Checking vartimestamp " + varTimestampList[0]);
                     }
                 }
+
+                
             }
         }
 
@@ -185,8 +192,8 @@ public class MetaDataManager : IMetaDataManager {
             StartDateTimeNumber = startDateTime,
             EndDateTimeNumber = endDateTime,
             TimeInterval = timeInterval,
-            Timestamps = timestamps,
-            Variables = variables
+            Timestamps = timestampList,
+            Variables = variablesList
         };
     }
 }

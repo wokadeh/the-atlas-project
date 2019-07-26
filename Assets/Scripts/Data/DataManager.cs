@@ -85,9 +85,9 @@ public class DataManager : MonoBehaviour {
         }
 
         //// 2. write 3dTexture assets to folders of variables
-        for (int i = 0; i < m_MetaData.Variables.Count; i++)
+        for (int varIndex = 0; varIndex < m_MetaData.Variables.Count; varIndex++)
         {
-            IVariable variable = m_MetaData.Variables[i];
+            IVariable variable = m_MetaData.Variables[varIndex];
 
             string variablePath = Globals.SAVE_PROJECTS_PATH + "/" + m_MetaData.DataName + "/" + variable.Name;
 
@@ -97,10 +97,10 @@ public class DataManager : MonoBehaviour {
                 Directory.CreateDirectory(variablePath);
             }
 
-            yield return StartCoroutine(SaveVariableRoutine(variable, variablePath, new Progress<float>(value =>
+            yield return StartCoroutine(SaveVariableRoutine(variable, variablePath, varIndex, new Progress<float>(value =>
             {
                 // Do overall progress report
-                float progression = i / (float)m_MetaData.Variables.Count;
+                float progression = varIndex / (float)m_MetaData.Variables.Count;
                 _progress.Report(progression + (value / m_MetaData.Variables.Count));
             })));
         }
@@ -152,17 +152,6 @@ public class DataManager : MonoBehaviour {
         m_CurrentVariable = m_DataAssets.First().Key;
         m_CurrentAsset = DataAssets.First();
 
-        Debug.Log("DISPLAY ALL TIMESTAMPSSSSSSS");
-        for(int i = 0; i < m_MetaData.Timestamps.Count(); i++)
-        {
-            Debug.Log("first variable for timestamps");
-            for (int j = 0; j < m_MetaData.Timestamps[i].Count(); j++)
-            {
-                Debug.Log("Found timestamp");
-                Debug.Log("Timestamp: " + m_MetaData.Timestamps[i][j].ToString());
-            }
-        }
-
         // Set new data
         m_VolumeRenderer.SetData(m_CurrentAsset);
         m_TransferFunctionUI.Redraw();
@@ -172,7 +161,7 @@ public class DataManager : MonoBehaviour {
         _callback?.Invoke();
     }
 
-    private IEnumerator SaveVariableRoutine(IVariable _variable, string _variablePath, IProgress<float> _progress)
+    private IEnumerator SaveVariableRoutine(IVariable _variable, string _variablePath, int varIndex, IProgress<float> _progress)
     {
         string textureAssetPath = _variablePath + "/" + Globals.TEXTURE3D_FOLDER_NAME;
         // Only create if it does not exist, yet
@@ -181,10 +170,10 @@ public class DataManager : MonoBehaviour {
             Directory.CreateDirectory(textureAssetPath);
         }
 
-        int i = 0;
+        int timestampIndex = 0;
         foreach (EarthDataFrame asset in m_DataAssets[_variable.Name])
         {
-            string dateTimeString = m_MetaData.Timestamps[i].ToString();
+            string dateTimeString = m_MetaData.Timestamps[varIndex][timestampIndex].Value;
             string assetName = Globals.TEXTURE3D_PREFEX + _variable.Name + "_" + dateTimeString;
             string assetPath = textureAssetPath + "/";
 
@@ -193,9 +182,9 @@ public class DataManager : MonoBehaviour {
             AssetDatabase.CreateAsset(asset.DataTexture, assetPath + assetName + ".asset");
 
             // Report progress
-            float progression = (i + 1) / (float)m_DataAssets.Count;
+            float progression = (timestampIndex + 1) / (float)m_DataAssets.Count;
             _progress.Report(progression);
-            i++;
+            timestampIndex++;
             yield return null;
         }
         yield return null;
