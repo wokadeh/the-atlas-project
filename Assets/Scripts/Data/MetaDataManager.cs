@@ -5,6 +5,7 @@ using System.Xml;
 using System.Security.AccessControl;
 using System.IO;
 using Microsoft.Win32.SafeHandles;
+using System.Globalization;
 
 public class MetaDataManager : IMetaDataManager {
     //private class MetaDataException : Exception {
@@ -73,7 +74,7 @@ public class MetaDataManager : IMetaDataManager {
 
                     string currentTimeStamp = _metaData.Timestamps[j][i].Value;
 
-                   Log.Info(this, "save timestamp to XML: " + currentTimeStamp);
+                    Log.Info(this, "save timestamp to XML: " + currentTimeStamp.Replace(',','.'));
 
                     earthFrameDataNode.SetAttribute(Globals.TIMESTAMP_DATETIME_ATTRIBUTE, currentTimeStamp);
 
@@ -155,7 +156,6 @@ public class MetaDataManager : IMetaDataManager {
                 }
                 foreach (XmlNode timestampNode in varNode.ChildNodes)
                 {
-                    Log.Info(this, "Read timestampNode: " + timestampNode.Name);
                     if (timestampNode.Name == Globals.TIMESTAMP_LIST_ELEMENT)
                     {
                         if (timestampNode == null)
@@ -168,18 +168,12 @@ public class MetaDataManager : IMetaDataManager {
                             Log.ThrowValueNotFoundException(this, Globals.TIMESTAMP_DATETIME_ATTRIBUTE + " of " + varNode.Name);
                         }
 
-                        float timestampNodeValue = float.Parse(timestampNode.Attributes[Globals.TIMESTAMP_DATETIME_ATTRIBUTE].Value);
+                        float timestampNodeValue = float.Parse(timestampNode.Attributes[Globals.TIMESTAMP_DATETIME_ATTRIBUTE].Value, CultureInfo.InvariantCulture.NumberFormat);
 
-                        Log.Info(this, "Reading timestamp " + timestampNodeValue.ToString());
                         // fill last list with timestamps
                         varTimestampList.Add(new Timestamp() { Value = timestampNodeValue.ToString() });
-
-                        Log.Info(this, "Checking timestamp " + timestampList[0][0]);
-                        Log.Info(this, "Checking vartimestamp " + varTimestampList[0]);
                     }
                 }
-
-                
             }
         }
 

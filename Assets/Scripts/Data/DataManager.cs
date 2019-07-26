@@ -173,7 +173,7 @@ public class DataManager : MonoBehaviour {
         int timestampIndex = 0;
         foreach (EarthDataFrame asset in m_DataAssets[_variable.Name])
         {
-            string dateTimeString = m_MetaData.Timestamps[varIndex][timestampIndex].Value;
+            string dateTimeString = m_MetaData.Timestamps[varIndex][timestampIndex].Value.Replace(',', '.');
             string assetName = Globals.TEXTURE3D_PREFEX + _variable.Name + "_" + dateTimeString;
             string assetPath = textureAssetPath + "/";
 
