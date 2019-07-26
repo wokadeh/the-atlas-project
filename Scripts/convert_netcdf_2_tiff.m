@@ -160,7 +160,7 @@ function createMetaData( metaDataFileName, metaDataName, variables, timeDim, bit
             timestamp = makeTimeStamp( timeStep, timeDim );
 
             time_stamp_element = document.createElement( 'timestamp' );
-            time_stamp_element.setAttribute('name', num2str( timestamp ));
+            time_stamp_element.setAttribute('datetime', num2str( timestamp ));
             
             variable_element.appendChild( time_stamp_element );
         end 

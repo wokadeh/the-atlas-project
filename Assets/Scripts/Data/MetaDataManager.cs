@@ -71,7 +71,7 @@ public class MetaDataManager : IMetaDataManager {
                 {
                     XmlElement earthFrameDataNode = document.CreateElement(Globals.EARTH_DATA_FRAME_ELEMENT);
 
-                    earthFrameDataNode.SetAttribute(Globals.TIMESTAMP_LIST_ATTRIBUTE, _metaData.Timestamps[i].ToString());
+                    earthFrameDataNode.SetAttribute(Globals.TIMESTAMP_DATETIME_ATTRIBUTE, _metaData.Timestamps[i].ToString());
 
                     earthFrameDataNode.SetAttribute(Globals.EARTH_DATA_FRAME_DIM_X_ATTRIBUTE, earthDataFrame.Dimensions.x.ToString());
                     earthFrameDataNode.SetAttribute(Globals.EARTH_DATA_FRAME_DIM_Y_ATTRIBUTE, earthDataFrame.Dimensions.y.ToString());
@@ -120,8 +120,9 @@ public class MetaDataManager : IMetaDataManager {
         IList<IVariable> variables = new List<IVariable>();
         IList<IList<ITimestamp>> timestamps = new List<IList<ITimestamp>>();
 
-        if (root.ChildNodes.Count == 0) {
-            throw new MetaDataException($"Trying to read meta data with no variables!");
+        if (root.ChildNodes.Count == 0)
+        {
+            throw new MetaDataException($"[MetaDataManager] - Trying to read meta data with NO VARIABLES!");
         }
         foreach (XmlNode varNode in root.ChildNodes)
         {
@@ -133,21 +134,39 @@ public class MetaDataManager : IMetaDataManager {
 
                     // Create a new list for timestamps
                     timestamps.Add( new List<ITimestamp>());
-                } else {
-                    throw new MetaDataException($"Failed to read '{Globals.VARIABLE_NAME_ATTRIBUTE}' attribute from variable!");
+                } else
+                {
+                    throw new MetaDataException($"[MetaDataManager] - Failed to read '{Globals.VARIABLE_NAME_ATTRIBUTE}' attribute from variable!");
                 }
 
+                if (varNode.ChildNodes.Count == 0)
+                {
+                    throw new MetaDataException($"[MetaDataManager] - Trying to read variable ' {varNode.Name} ' data with NO TIMESTAMPS!");
+                }
                 foreach (XmlNode timestampNode in varNode.ChildNodes)
                 {
-                    float timestampNodeValue = float.Parse(timestampNode.Attributes[Globals.TIMESTAMP_LIST_ATTRIBUTE].Value);
-                    if (timestampNodeValue != 0)
+                    if (varNode.Name == Globals.TIMESTAMP_LIST_ELEMENT)
                     {
-                        // fill last list with timestamps
-                        //timestamps[timestamps.Count - 1].Add(new Timestamp() { Value = timestampNodeValue });
-                    }
-                    else
-                    {
-                        throw new MetaDataException($"Failed to read '{Globals.TIMESTAMP_LIST_ATTRIBUTE}' attribute from timestamp!");
+                        if (timestampNode == null)
+                        {
+                            throw new MetaDataException($"[MetaDataManager] - Timestamp of ' {varNode.Name} ' is NULL!");
+                        }
+
+                        if (timestampNode.Attributes[Globals.TIMESTAMP_DATETIME_ATTRIBUTE] == null)
+                        {
+                            throw new MetaDataException($"[MetaDataManager] - Timestamp of ' {varNode.Name} ' is has NO attributes!");
+                        }
+
+                        float timestampNodeValue = float.Parse(timestampNode.Attributes[Globals.TIMESTAMP_DATETIME_ATTRIBUTE].Value);
+                        if (timestampNodeValue != 0)
+                        {
+                            // fill last list with timestamps
+                            timestamps[timestamps.Count - 1].Add(new Timestamp() { Value = timestampNodeValue });
+                        }
+                        else
+                        {
+                            throw new MetaDataException($"Failed to read '{Globals.TIMESTAMP_DATETIME_ATTRIBUTE}' attribute from timestamp!");
+                        }
                     }
                 }
             }

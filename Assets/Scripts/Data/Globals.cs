@@ -13,9 +13,10 @@ public struct Globals
     public const string START_DATETIME_ATTRIBUTE = "start_datetime";
     public const string END_DATETIME_ATTRIBUTE = "end_datetime";
     public const string TIME_INTERVAL_ATTRIBUTE = "time_interval";
-    public const string TIMESTAMP_LIST_ATTRIBUTE = "timestamp";
 
-    public const string ROOT_NODE = "variables";
+    public const string TIMESTAMP_LIST_ELEMENT = "timestamp";
+    public const string TIMESTAMP_DATETIME_ATTRIBUTE = "datetime";
+
     public const string VARIABLE_ELEMENT = "variable";
     public const string VARIABLE_NAME_ATTRIBUTE = "name";
 
