@@ -7,10 +7,7 @@ using UnityEngine;
 using UnityEditor;
 
 public class DataManager : MonoBehaviour {
-    private enum BitDepth {
-        Depth8,
-        Depth16
-    }
+    
 
     [SerializeField] private VolumeRenderer m_VolumeRenderer;
     [SerializeField] private TransferFunctionUI m_TransferFunctionUI;
@@ -79,11 +76,11 @@ public class DataManager : MonoBehaviour {
 
             m_MetaDataReader.Write(filePath, m_MetaData, m_DataAssets);
 
-            Debug.Log("[DataManager] - Successfully wrote project XML to: " + filePath);
+            Log.Info(this, "Successfully wrote project XML to: " + filePath);
         }
         catch (Exception e)
         {
-            Debug.LogError($"[DataManager] - Failed to save meta data: '{projectFolderPath}' with exception:\n{e.GetType().Name} - {e.Message}!");
+            Log.ThrowException(this, "Failed to save meta data: " + projectFolderPath + " with exception:\n " + e.GetType().Name + "-" + e.Message);
             _callback?.Invoke();
         }
 
@@ -118,12 +115,12 @@ public class DataManager : MonoBehaviour {
 
         // Read in meta data
         IMetaData metaData = null;
-        BitDepth bitDepth = BitDepth.Depth8;
+        Utils.BitDepth bitDepth = Utils.BitDepth.Depth8;
         try {
-            metaData = m_MetaDataReader.Read(_projectFilePath);
-            bitDepth = this.GetBitDepth(metaData);
+            metaData = m_MetaDataReader.Import(_projectFilePath);
+            bitDepth = Utils.GetBitDepth(metaData);
         } catch (Exception e) {
-            Debug.LogError($"[DataManager] - Failed to read meta data: '{_projectFilePath}' with exception:\n{e.GetType().Name} - {e.Message}!");
+            Log.ThrowException(this, "Failed to read meta data: " +_projectFilePath + " with exception:\n " + e.GetType().Name + "-" + e.Message );
             _callback?.Invoke();
         }
 
@@ -144,16 +141,27 @@ public class DataManager : MonoBehaviour {
                     _progress.Report(progression + (value / metaData.Variables.Count));
                 })));
             } else {
-                Debug.LogError($"[DataManager] - Trying to load variable: '{variable.Name}' but the corresponding directory does not exist!");
+                Log.ThrowValueNotFoundException(this, variable.Name);
                 _callback?.Invoke();
             }
         }
 
-        Debug.Log($"[DataManager] - Loading and creating assets took {(stopwatch.ElapsedMilliseconds / 1000.0f).ToString("0.00")} seconds.");
+        Log.Info(this, "Loading and creating assets took " + (stopwatch.ElapsedMilliseconds / 1000.0f).ToString("0.00") + "seconds.");
 
         m_MetaData = metaData;
         m_CurrentVariable = m_DataAssets.First().Key;
         m_CurrentAsset = DataAssets.First();
+
+        Debug.Log("DISPLAY ALL TIMESTAMPSSSSSSS");
+        for(int i = 0; i < m_MetaData.Timestamps.Count(); i++)
+        {
+            Debug.Log("first variable for timestamps");
+            for (int j = 0; j < m_MetaData.Timestamps[i].Count(); j++)
+            {
+                Debug.Log("Found timestamp");
+                Debug.Log("Timestamp: " + m_MetaData.Timestamps[i][j].ToString());
+            }
+        }
 
         // Set new data
         m_VolumeRenderer.SetData(m_CurrentAsset);
@@ -193,7 +201,7 @@ public class DataManager : MonoBehaviour {
         yield return null;
     }
 
-    private IEnumerator ImportVariableRoutine(IDataLoader _loader, string _projectFolder, List<EarthDataFrame> _earthFrameList, BitDepth _bitDepth, IProgress<float> _progress) {
+    private IEnumerator ImportVariableRoutine(IDataLoader _loader, string _projectFolder, List<EarthDataFrame> _earthFrameList, Utils.BitDepth _bitDepth, IProgress<float> _progress) {
         // We assume every directory is a time stamp which contains the level tiffs
         string[] directories = Directory.GetDirectories(_projectFolder);
 
@@ -202,8 +210,8 @@ public class DataManager : MonoBehaviour {
 
             EarthDataFrame asset;
             switch (_bitDepth) {
-                case BitDepth.Depth8: asset = m_EarthDataFrameBuilder.Build8Bit(_loader.Load8Bit(directory)); break;
-                case BitDepth.Depth16: asset = m_EarthDataFrameBuilder.Build16Bit(_loader.Load16Bit(directory)); break;
+                case Utils.BitDepth.Depth8: asset = m_EarthDataFrameBuilder.Build8Bit(_loader.Load8Bit(directory)); break;
+                case Utils.BitDepth.Depth16: asset = m_EarthDataFrameBuilder.Build16Bit(_loader.Load16Bit(directory)); break;
                 default: yield break;
             }
             _earthFrameList.Add(asset);
@@ -217,11 +225,5 @@ public class DataManager : MonoBehaviour {
         yield return null;
     }
 
-    private BitDepth GetBitDepth(IMetaData _metaData) {
-        switch (_metaData.BitDepth) {
-            case 8: return BitDepth.Depth8;
-            case 16: return BitDepth.Depth16;
-            default: throw new Exception("Failed to determine bit depth!");
-        }
-    }
+    
 }

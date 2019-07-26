@@ -7,9 +7,9 @@ using System.IO;
 using Microsoft.Win32.SafeHandles;
 
 public class MetaDataManager : IMetaDataManager {
-    private class MetaDataException : Exception {
-        public MetaDataException(string message) : base(message) { }
-    }
+    //private class MetaDataException : Exception {
+    //    public MetaDataException(string message) : base(message) { }
+    //}
 
     public class MetaData : IMetaData {
         public string DataName { get; set; }
@@ -96,11 +96,11 @@ public class MetaDataManager : IMetaDataManager {
         }
         catch (Exception e)
         {
-            throw new MetaDataException($"[MetaDataManager] - Failed to save file '{_projectFilePath}' because of '{e}' !");
+            Log.ThrowDataException(this, _projectFilePath, e);
         }
     }
 
-    public IMetaData Read(string _projectFilePath)
+    public IMetaData Import(string _projectFilePath)
     {
         XmlDocument document = new XmlDocument();
         document.Load(_projectFilePath);
@@ -108,13 +108,13 @@ public class MetaDataManager : IMetaDataManager {
 
         // Read in bit depth, width and height
         string dataName = root.Name;
-        int bitDepth = this.ReadIntegerAttribute(root, Globals.BIT_DEPTH_ATTRIBUTE);
-        int width = this.ReadIntegerAttribute(root, Globals.WIDTH_ATTRIBUTE);
-        int height = this.ReadIntegerAttribute(root, Globals.HEIGHT_ATTRIBUTE);
-        int levels = this.ReadIntegerAttribute(root, Globals.LEVELS_ATTRIBUTE);
-        float startDateTime = this.ReadFloatAttribute(root, Globals.START_DATETIME_ATTRIBUTE);
-        float endDateTime = this.ReadFloatAttribute(root, Globals.END_DATETIME_ATTRIBUTE);
-        int timeInterval = this.ReadIntegerAttribute(root, Globals.TIME_INTERVAL_ATTRIBUTE);
+        int bitDepth = Utils.ReadIntegerAttribute(root, Globals.BIT_DEPTH_ATTRIBUTE);
+        int width = Utils.ReadIntegerAttribute(root, Globals.WIDTH_ATTRIBUTE);
+        int height = Utils.ReadIntegerAttribute(root, Globals.HEIGHT_ATTRIBUTE);
+        int levels = Utils.ReadIntegerAttribute(root, Globals.LEVELS_ATTRIBUTE);
+        float startDateTime = Utils.ReadFloatAttribute(root, Globals.START_DATETIME_ATTRIBUTE);
+        float endDateTime = Utils.ReadFloatAttribute(root, Globals.END_DATETIME_ATTRIBUTE);
+        int timeInterval = Utils.ReadIntegerAttribute(root, Globals.TIME_INTERVAL_ATTRIBUTE);
 
         // Read in variables
         IList<IVariable> variables = new List<IVariable>();
@@ -122,7 +122,7 @@ public class MetaDataManager : IMetaDataManager {
 
         if (root.ChildNodes.Count == 0)
         {
-            throw new MetaDataException($"[MetaDataManager] - Trying to read meta data with NO VARIABLES!");
+            Log.ThrowValueNotFoundException(this, root.Name + "is empty");
         }
         foreach (XmlNode varNode in root.ChildNodes)
         {
@@ -136,28 +136,31 @@ public class MetaDataManager : IMetaDataManager {
                     timestamps.Add( new List<ITimestamp>());
                 } else
                 {
-                    throw new MetaDataException($"[MetaDataManager] - Failed to read '{Globals.VARIABLE_NAME_ATTRIBUTE}' attribute from variable!");
+                    Log.ThrowValueNotFoundException(this, Globals.VARIABLE_NAME_ATTRIBUTE);
                 }
 
                 if (varNode.ChildNodes.Count == 0)
                 {
-                    throw new MetaDataException($"[MetaDataManager] - Trying to read variable ' {varNode.Name} ' data with NO TIMESTAMPS!");
+                    Log.ThrowValueNotFoundException(this, varNode.Name);
                 }
                 foreach (XmlNode timestampNode in varNode.ChildNodes)
                 {
-                    if (varNode.Name == Globals.TIMESTAMP_LIST_ELEMENT)
+                    Log.Info(this, "Read timestampNode: " + timestampNode.Name);
+                    if (timestampNode.Name == Globals.TIMESTAMP_LIST_ELEMENT)
                     {
                         if (timestampNode == null)
                         {
-                            throw new MetaDataException($"[MetaDataManager] - Timestamp of ' {varNode.Name} ' is NULL!");
+                            Log.ThrowValueNotFoundException(this, Globals.TIMESTAMP_LIST_ELEMENT);
                         }
 
                         if (timestampNode.Attributes[Globals.TIMESTAMP_DATETIME_ATTRIBUTE] == null)
                         {
-                            throw new MetaDataException($"[MetaDataManager] - Timestamp of ' {varNode.Name} ' is has NO attributes!");
+                            Log.ThrowValueNotFoundException(this, Globals.TIMESTAMP_DATETIME_ATTRIBUTE + " of " + varNode.Name);
                         }
 
                         float timestampNodeValue = float.Parse(timestampNode.Attributes[Globals.TIMESTAMP_DATETIME_ATTRIBUTE].Value);
+
+                        Log.Info(this, "Reading timestamp " + timestampNodeValue.ToString());
                         if (timestampNodeValue != 0)
                         {
                             // fill last list with timestamps
@@ -165,7 +168,8 @@ public class MetaDataManager : IMetaDataManager {
                         }
                         else
                         {
-                            throw new MetaDataException($"Failed to read '{Globals.TIMESTAMP_DATETIME_ATTRIBUTE}' attribute from timestamp!");
+                            //throw new Log.MetaDataException($"[MetaDataManager] - Failed to read '{Globals.TIMESTAMP_DATETIME_ATTRIBUTE}' attribute from timestamp!");
+                            Log.ThrowMetaDataException(this, "Failed to read " + Globals.TIMESTAMP_DATETIME_ATTRIBUTE + " attribute from timestamp!");
                         }
                     }
                 }
@@ -184,34 +188,5 @@ public class MetaDataManager : IMetaDataManager {
             Timestamps = timestamps,
             Variables = variables
         };
-    }
-
-    private int ReadIntegerAttribute(XmlElement _relement, string _name) {
-        int attribute;
-        if (_relement.HasAttribute(_name)) {
-            if (!int.TryParse(_relement.GetAttribute(_name), out attribute)) {
-                throw new MetaDataException($"Failed to read '{_name}' attribute!");
-            }
-        } else {
-            throw new MetaDataException($"Xml file has no '{_name}' attribute!");
-        }
-        return attribute;
-    }
-
-    private float ReadFloatAttribute(XmlElement _relement, string _name)
-    {
-        float attribute;
-        if (_relement.HasAttribute(_name))
-        {
-            if (!float.TryParse(_relement.GetAttribute(_name), out attribute))
-            {
-                throw new MetaDataException($"Failed to read '{_name}' attribute!");
-            }
-        }
-        else
-        {
-            throw new MetaDataException($"Xml file has no '{_name}' attribute!");
-        }
-        return attribute;
     }
 }
