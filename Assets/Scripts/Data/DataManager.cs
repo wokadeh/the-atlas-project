@@ -43,6 +43,11 @@ public class DataManager : MonoBehaviour {
         StartCoroutine(SaveProjectCoroutine(_projectFilePath, _progress, _callback));
     }
 
+    public void LoadProject(string _projectFilePath, IProgress<float> _progress, Action _callback)
+    {
+        StartCoroutine(LoadProjectCoroutine(_projectFilePath, _progress, _callback));
+    }
+
     public void SetCurrentAsset(EarthDataFrame _earthDataFrame) {
         m_CurrentAsset = _earthDataFrame;
         OnDataAssetChanged?.Invoke(_earthDataFrame);
@@ -110,7 +115,8 @@ public class DataManager : MonoBehaviour {
         _callback?.Invoke();
     }
 
-    private IEnumerator ImportDataCoroutine(string _projectFilePath, IProgress<float> _progress, Action _callback) {
+    private IEnumerator ImportDataCoroutine(string _projectFilePath, IProgress<float> _progress, Action _callback)
+    {
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
         // Read in meta data
@@ -161,6 +167,66 @@ public class DataManager : MonoBehaviour {
         _callback?.Invoke();
     }
 
+    private IEnumerator LoadDataCoroutine(string _projectFilePath, IProgress<float> _progress, Action _callback)
+    {
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
+        m_DataAssets.Clear();
+
+        // Read in meta data
+        IMetaData metaData = null;
+        Utils.BitDepth bitDepth = Utils.BitDepth.Depth8;
+        try
+        {
+            metaData = m_MetaDataReader.Load(_projectFilePath);
+            bitDepth = Utils.GetBitDepth(metaData);
+        }
+        catch (Exception e)
+        {
+            Log.ThrowException(this, "Failed to read meta data: " + _projectFilePath + " with exception:\n " + e.GetType().Name + "-" + e.Message);
+            _callback?.Invoke();
+        }
+
+        m_EarthDataFrameBuilder = new EarthDataFrameBuilder(metaData.Width, metaData.Height, metaData.Levels);
+
+        for (int i = 0; i < metaData.Variables.Count; i++)
+        {
+            IVariable variable = metaData.Variables[i];
+
+            // For each variable there is a list of all textures that are used
+            m_DataAssets[variable.Name] = new List<EarthDataFrame>();
+
+            string variableFolderPath = Path.Combine(Path.GetDirectoryName(_projectFilePath), variable.Name.ToLower());
+            if (Directory.Exists(variableFolderPath))
+            {
+                yield return StartCoroutine(LoadVariableRoutine(variableFolderPath, variable, bitDepth, new Progress<float>(value => {
+                    // Do overall progress report
+                    float progression = i / (float)metaData.Variables.Count;
+                    _progress.Report(progression + (value / metaData.Variables.Count));
+                })));
+            }
+            else
+            {
+                Log.ThrowValueNotFoundException(this, variable.Name);
+                _callback?.Invoke();
+            }
+        }
+
+        Log.Info(this, "Loading and creating assets took " + (stopwatch.ElapsedMilliseconds / 1000.0f).ToString("0.00") + "seconds.");
+
+        m_MetaData = metaData;
+        m_CurrentVariable = m_DataAssets.First().Key;
+        m_CurrentAsset = DataAssets.First();
+
+        // Set new data
+        m_VolumeRenderer.SetData(m_CurrentAsset);
+        m_TransferFunctionUI.Redraw();
+
+        OnNewImport?.Invoke();
+
+        _callback?.Invoke();
+    }
+
     private IEnumerator SaveVariableRoutine(IVariable _variable, string _variablePath, int varIndex, IProgress<float> _progress)
     {
         string textureAssetPath = _variablePath + "/" + Globals.TEXTURE3D_FOLDER_NAME;
@@ -185,8 +251,33 @@ public class DataManager : MonoBehaviour {
             float progression = (timestampIndex + 1) / (float)m_DataAssets.Count;
             _progress.Report(progression);
             timestampIndex++;
+
             yield return null;
         }
+        yield return null;
+    }
+
+
+    private IEnumerator LoadVariableRoutine(string _projectFolder, IVariable variable, Utils.BitDepth _bitDepth, IProgress<float> _progress)
+    {
+        object[] assets = AssetDatabase.LoadAllAssetsAtPath(_projectFolder);
+
+        List<EarthDataFrame> timestampAssetList = new List<EarthDataFrame>();
+
+        foreach (object asset in assets)
+        {
+            EarthDataFrame timestampAsset = new EarthDataFrame();
+            timestampAsset.Dimensions.x = variable
+            timestampAssetList.Add( )
+        }
+            
+
+            // Report progress
+            float progression = (assetFileIndex + 1) / (float)assetFiles.Length;
+            _progress.Report(progression);
+            yield return null;
+        
+
         yield return null;
     }
 

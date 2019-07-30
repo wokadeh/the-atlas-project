@@ -30,8 +30,8 @@ public class EarthDataFrameBuilder : IEarthDataFrameBuilder {
         int depth = data.Length;
 
         // Create data texture
-        Texture3D dataTexture = BuildDataTexture(data);
-        Texture2D histogramTexture = BuildHistogramTexture();
+        Texture3D dataTexture = this.BuildDataTexture(data);
+        Texture2D histogramTexture = this.BuildHistogramTexture();
 
         return new EarthDataFrame() { Dimensions = new Vector3(m_Width, m_Height, depth), DataTexture = dataTexture, HistogramTexture = histogramTexture };
     }
