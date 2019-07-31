@@ -46,7 +46,6 @@ public class DataManager : MonoBehaviour {
 
     public void SaveProject(string _projectFilePath, IProgress<float> _progress, Action _callback)
     {
-        this.Clear();
         this.StartCoroutine(SaveProjectCoroutine(_projectFilePath, _progress, _callback));
     }
 
