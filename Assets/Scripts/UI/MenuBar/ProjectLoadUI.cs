@@ -27,12 +27,12 @@ public class ProjectLoadUI : MonoBehaviour
 
     private void LoadProject()
     {
-        string[] folders = StandaloneFileBrowser.OpenFilePanel("Load project file...", Directory.GetCurrentDirectory() + "/" + Globals.SAVE_PROJECTS_PATH, FILE_FILTER, false);
+        string[] files = StandaloneFileBrowser.OpenFilePanel("Load project file...", Directory.GetCurrentDirectory() + "/" + Globals.SAVE_PROJECTS_PATH, FILE_FILTER, false);
 
-        // Only continue, if one folder was selected
-        if(folders.Length > 0)
+        // Only continue, if at least one folder was selected
+        if(files.Length > 0)
         {
-            string projectFolderPath = folders[0] + "/";
+            string projectFolderPath = files[0];
 
             Log.Info(this, "Load from project file " + projectFolderPath);
 

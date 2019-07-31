@@ -37,7 +37,7 @@ public class VolumeRenderer : MonoBehaviour {
         }
     }
 
-    public void SetData(EarthDataFrame data) {
+    public void SetData(TimeStepDataAsset data) {
         m_CartesianMaterial.SetTexture("_Data", data.DataTexture);
         m_SphericalMaterial.SetTexture("_Data", data.DataTexture);
     }

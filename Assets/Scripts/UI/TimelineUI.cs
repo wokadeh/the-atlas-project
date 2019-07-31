@@ -82,7 +82,7 @@ public class TimelineUI : MonoBehaviour {
             return;
         }
 
-        EarthDataFrame asset = m_DataManager.DataAssets[(int)value];
+        TimeStepDataAsset asset = m_DataManager.DataAssets[(int)value];
         m_DataManager.SetCurrentAsset(asset);
         m_VolumeRenderer.SetData(asset);
     }

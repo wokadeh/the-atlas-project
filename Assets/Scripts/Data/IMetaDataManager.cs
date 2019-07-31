@@ -2,5 +2,6 @@
 
 public interface IMetaDataManager {
     IMetaData Import(string _fileName);
-    void Write(string _projectFilePath, IMetaData _metaData, Dictionary<string, List<EarthDataFrame>> _dataAssets);
+    IMetaData Load(string _fileName);
+    void Write(string _projectFilePath, IMetaData _metaData, Dictionary<string, List<TimeStepDataAsset>> _dataAssets);
 }
