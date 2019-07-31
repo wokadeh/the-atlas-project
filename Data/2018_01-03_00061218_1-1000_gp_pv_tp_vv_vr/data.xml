@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<variables bit_depth="8" height="656" width="875" levels="37">
-   <variable name="Geopotential"/>
-   <variable name="Potential vorticity"/>
-   <variable name="Temperature"/>
-   <variable name="Vertical velocity"/>
-   <variable name="Vorticity (relative)"/>
-</variables>
