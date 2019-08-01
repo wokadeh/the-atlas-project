@@ -44,9 +44,9 @@ public class DataManager : MonoBehaviour {
         this.StartCoroutine(ImportDataCoroutine(_projectFilePath, _progress, _callback));
     }
 
-    public void SaveProject(string _projectFilePath, IProgress<float> _progress, Action _callback)
+    public void SaveProject(string _projectFilePath, bool _saveOnlyXml, IProgress<float> _progress, Action _callback)
     {
-        this.StartCoroutine(SaveProjectCoroutine(_projectFilePath, _progress, _callback));
+        this.StartCoroutine(SaveProjectCoroutine(_projectFilePath, _saveOnlyXml, _progress, _callback));
     }
 
     public void LoadProject(string _projectFilePath, IProgress<float> _progress, Action _callback)
@@ -70,33 +70,49 @@ public class DataManager : MonoBehaviour {
         m_VolumeRenderer.SetData(m_CurrentAsset);
     }
 
-    private IEnumerator SaveProjectCoroutine(string _projectFolderPath, IProgress<float> _progress, Action _callback)
+    private IEnumerator SaveProjectCoroutine(string _projectFolderPath, bool _saveOnlyXml, IProgress<float> _progress, Action _callback)
     {
         // 1. Write new xml file with all previous data (bitdepth, levels, etc.)
-
-        // Warning! Make sure always MetaData has been filled by importing/loading!!!!
-        string projectFolderPath = _projectFolderPath + m_MetaData.DataName;
-
-        try
+        if(m_MetaData != null)
         {
-            // Only create if it does not exist, yet
-            if (!Directory.Exists(projectFolderPath))
+            // Warning! Make sure always MetaData has been filled by importing/loading!!!!
+            string projectFolderPath = _projectFolderPath + m_MetaData.DataName;
+
+            try
             {
-                Directory.CreateDirectory(projectFolderPath);
+                // Only create if it does not exist, yet
+                if (!Directory.Exists(projectFolderPath))
+                {
+                    Directory.CreateDirectory(projectFolderPath);
+                }
+                string filePath = Path.Combine(projectFolderPath, m_MetaData.DataName + ".xml");
+
+                m_MetaDataManager.Write(filePath, m_MetaData, m_DataAssets);
+
+                Log.Info(this, "Successfully wrote project XML to: " + filePath);
             }
-            string filePath = Path.Combine(projectFolderPath, m_MetaData.DataName + ".xml");
+            catch (Exception e)
+            {
+                Log.ThrowException(this, "Failed to save meta data: " + projectFolderPath + " with exception:\n " + e.GetType().Name + "-" + e.Message);
+                _callback?.Invoke();
+            }
 
-            m_MetaDataManager.Write(filePath, m_MetaData, m_DataAssets);
-
-            Log.Info(this, "Successfully wrote project XML to: " + filePath);
+            if (!_saveOnlyXml)
+            {
+                // 2. write 3dTexture assets to folders of variables
+                yield return this.CreateAssets(_progress);
+            }
         }
-        catch (Exception e)
+        else
         {
-            Log.ThrowException(this, "Failed to save meta data: " + projectFolderPath + " with exception:\n " + e.GetType().Name + "-" + e.Message);
-            _callback?.Invoke();
-        }
+            Log.Warn(this, "Cannot save, because no data is loaded!");
+        }        
 
-        //// 2. write 3dTexture assets to folders of variables
+        _callback?.Invoke();
+    }
+
+    private IEnumerator CreateAssets(IProgress<float> _progress)
+    {
         for (int varIndex = 0; varIndex < m_MetaData.Variables.Count; varIndex++)
         {
             IVariable variable = m_MetaData.Variables[varIndex];
@@ -116,10 +132,6 @@ public class DataManager : MonoBehaviour {
                 _progress.Report(progression + (value / m_MetaData.Variables.Count));
             })));
         }
-
-        // 2. write 2dTexture from Histo to folders of variables
-
-        _callback?.Invoke();
     }
 
     private IEnumerator ImportDataCoroutine(string _projectFilePath, IProgress<float> _progress, Action _callback)

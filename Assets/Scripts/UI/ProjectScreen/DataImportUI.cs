@@ -10,6 +10,7 @@ public class DataImportUI : MonoBehaviour {
         new ExtensionFilter("Xml File", "xml")
     };
 
+    [SerializeField] private VolumeRenderer m_VolumeRenderer;
     [SerializeField] private DataManager m_DataManager;
     [SerializeField] private GameObject m_TransferFunctionUIPanel;
     [SerializeField] private GameObject m_TimelineUIPanel;
@@ -18,6 +19,8 @@ public class DataImportUI : MonoBehaviour {
     [SerializeField] private Image m_ImportProgressBar;
     [SerializeField] private TMP_Text m_ImportProgressBarText;
     [SerializeField] private GameObject m_ProjectScreen;
+    [SerializeField] private Button m_SaveProjectButton;
+    [SerializeField] private Button m_SaveProjectAsButton;
 
     private void Start() {
         m_ImportDataButton.onClick.AddListener(ImportData);
@@ -29,6 +32,7 @@ public class DataImportUI : MonoBehaviour {
         // This is a little hackey but works for now
         m_TransferFunctionUIPanel.SetActive(false);
         m_TimelineUIPanel.SetActive(false);
+        m_ProjectScreen.SetActive(false);
 
         if (files.Length == 1) {
             StartCoroutine(ImportDataCoroutine(files[0]));
@@ -50,6 +54,9 @@ public class DataImportUI : MonoBehaviour {
             m_ImportProgressBarText.text = $"{(progress * 100).ToString("0")} %";
         }), () => {
             m_ImportScreen.SetActive(false);
+            m_SaveProjectButton.interactable = true;
+            m_SaveProjectAsButton.interactable = true;
+            m_VolumeRenderer.gameObject.SetActive(true);
         });
     }
 }

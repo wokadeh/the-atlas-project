@@ -12,12 +12,15 @@ public class ProjectLoadUI : MonoBehaviour
         new ExtensionFilter("Xml File", "xml")
     };
 
+    [SerializeField] private VolumeRenderer m_VolumeRenderer;
     [SerializeField] private DataManager m_DataManager;
     [SerializeField] private GameObject m_TransferFunctionUIPanel;
     [SerializeField] private GameObject m_LoadScreen;
     [SerializeField] private Image m_LoadProgressBar;
     [SerializeField] private TMP_Text m_LoadProgressBarText;
     [SerializeField] private Button m_LoadProjectButton;
+    [SerializeField] private Button m_SaveProjectButton;
+    [SerializeField] private Button m_SaveProjectAsButton;
     [SerializeField] private GameObject m_ProjectScreen;
 
     // Start is called before the first frame update
@@ -58,6 +61,9 @@ public class ProjectLoadUI : MonoBehaviour
 
         m_DataManager.LoadProject(_projectFolderPath, Utils.CreateProgressBarProgress(m_LoadProgressBar, m_LoadProgressBarText, m_LoadScreen), () => {
             m_LoadScreen.SetActive(false);
+            m_SaveProjectButton.interactable = true;
+            m_SaveProjectAsButton.interactable = true;
+            m_VolumeRenderer.gameObject.SetActive(true);
         }); ;
     }
 }

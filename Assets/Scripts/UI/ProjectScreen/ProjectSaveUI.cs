@@ -18,34 +18,48 @@ public class ProjectSaveUI : MonoBehaviour
     [SerializeField] private Image m_SaveProgressBar;
     [SerializeField] private TMP_Text m_SaveProgressBarText;
     [SerializeField] private Button m_SaveProjectButton;
+    [SerializeField] private Button m_SaveProjectAsButton;
     [SerializeField] private GameObject m_ProjectScreen;
+
+    private string HOME_SAVE_DIR = Directory.GetCurrentDirectory() + "/" + Globals.SAVE_PROJECTS_PATH;
 
     // Start is called before the first frame update
     void Start()
     {
+        m_SaveProjectAsButton.onClick.AddListener(SaveAsProject);
         m_SaveProjectButton.onClick.AddListener(SaveProject);
     }
 
     private void SaveProject()
     {
-        string[] folders = StandaloneFileBrowser.OpenFolderPanel("Save project at...", Directory.GetCurrentDirectory() + "/" + Globals.SAVE_PROJECTS_PATH, false);
+        this.SaveProject(HOME_SAVE_DIR, true);
+    }
+
+    private void SaveProject(string _projectFolderPathh, bool _saveOnlyXml)
+    {
+        Log.Info(this, " Selected folder is " + _projectFolderPathh);
+
+        // This is a little hackey but works for now
+        m_TransferFunctionUIPanel.SetActive(false);
+        m_ProjectScreen.SetActive(false);
+
+        this.StartCoroutine(SaveProjectCoroutine(_projectFolderPathh, false));
+    }
+
+    private void SaveAsProject()
+    {
+        string[] folders = StandaloneFileBrowser.OpenFolderPanel("Save project at...", HOME_SAVE_DIR, false);
 
         // Only continue, if one folder was selected
         if(folders.Length > 0)
         {
             string projectFolderPath = folders[0] + "/";
 
-            Debug.Log("[ProjectSaveUI] - Selected folder is " + projectFolderPath);
-
-            // This is a little hackey but works for now
-            m_TransferFunctionUIPanel.SetActive(false);
-            m_ProjectScreen.SetActive(false);
-
-            this.StartCoroutine(SaveProjectCoroutine(projectFolderPath));
+            this.SaveProject(projectFolderPath, false);
         }
     }
 
-    private IEnumerator SaveProjectCoroutine(string _projectFolderPath)
+    private IEnumerator SaveProjectCoroutine(string _projectFolderPath, bool _saveOnlyXml)
     {
         m_SaveProgressBar.fillAmount = 0;
         m_SaveProgressBarText.text = "0 %";
@@ -56,7 +70,7 @@ public class ProjectSaveUI : MonoBehaviour
         yield return null;
         yield return null;
 
-        m_DataManager.SaveProject(_projectFolderPath, new Progress<float>(progress => {
+        m_DataManager.SaveProject(_projectFolderPath, _saveOnlyXml, new Progress<float>(progress => {
             m_SaveProgressBar.fillAmount = progress;
             m_SaveProgressBarText.text = $"{(progress * 100).ToString("0")} %";
         }), () => {
