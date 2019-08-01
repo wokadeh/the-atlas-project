@@ -45,16 +45,17 @@ public class ProjectLoadUI : MonoBehaviour
 
     private IEnumerator LoadProjectCoroutine(string _projectFolderPath)
     {
+        m_LoadProgressBar.fillAmount = 0;
+        m_LoadProgressBarText.text = "0 %";
+        m_LoadScreen.SetActive(true);
+
         // We are waiting for two frames so that unity has enough time to redraw the ui
         // which apparently it needs or otherwise the positions are off...
         yield return null;
         yield return null;
 
-        m_DataManager.LoadProject(_projectFolderPath, new Progress<float>(progress => {
-            m_LoadProgressBar.fillAmount = progress;
-            m_LoadProgressBarText.text = $"{(progress * 100).ToString("0")} %";
-        }), () => {
+        m_DataManager.LoadProject(_projectFolderPath, Utils.CreateProgressBarProgress(m_LoadProgressBar, m_LoadProgressBarText, m_LoadScreen), () => {
             m_LoadScreen.SetActive(false);
-        });
+        }); ;
     }
 }

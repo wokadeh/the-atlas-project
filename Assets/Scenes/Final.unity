@@ -11700,7 +11700,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_text: Importing...
+  m_text: Loading...
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 19a44a975e328ed4db300eba9d4161c7, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 2e44aae5161b36f4b85b4123e4d2e8e8, type: 2}

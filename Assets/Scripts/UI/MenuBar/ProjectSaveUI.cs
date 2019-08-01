@@ -45,6 +45,10 @@ public class ProjectSaveUI : MonoBehaviour
 
     private IEnumerator SaveProjectCoroutine(string _projectFolderPath)
     {
+        m_SaveProgressBar.fillAmount = 0;
+        m_SaveProgressBarText.text = "0 %";
+        m_SaveScreen.SetActive(true);
+
         // We are waiting for two frames so that unity has enough time to redraw the ui
         // which apparently it needs or otherwise the positions are off...
         yield return null;
