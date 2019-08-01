@@ -18,6 +18,7 @@ public class ProjectSaveUI : MonoBehaviour
     [SerializeField] private Image m_SaveProgressBar;
     [SerializeField] private TMP_Text m_SaveProgressBarText;
     [SerializeField] private Button m_SaveProjectButton;
+    [SerializeField] private GameObject m_ProjectScreen;
 
     // Start is called before the first frame update
     void Start()
@@ -38,6 +39,7 @@ public class ProjectSaveUI : MonoBehaviour
 
             // This is a little hackey but works for now
             m_TransferFunctionUIPanel.SetActive(false);
+            m_ProjectScreen.SetActive(false);
 
             this.StartCoroutine(SaveProjectCoroutine(projectFolderPath));
         }

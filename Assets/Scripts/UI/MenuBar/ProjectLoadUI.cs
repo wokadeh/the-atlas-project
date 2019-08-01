@@ -18,6 +18,7 @@ public class ProjectLoadUI : MonoBehaviour
     [SerializeField] private Image m_LoadProgressBar;
     [SerializeField] private TMP_Text m_LoadProgressBarText;
     [SerializeField] private Button m_LoadProjectButton;
+    [SerializeField] private GameObject m_ProjectScreen;
 
     // Start is called before the first frame update
     void Start()
@@ -38,6 +39,7 @@ public class ProjectLoadUI : MonoBehaviour
 
             // This is a little hackey but works for now
             m_TransferFunctionUIPanel.SetActive(false);
+            m_ProjectScreen.SetActive(false);
 
             this.StartCoroutine(LoadProjectCoroutine(projectFolderPath));
         }

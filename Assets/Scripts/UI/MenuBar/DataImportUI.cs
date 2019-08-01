@@ -17,6 +17,7 @@ public class DataImportUI : MonoBehaviour {
     [SerializeField] private GameObject m_ImportScreen;
     [SerializeField] private Image m_ImportProgressBar;
     [SerializeField] private TMP_Text m_ImportProgressBarText;
+    [SerializeField] private GameObject m_ProjectScreen;
 
     private void Start() {
         m_ImportDataButton.onClick.AddListener(ImportData);
