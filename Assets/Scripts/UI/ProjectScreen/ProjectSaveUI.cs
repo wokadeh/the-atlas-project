@@ -35,15 +35,15 @@ public class ProjectSaveUI : MonoBehaviour
         this.SaveProject(HOME_SAVE_DIR, true);
     }
 
-    private void SaveProject(string _projectFolderPathh, bool _saveOnlyXml)
+    private void SaveProject(string _projectFolderPath, bool _saveOnlyXml)
     {
-        Log.Info(this, " Selected folder is " + _projectFolderPathh);
+        Log.Info(this, " Selected folder is " + _projectFolderPath);
 
         // This is a little hackey but works for now
         m_TransferFunctionUIPanel.SetActive(false);
         m_ProjectScreen.SetActive(false);
 
-        this.StartCoroutine(SaveProjectCoroutine(_projectFolderPathh, false));
+        this.StartCoroutine(SaveProjectCoroutine(_projectFolderPath, _saveOnlyXml));
     }
 
     private void SaveAsProject()
