@@ -34,4 +34,7 @@ public struct Globals
 
     public const int TRANSFER_FUNTCTION_TEXTURE_WIDTH = 512;
     public const int TRANSFER_FUNTCTION_TEXTURE_HEIGHT = 2;
+
+    public const string CAMERA_ORBIT_TITLE = "Orbit";
+    public const string CAMERA_FIRSTP_TITLE = "First Person";
 }

@@ -153,8 +153,6 @@ public class MetaDataManager : IMetaDataManager {
                 if (varNodeName != null) {
                     variablesList.Add(new Variable() { Name = varNodeName });
 
-                    Log.Info(this, "Checking variable " + variablesList[0]);
-
                     // Create a new list for timestamps
                     timestampLisList.Add(varTimestampList);
                 } else
