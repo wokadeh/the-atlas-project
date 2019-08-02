@@ -55,17 +55,9 @@ sysinfo.txt
 crashlytics-build.properties
 
 
-
 *.tif
 
-
-
-Data/
-
-
-*.tif
-
-Data/
+*.nc
 
 *.xml
 Assets/Saved_Projects/
