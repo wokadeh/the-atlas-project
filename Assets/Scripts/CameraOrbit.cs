@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
+using Cursor = UnityEngine.Cursor;
 
 [AddComponentMenu("Camera-Control/Mouse Orbit with zoom")]
 
@@ -11,6 +13,8 @@ public class CameraOrbit : MonoBehaviour
     public float distance = 2.5f;
     public float xSpeed = 120.0f;
     public float ySpeed = 120.0f;
+
+    private Vector2 m_MousePosition;
 
     public int moveButton = 1;
 
@@ -59,6 +63,7 @@ public class CameraOrbit : MonoBehaviour
         if (Input.GetMouseButtonDown(moveButton) && !orbit)
         {
             orbit = true;
+            m_MousePosition = Input.mousePosition;
         }
 
         if (target && orbit)
@@ -70,6 +75,7 @@ public class CameraOrbit : MonoBehaviour
         if (Input.GetMouseButtonUp(moveButton))
         {
             orbit = false;
+            Cursor.SetCursor(null, m_MousePosition, CursorMode.Auto);
         }
 
     }
