@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.UI.Extensions;
 using UnityEngine.UI.Extensions.ColorPicker;
 
-public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
+public class TransferFunctionUI : MonoBehaviour, IPointerDownHandler {
     [SerializeField] private DataManager m_DataManager;
     [SerializeField] private VolumeRenderer m_VolumeRenderer;
     [SerializeField] private Color m_ControlPointStartColor;
@@ -28,7 +29,7 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
     }
 
     public void SelectPoint(TransferFunctionControlPointUI _controlPoint) {
-        DeselectPoint();
+        this.DeselectPoint();
 
         m_SelectedPoint = _controlPoint;
 
@@ -83,22 +84,15 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
         return point;
     }
 
-    public void OnPointerClick(PointerEventData _eventData) {
-        Log.Info(this, "Pointer click " + _eventData.button.ToString()) ;
+    public void OnPointerDown(PointerEventData _eventData) {
         if (m_DataManager.m_CurrentAsset != null) {
-            if (_eventData.button == PointerEventData.InputButton.Middle) {
+            if (_eventData.button == PointerEventData.InputButton.Right) {
                 // Nasty workaround, since right click is not recognized
                 this.CreatePoint(LimitPositionToPointInBox(_eventData.position), m_ControlPointStartColor, true);
-                Log.Info(this, "Create point ");
             }
             else if (_eventData.button == PointerEventData.InputButton.Left)
             {
                 this.DeselectPoint();
-            }
-            else
-            {
-                // @ToDo: Find out why right click is not recognized at all. Update?
-                Log.Info(this, "RIGHT CLICK WORKS AGAIN!!!!!! Switch create point to here");
             }
         }
     }
@@ -116,7 +110,7 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
 
         m_LineRenderer.gameObject.SetActive(true);
 
-        GenerateStartingPoints();
+        this.GenerateStartingPoints();
     }
 
     private void DeselectPoint() {
@@ -161,7 +155,7 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
 
     private void RedrawHistogram() {
         if (m_DataManager.m_CurrentAsset != null) {
-            var tex = GenerateTransferFunction().GetTexture();
+            var tex = this.GenerateTransferFunction().GetTexture();
 
             m_HistogramTexture.material.SetTexture("_HistTex", m_DataManager.m_CurrentAsset.HistogramTexture);
             m_HistogramTexture.material.SetTexture("_TFTex", tex);
