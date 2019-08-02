@@ -44,7 +44,7 @@ dataFolderName = dataSetVar + "_" + begin + "_to_" + end + "_" + repr(gridRes)
 for param in range(0, 4):
     for lvl in levelList:
 
-        folders = targetFolderName + "\\" + dataFolderName + "\\" + paramNameList[param]
+        folders = targetFolderName + "\\" + dataFolderName + "\\" + paramNameList[param]  + "\\"
         if not os.path.exists(folders): os.makedirs(folders) 
 
         targetVar = folders + "ecmwf_" + repr(gridRes) + "_" + paramNameList[param] + "_" + repr(lvl) + ".nc"
