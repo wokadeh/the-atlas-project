@@ -3,40 +3,39 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class TransferFunction {
-    public List<TFColourControlPoint> colourControlPoints = new List<TFColourControlPoint>();
-    public List<TFAlphaControlPoint> alphaControlPoints = new List<TFAlphaControlPoint>();
+    public List<TFColourControlPoint> m_ColourControlPoints = new List<TFColourControlPoint>();
+    public List<TFAlphaControlPoint> m_AlphaControlPoints = new List<TFAlphaControlPoint>();
 
-    public Texture2D histogramTexture = null;
+    public Texture2D m_HistogramTexture = null;
 
-    private Texture2D texture = null;
-    Color[] tfCols;
+    private Texture2D m_Texture = null;
+    Color[] m_TfCols;
 
-    private const int TEXTURE_WIDTH = 512;
-    private const int TEXTURE_HEIGHT = 2;
+
 
     public TransferFunction() {
-        texture = new Texture2D(TEXTURE_WIDTH, TEXTURE_HEIGHT, TextureFormat.RGBAFloat, false);
-        tfCols = new Color[TEXTURE_WIDTH * TEXTURE_HEIGHT];
+        m_Texture = new Texture2D(Globals.TRANSFER_FUNTCTION_TEXTURE_WIDTH, Globals.TRANSFER_FUNTCTION_TEXTURE_HEIGHT, TextureFormat.RGBAFloat, false);
+        m_TfCols = new Color[Globals.TRANSFER_FUNTCTION_TEXTURE_WIDTH * Globals.TRANSFER_FUNTCTION_TEXTURE_HEIGHT];
     }
 
     public void AddControlPoint(TFColourControlPoint ctrlPoint) {
-        colourControlPoints.Add(ctrlPoint);
+        m_ColourControlPoints.Add(ctrlPoint);
     }
 
     public void AddControlPoint(TFAlphaControlPoint ctrlPoint) {
-        alphaControlPoints.Add(ctrlPoint);
+        m_AlphaControlPoints.Add(ctrlPoint);
     }
 
     public Texture2D GetTexture() {
-        if (texture == null)
+        if (m_Texture == null)
             GenerateTexture();
 
-        return texture;
+        return m_Texture;
     }
 
     public void GenerateTexture() {
-        List<TFColourControlPoint> cols = new List<TFColourControlPoint>(colourControlPoints);
-        List<TFAlphaControlPoint> alphas = new List<TFAlphaControlPoint>(alphaControlPoints);
+        List<TFColourControlPoint> cols = new List<TFColourControlPoint>(m_ColourControlPoints);
+        List<TFAlphaControlPoint> alphas = new List<TFAlphaControlPoint>(m_AlphaControlPoints);
 
         // Sort lists of control points
         cols.Sort((a, b) => (a.dataValue.CompareTo(b.dataValue)));
@@ -59,8 +58,8 @@ public class TransferFunction {
         int iCurrColour = 0;
         int iCurrAlpha = 0;
 
-        for (int iX = 0; iX < TEXTURE_WIDTH; iX++) {
-            float t = iX / (float)(TEXTURE_WIDTH - 1);
+        for (int iX = 0; iX < Globals.TRANSFER_FUNTCTION_TEXTURE_WIDTH; iX++) {
+            float t = iX / (float)(Globals.TRANSFER_FUNTCTION_TEXTURE_WIDTH - 1);
             while (iCurrColour < numColours - 2 && cols[iCurrColour + 1].dataValue < t)
                 iCurrColour++;
             while (iCurrAlpha < numAlphas - 2 && alphas[iCurrAlpha + 1].dataValue < t)
@@ -77,13 +76,13 @@ public class TransferFunction {
             Color pixCol = rightCol.colourValue * tCol + leftCol.colourValue * (1.0f - tCol);
             pixCol.a = rightAlpha.alphaValue * tAlpha + leftAlpha.alphaValue * (1.0f - tAlpha);
 
-            for (int iY = 0; iY < TEXTURE_HEIGHT; iY++) {
-                tfCols[iX + iY * TEXTURE_WIDTH] = pixCol;
+            for (int iY = 0; iY < Globals.TRANSFER_FUNTCTION_TEXTURE_HEIGHT; iY++) {
+                m_TfCols[iX + iY * Globals.TRANSFER_FUNTCTION_TEXTURE_WIDTH] = pixCol;
             }
         }
 
-        texture.wrapMode = TextureWrapMode.Clamp;
-        texture.SetPixels(tfCols);
-        texture.Apply();
+        m_Texture.wrapMode = TextureWrapMode.Clamp;
+        m_Texture.SetPixels(m_TfCols);
+        m_Texture.Apply();
     }
 }

@@ -35,7 +35,6 @@ public class TimeStepDataAssetBuilder : ITimeStepDataAssetBuilder {
     public TimeStepDataAsset BuildTimestepDataAssetFromTexture(Texture3D _assetTex)
     {
         int depth = _assetTex.depth;
-        sddfgfhfghfghfhg
 
         // We need to fill the color buffer to create the histogram
         m_ColorBuffer3D = _assetTex.GetPixels();

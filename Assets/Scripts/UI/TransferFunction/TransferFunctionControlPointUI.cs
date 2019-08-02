@@ -24,10 +24,10 @@ public class TransferFunctionControlPointUI : MonoBehaviour, IPointerEnterHandle
         m_NormalColor = m_Image.color;
     }
 
-    public void Init(TransferFunctionUI transferFunctionUI, Color color, bool selected) {
-        m_TransferFunctionUI = transferFunctionUI;
-        Color = color;
-        if (selected) {
+    public void Init(TransferFunctionUI _transferFunctionUI, Color _color, bool _selected) {
+        m_TransferFunctionUI = _transferFunctionUI;
+        Color = _color;
+        if (_selected) {
             m_Selected = true;
             m_Image.color = m_SelectionColor;
         }
@@ -38,20 +38,23 @@ public class TransferFunctionControlPointUI : MonoBehaviour, IPointerEnterHandle
         m_Image.color = DetermineFallbackColor(Input.mousePosition);
     }
 
-    public void OnPointerEnter(PointerEventData eventData) {
+    public void OnPointerEnter(PointerEventData _eventData) {
         if (!m_Selected) {
             m_Image.color = m_HighlightColor;
         }
     }
 
-    public void OnPointerExit(PointerEventData eventData) {
+    public void OnPointerExit(PointerEventData _eventData) {
         if (!m_IsDragging && !m_Selected) {
             m_Image.color = m_NormalColor;
         }
     }
 
-    public void OnPointerDown(PointerEventData eventData) {
-        if (eventData.button == PointerEventData.InputButton.Left) {
+    // Works
+    public void OnPointerDown(PointerEventData _eventData) {
+        Log.Info(this, "Pointer down " + _eventData.button.ToString());
+        if (_eventData.button == PointerEventData.InputButton.Left) {
+            Log.Info(this, "Left select");
             // We do not want to select the same point twice
             if (!m_Selected) {
                 m_Selected = true;
@@ -60,18 +63,19 @@ public class TransferFunctionControlPointUI : MonoBehaviour, IPointerEnterHandle
 
                 m_TransferFunctionUI.SelectPoint(this);
             }
-        } else if (eventData.button == PointerEventData.InputButton.Right) {
+        } else if (_eventData.button == PointerEventData.InputButton.Right) {
+            Log.Info(this, "Right delete");
             m_TransferFunctionUI.DeletePoint(this);
         }
     }
 
-    public void OnBeginDrag(PointerEventData eventData) {
+    public void OnBeginDrag(PointerEventData _eventData) {
         m_IsDragging = true;
         m_RectTransform.SetAsLastSibling();
     }
 
-    public void OnDrag(PointerEventData eventData) {
-        m_RectTransform.anchoredPosition = m_TransferFunctionUI.LimitPositionToPointInBox(eventData.position);
+    public void OnDrag(PointerEventData _eventData) {
+        m_RectTransform.anchoredPosition = m_TransferFunctionUI.LimitPositionToPointInBox(_eventData.position);
         m_TransferFunctionUI.Redraw();
     }
 
@@ -79,10 +83,10 @@ public class TransferFunctionControlPointUI : MonoBehaviour, IPointerEnterHandle
         m_IsDragging = false;
     }
 
-    private Color DetermineFallbackColor(Vector3 position) {
+    private Color DetermineFallbackColor(Vector3 _position) {
         if (m_Selected) {
             return m_SelectionColor;
-        } else if (RectTransformUtility.RectangleContainsScreenPoint(m_RectTransform, position)) {
+        } else if (RectTransformUtility.RectangleContainsScreenPoint(m_RectTransform, _position)) {
             return m_HighlightColor;
         } else {
             return m_NormalColor;

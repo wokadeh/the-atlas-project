@@ -31,4 +31,7 @@ public struct Globals
     public const string EARTH_DATA_FRAME_TF_NODE_NAME_ATTRIBUTE = "tf_node";
 
     public const int HISTOGRAM_SAMPLES = 256;
+
+    public const int TRANSFER_FUNTCTION_TEXTURE_WIDTH = 512;
+    public const int TRANSFER_FUNTCTION_TEXTURE_HEIGHT = 2;
 }

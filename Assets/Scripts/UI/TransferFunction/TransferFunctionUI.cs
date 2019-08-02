@@ -27,25 +27,27 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
         m_DataManager.OnDataAssetChanged += asset => RedrawHistogram();
     }
 
-    public void SelectPoint(TransferFunctionControlPointUI point) {
+    public void SelectPoint(TransferFunctionControlPointUI _controlPoint) {
         DeselectPoint();
 
-        m_SelectedPoint = point;
+        m_SelectedPoint = _controlPoint;
 
         m_ColorPicker.gameObject.SetActive(true);
         m_ColorPicker.CurrentColor = m_SelectedPoint.Color;
     }
 
-    public void DeletePoint(TransferFunctionControlPointUI point) {
+    public void DeletePoint(TransferFunctionControlPointUI _controlPoint) {
         // If we are deleting the currently selected point, deselect it first
-        if (m_SelectedPoint == point) {
-            DeselectPoint();
+        if (m_SelectedPoint == _controlPoint)
+        {
+            
+            this.DeselectPoint();
         }
+        Log.Info(this, "Delete point");
+        Destroy(_controlPoint.gameObject);
+        m_ControlPoints.Remove(_controlPoint);
 
-        Destroy(point.gameObject);
-        m_ControlPoints.Remove(point);
-
-        Redraw();
+        this.Redraw();
     }
 
     public void Redraw() {
@@ -57,12 +59,12 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
         var s = m_ControlPoints.OrderBy(p => p.transform.localPosition.x);
         m_ControlPoints = s.ToList();
 
-        RedrawLines();
-        RedrawHistogram();
+        this.RedrawLines();
+        this.RedrawHistogram();
     }
 
-    public Vector2 LimitPositionToPointInBox(Vector2 position) {
-        Vector2 point = ConvertToLocalPointInBox(position);
+    public Vector2 LimitPositionToPointInBox(Vector2 _position) {
+        Vector2 point = ConvertToLocalPointInBox(_position);
         Vector3 min = m_BoxBounds.min;
         Vector3 max = m_BoxBounds.max;
 
@@ -81,12 +83,22 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
         return point;
     }
 
-    public void OnPointerClick(PointerEventData eventData) {
+    public void OnPointerClick(PointerEventData _eventData) {
+        Log.Info(this, "Pointer click " + _eventData.button.ToString()) ;
         if (m_DataManager.m_CurrentAsset != null) {
-            if (eventData.button == PointerEventData.InputButton.Right) {
-                CreatePoint(LimitPositionToPointInBox(eventData.position), m_ControlPointStartColor, true);
-            } else {
-                DeselectPoint();
+            if (_eventData.button == PointerEventData.InputButton.Middle) {
+                // Nasty workaround, since right click is not recognized
+                this.CreatePoint(LimitPositionToPointInBox(_eventData.position), m_ControlPointStartColor, true);
+                Log.Info(this, "Create point ");
+            }
+            else if (_eventData.button == PointerEventData.InputButton.Left)
+            {
+                this.DeselectPoint();
+            }
+            else
+            {
+                // @ToDo: Find out why right click is not recognized at all. Update?
+                Log.Info(this, "RIGHT CLICK WORKS AGAIN!!!!!! Switch create point to here");
             }
         }
     }
@@ -208,25 +220,27 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
 
         float x, y;
 
+        // @ToDo: Generate Colormaps
+
         // Blue
         x = Mathf.Lerp(xMin, xMax, 0.125f);
         y = Mathf.Lerp(yMin, yMax, 0.25f);
-        CreatePoint(new Vector2(x, y), Color.blue, false);
+        this.CreatePoint(new Vector2(x, y), Color.blue, false);
 
         // Green
         x = Mathf.Lerp(xMin, xMax, 0.375f);
         y = Mathf.Lerp(yMin, yMax, 0.5f);
-        CreatePoint(new Vector2(x, y), Color.green, false);
+        this.CreatePoint(new Vector2(x, y), Color.green, false);
 
         // Yellow
         x = Mathf.Lerp(xMin, xMax, 0.625f);
         y = Mathf.Lerp(yMin, yMax, 0.625f);
-        CreatePoint(new Vector2(x, y), Color.yellow, false);
+        this.CreatePoint(new Vector2(x, y), Color.yellow, false);
 
         // Red
         x = Mathf.Lerp(xMin, xMax, 0.875f);
         y = Mathf.Lerp(yMin, yMax, 0.75f);
-        CreatePoint(new Vector2(x, y), Color.red, false);
+        this.CreatePoint(new Vector2(x, y), Color.red, false);
     }
 
     private void OnColorPickerChanged(Color color) {
@@ -237,21 +251,21 @@ public class TransferFunctionUI : MonoBehaviour, IPointerClickHandler {
 
         m_SelectedPoint.Color = color;
 
-        RedrawHistogram();
+        this.RedrawHistogram();
     }
 
-    private void CreatePoint(Vector2 pointInBox, Color color, bool select) {
+    private void CreatePoint(Vector2 _pointInBox, Color _color, bool _select) {
         TransferFunctionControlPointUI point = Instantiate(m_ControlPointPrefab, transform);
-        point.GetComponent<RectTransform>().anchoredPosition = pointInBox;
+        point.GetComponent<RectTransform>().anchoredPosition = _pointInBox;
         point.name = $"Transferfunction_Control_Point";
-        point.Init(this, color, select);
+        point.Init(this, _color, _select);
 
         m_ControlPoints.Add(point);
 
-        Redraw();
+        this.Redraw();
 
-        if (select) {
-            SelectPoint(point);
+        if (_select) {
+            this.SelectPoint(point);
         }
     }
 
