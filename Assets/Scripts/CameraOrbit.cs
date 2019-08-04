@@ -1,10 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UIElements;
+﻿using UnityEngine;
 using Cursor = UnityEngine.Cursor;
 
-[AddComponentMenu("Camera-Control/Mouse Orbit with zoom")]
+[AddComponentMenu( "Camera-Control/Mouse Orbit with zoom" )]
 
 public class CameraOrbit : MonoBehaviour
 {
@@ -31,51 +28,51 @@ public class CameraOrbit : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        Vector3 angles = transform.eulerAngles;
-        x = angles.y;
-        y = angles.x;
+        Vector3 angles = this.transform.eulerAngles;
+        this.x = angles.y;
+        this.y = angles.x;
 
-        rigidbody = GetComponent<Rigidbody>();
+        this.rigidbody = this.GetComponent<Rigidbody>();
 
         // Make the rigid body not change rotation
-        if (rigidbody != null)
+        if (this.rigidbody != null)
         {
-            rigidbody.freezeRotation = true;
+            this.rigidbody.freezeRotation = true;
         }
     }
 
     void LateUpdate()
     {
 
-        Quaternion rotation = Quaternion.Euler(y, x, 0);
-        distance = Mathf.Clamp(distance - Input.GetAxis("Mouse ScrollWheel") * 1, distanceMin, distanceMax);
+        Quaternion rotation = Quaternion.Euler( this.y, this.x, 0 );
+        this.distance = Mathf.Clamp( this.distance - Input.GetAxis( "Mouse ScrollWheel" ) * 1, this.distanceMin, this.distanceMax );
         RaycastHit hit;
-        if (Physics.Linecast(target.position, transform.position, out hit))
+        if (Physics.Linecast( this.target.position, this.transform.position, out hit ))
         {
-            distance -= hit.distance;
+            this.distance -= hit.distance;
         }
-        Vector3 negDistance = new Vector3(0.0f, 0.0f, -distance);
-        Vector3 position = rotation * negDistance + target.position;
+        Vector3 negDistance = new Vector3( 0.0f, 0.0f, -this.distance );
+        Vector3 position = rotation * negDistance + this.target.position;
 
-        transform.rotation = rotation;
-        transform.position = position;
+        this.transform.rotation = rotation;
+        this.transform.position = position;
 
-        if (Input.GetMouseButtonDown(moveButton) && !orbit)
+        if (Input.GetMouseButtonDown( this.moveButton ) && !this.orbit)
         {
-            orbit = true;
-            m_MousePosition = Input.mousePosition;
-        }
-
-        if (target && orbit)
-        {
-            x += Input.GetAxis("Mouse X") * xSpeed * distance * 0.02f;
-            y -= Input.GetAxis("Mouse Y") * ySpeed * 0.02f;
+            this.orbit = true;
+            this.m_MousePosition = Input.mousePosition;
         }
 
-        if (Input.GetMouseButtonUp(moveButton))
+        if (this.target && this.orbit)
         {
-            orbit = false;
-            Cursor.SetCursor(null, m_MousePosition, CursorMode.Auto);
+            this.x += Input.GetAxis( "Mouse X" ) * this.xSpeed * this.distance * 0.02f;
+            this.y -= Input.GetAxis( "Mouse Y" ) * this.ySpeed * 0.02f;
+        }
+
+        if (Input.GetMouseButtonUp( this.moveButton ))
+        {
+            this.orbit = false;
+            Cursor.SetCursor( null, this.m_MousePosition, CursorMode.Auto );
         }
 
     }

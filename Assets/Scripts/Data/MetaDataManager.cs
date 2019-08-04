@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Xml;
 using UnityEngine;
 
-using System.Security.AccessControl;
-using System.IO;
-using Microsoft.Win32.SafeHandles;
-using System.Globalization;
+public class MetaDataManager : IMetaDataManager
+{
 
-public class MetaDataManager : IMetaDataManager {
-  
-    public class MetaData : IMetaData {
+    public class MetaData : IMetaData
+    {
         public string DataName { get; set; }
         public int BitDepth { get; set; }
         public int Width { get; set; }
@@ -24,7 +22,8 @@ public class MetaDataManager : IMetaDataManager {
         public IList<IList<TimeStepDataAsset>> Timestamps { get; set; }
     }
 
-    private class Variable : IVariable {
+    private class Variable : IVariable
+    {
         public string Name { get; set; }
     }
 
@@ -33,55 +32,76 @@ public class MetaDataManager : IMetaDataManager {
         public string DateTime { get; set; }
     }
 
+    public IMetaData SetMetaDataName( string _projectName, IMetaData _metaData )
+    {
+        MetaData newMetaData = new MetaData();
 
-    public void Write(string _projectFilePath, IMetaData _metaData, Dictionary<string, List<TimeStepDataAsset>> _dataAssets)
+        newMetaData.DataName = _projectName;
+
+        newMetaData.BitDepth = _metaData.BitDepth;
+        newMetaData.Width = _metaData.Width;
+        newMetaData.Height = _metaData.Height;
+        newMetaData.Levels = _metaData.Levels;
+        newMetaData.StartDateTimeNumber = _metaData.StartDateTimeNumber;
+        newMetaData.EndDateTimeNumber = _metaData.EndDateTimeNumber;
+        newMetaData.TimeInterval = _metaData.TimeInterval;
+
+        newMetaData.Variables = _metaData.Variables;
+        newMetaData.Timestamps = _metaData.Timestamps;
+
+        return newMetaData;
+    }
+
+    public void Write( string _projectFilePath, IMetaData _metaData, Dictionary<string, List<TimeStepDataAsset>> _dataAssets )
     {
         try
         {
             // Create root
             XmlDocument document = new XmlDocument();
-            document.CreateXmlDeclaration("1.0", "utf-8", "");
+            document.CreateXmlDeclaration( "1.0", "utf-8", "" );
+
+            
 
             //Create the root element and 
             //add it to the document.
-            document.AppendChild(document.CreateElement(_metaData.DataName));
+            document.AppendChild( document.CreateElement( _metaData.DataName ) );
             XmlElement root = document.DocumentElement;
 
             // Set main attributes
-            root.SetAttribute(Globals.BIT_DEPTH_ATTRIBUTE, _metaData.BitDepth.ToString());
-            root.SetAttribute(Globals.WIDTH_ATTRIBUTE, _metaData.Width.ToString());
-            root.SetAttribute(Globals.HEIGHT_ATTRIBUTE, _metaData.Height.ToString());
-            root.SetAttribute(Globals.LEVELS_ATTRIBUTE, _metaData.Levels.ToString());
-            root.SetAttribute(Globals.START_DATETIME_ATTRIBUTE, _metaData.StartDateTimeNumber.ToString());
-            root.SetAttribute(Globals.END_DATETIME_ATTRIBUTE, _metaData.EndDateTimeNumber.ToString());
-            root.SetAttribute(Globals.TIME_INTERVAL_ATTRIBUTE, _metaData.TimeInterval.ToString());
+            root.SetAttribute( Globals.BIT_DEPTH_ATTRIBUTE, _metaData.BitDepth.ToString() );
+            root.SetAttribute( Globals.WIDTH_ATTRIBUTE, _metaData.Width.ToString() );
+            root.SetAttribute( Globals.HEIGHT_ATTRIBUTE, _metaData.Height.ToString() );
+            root.SetAttribute( Globals.LEVELS_ATTRIBUTE, _metaData.Levels.ToString() );
+            root.SetAttribute( Globals.START_DATETIME_ATTRIBUTE, _metaData.StartDateTimeNumber.ToString() );
+            root.SetAttribute( Globals.END_DATETIME_ATTRIBUTE, _metaData.EndDateTimeNumber.ToString() );
+            root.SetAttribute( Globals.TIME_INTERVAL_ATTRIBUTE, _metaData.TimeInterval.ToString() );
 
             int j = 0;
             // Add node for each variable
-            foreach (Variable var in _metaData.Variables)
+            foreach ( Variable var in _metaData.Variables )
             {
-                XmlElement varNode = document.CreateElement(Globals.VARIABLE_ELEMENT);
-                varNode.SetAttribute(Globals.VARIABLE_NAME_ATTRIBUTE, var.Name);
-                root.AppendChild(varNode);
+                XmlElement varNode = document.CreateElement( Globals.VARIABLE_ELEMENT );
+                varNode.SetAttribute( Globals.VARIABLE_NAME_ATTRIBUTE, var.Name );
+                root.AppendChild( varNode );
 
                 int i = 0;
                 // Go through every element in the list of earthDataFrames for each variable
-                foreach (TimeStepDataAsset earthDataFrame in _dataAssets[var.Name])
+                foreach ( TimeStepDataAsset earthDataFrame in _dataAssets[ var.Name ] )
                 {
-                    XmlElement earthFrameDataNode = document.CreateElement(Globals.TIME_STAMP_DATA_ASSET_ELEMENT);
+                    XmlElement earthFrameDataNode = document.CreateElement( Globals.TIME_STAMP_DATA_ASSET_ELEMENT );
 
-                    string currentTimeStamp = _metaData.Timestamps[j][i].DateTime.ToString().Replace(',', '.');
+                    string currentTimeStamp = _metaData.Timestamps[ j ][ i ].DateTime.ToString().Replace( ',', '.' );
 
-                    Log.Info(this, "Save timestamp to XML: " + currentTimeStamp);
+                    Log.Info( this, "Save timestamp to XML: " + currentTimeStamp );
 
-                    earthFrameDataNode.SetAttribute(Globals.TIMESTAMP_DATETIME_ATTRIBUTE, currentTimeStamp);
+                    earthFrameDataNode.SetAttribute( Globals.TIMESTAMP_DATETIME_ATTRIBUTE, currentTimeStamp );
 
-                    earthFrameDataNode.SetAttribute(Globals.TIME_STAMP_DATA_ASSET_DIM_X_ATTRIBUTE, earthDataFrame.Dimensions.x.ToString());
-                    earthFrameDataNode.SetAttribute(Globals.TIME_STAMP_DATA_ASSET_DIM_Y_ATTRIBUTE, earthDataFrame.Dimensions.y.ToString());
-                    earthFrameDataNode.SetAttribute(Globals.TIME_STAMP_DATA_ASSET_DIM_Z_ATTRIBUTE, earthDataFrame.Dimensions.z.ToString());
+                    earthFrameDataNode.SetAttribute( Globals.TIME_STAMP_DATA_ASSET_DIM_X_ATTRIBUTE, earthDataFrame.Dimensions.x.ToString() );
+                    earthFrameDataNode.SetAttribute( Globals.TIME_STAMP_DATA_ASSET_DIM_Y_ATTRIBUTE, earthDataFrame.Dimensions.y.ToString() );
+                    earthFrameDataNode.SetAttribute( Globals.TIME_STAMP_DATA_ASSET_DIM_Z_ATTRIBUTE, earthDataFrame.Dimensions.z.ToString() );
 
 
-                    varNode.AppendChild(earthFrameDataNode);
+                    varNode.AppendChild( earthFrameDataNode );
                     i++;
                 }
                 // @TODO: Go through every node in the transfer functions for each variable
@@ -94,84 +114,87 @@ public class MetaDataManager : IMetaDataManager {
             settings.Indent = true;
 
             // Save the document to a file and auto-indent the output.
-            XmlWriter writer = XmlWriter.Create(_projectFilePath, settings);
+            XmlWriter writer = XmlWriter.Create( _projectFilePath, settings );
 
             document.PreserveWhitespace = true;
-            document.Save(writer);
+            document.Save( writer );
         }
-        catch (Exception e)
+        catch ( Exception e )
         {
-            Log.ThrowDataException(this, _projectFilePath, e);
+            Log.ThrowDataException( this, _projectFilePath, e );
         }
     }
 
-    public MetaData LoadProjectAttributes(XmlElement _root, MetaData _inputMetaData)
+    public MetaData LoadProjectAttributes( XmlElement _root, MetaData _inputMetaData )
     {
         _inputMetaData.DataName = _root.Name;
-        _inputMetaData.BitDepth = Utils.ReadIntegerAttribute(_root, Globals.BIT_DEPTH_ATTRIBUTE);
-        _inputMetaData.Width = Utils.ReadIntegerAttribute(_root, Globals.WIDTH_ATTRIBUTE);
-        _inputMetaData.Height = Utils.ReadIntegerAttribute(_root, Globals.HEIGHT_ATTRIBUTE);
-        _inputMetaData.Levels = Utils.ReadIntegerAttribute(_root, Globals.LEVELS_ATTRIBUTE);
-        _inputMetaData.StartDateTimeNumber = Utils.ReadFloatAttribute(_root, Globals.START_DATETIME_ATTRIBUTE);
-        _inputMetaData.EndDateTimeNumber = Utils.ReadFloatAttribute(_root, Globals.END_DATETIME_ATTRIBUTE);
-        _inputMetaData.TimeInterval = Utils.ReadIntegerAttribute(_root, Globals.TIME_INTERVAL_ATTRIBUTE);
+        _inputMetaData.BitDepth = Utils.ReadIntegerAttribute( _root, Globals.BIT_DEPTH_ATTRIBUTE );
+        _inputMetaData.Width = Utils.ReadIntegerAttribute( _root, Globals.WIDTH_ATTRIBUTE );
+        _inputMetaData.Height = Utils.ReadIntegerAttribute( _root, Globals.HEIGHT_ATTRIBUTE );
+        _inputMetaData.Levels = Utils.ReadIntegerAttribute( _root, Globals.LEVELS_ATTRIBUTE );
+        _inputMetaData.StartDateTimeNumber = Utils.ReadFloatAttribute( _root, Globals.START_DATETIME_ATTRIBUTE );
+        _inputMetaData.EndDateTimeNumber = Utils.ReadFloatAttribute( _root, Globals.END_DATETIME_ATTRIBUTE );
+        _inputMetaData.TimeInterval = Utils.ReadIntegerAttribute( _root, Globals.TIME_INTERVAL_ATTRIBUTE );
 
         return _inputMetaData;
     }
 
-    public IMetaData Load(string _projectFilePath)
+    public IMetaData Load( string _projectFilePath )
     {
-        return Import(_projectFilePath);
+        return this.Import( _projectFilePath );
     }
 
-    public IMetaData Import(string _projectFilePath)
+    public IMetaData Import( string _projectFilePath )
     {
         XmlDocument document = new XmlDocument();
-        document.Load(_projectFilePath);
+        document.Load( _projectFilePath );
         XmlElement root = document.DocumentElement;
 
         MetaData outputMetaData = new MetaData();
 
-        outputMetaData = this.LoadProjectAttributes(root, outputMetaData);
+        outputMetaData = this.LoadProjectAttributes( root, outputMetaData );
 
         // Read in variables
         IList<IVariable> variablesList = new List<IVariable>();
         IList<IList<TimeStepDataAsset>> timestampLisList = new List<IList<TimeStepDataAsset>>();
 
-        if (root.ChildNodes.Count == 0)
+        if ( root.ChildNodes.Count == 0 )
         {
-            Log.ThrowValueNotFoundException(this, root.Name + "is empty");
+            Log.ThrowValueNotFoundException( this, root.Name + "is empty" );
         }
-        foreach (XmlNode varNode in root.ChildNodes)
+        foreach ( XmlNode varNode in root.ChildNodes )
         {
-            if (varNode.Name == Globals.VARIABLE_ELEMENT) {
+            if ( varNode.Name == Globals.VARIABLE_ELEMENT )
+            {
                 // Read name from variable node
-                string varNodeName = varNode.Attributes[Globals.VARIABLE_NAME_ATTRIBUTE].Value;
+                string varNodeName = varNode.Attributes[ Globals.VARIABLE_NAME_ATTRIBUTE ].Value;
 
                 List<TimeStepDataAsset> varTimestampList = new List<TimeStepDataAsset>();
 
-                if (varNodeName != null) {
-                    variablesList.Add(new Variable() { Name = varNodeName });
+                if ( varNodeName != null )
+                {
+                    variablesList.Add( new Variable() { Name = varNodeName } );
 
                     // Create a new list for timestamps
-                    timestampLisList.Add(varTimestampList);
-                } else
+                    timestampLisList.Add( varTimestampList );
+                }
+                else
                 {
-                    Log.ThrowValueNotFoundException(this, Globals.VARIABLE_NAME_ATTRIBUTE);
+                    Log.ThrowValueNotFoundException( this, Globals.VARIABLE_NAME_ATTRIBUTE );
                 }
 
-                if (varNode.ChildNodes.Count == 0)
+                if ( varNode.ChildNodes.Count == 0 )
                 {
-                    Log.ThrowValueNotFoundException(this, varNode.Name);
+                    Log.ThrowValueNotFoundException( this, varNode.Name );
                 }
-                foreach (XmlNode timestampNode in varNode.ChildNodes)
+                foreach ( XmlNode timestampNode in varNode.ChildNodes )
                 {
-                    if (timestampNode.Name == Globals.TIMESTAMP_LIST_ELEMENT)
+                    if ( timestampNode.Name == Globals.TIMESTAMP_LIST_ELEMENT )
                     {
-                        TimeStepDataAsset newTimestamp = this.ReadTimeStamp(timestampNode);
+                        TimeStepDataAsset newTimestamp = this.ReadTimeStamp( timestampNode );
 
                         // fill last list with timestamps
-                        varTimestampList.Add(newTimestamp);
+                        varTimestampList.Add( newTimestamp );
                     }
                 }
             }
@@ -183,35 +206,37 @@ public class MetaDataManager : IMetaDataManager {
         return outputMetaData;
 
 
-        }
+    }
 
-    private TimeStepDataAsset ReadTimeStamp(XmlNode timestampNode)
+    private TimeStepDataAsset ReadTimeStamp( XmlNode timestampNode )
     {
         TimeStepDataAsset newTimestamp = new TimeStepDataAsset();
 
-        newTimestamp.DateTime = this.ReadAttribute(timestampNode, Globals.TIMESTAMP_DATETIME_ATTRIBUTE);
+        newTimestamp.DateTime = this.ReadAttribute( timestampNode, Globals.TIMESTAMP_DATETIME_ATTRIBUTE );
 
         Vector3 dim = new Vector3();
-        dim.x = this.ReadAttribute(timestampNode, Globals.TIME_STAMP_DATA_ASSET_DIM_X_ATTRIBUTE);
-        dim.y = this.ReadAttribute(timestampNode, Globals.TIME_STAMP_DATA_ASSET_DIM_Y_ATTRIBUTE);
-        dim.z = this.ReadAttribute(timestampNode, Globals.TIME_STAMP_DATA_ASSET_DIM_Z_ATTRIBUTE);
-    
+        dim.x = this.ReadAttribute( timestampNode, Globals.TIME_STAMP_DATA_ASSET_DIM_X_ATTRIBUTE );
+        dim.y = this.ReadAttribute( timestampNode, Globals.TIME_STAMP_DATA_ASSET_DIM_Y_ATTRIBUTE );
+        dim.z = this.ReadAttribute( timestampNode, Globals.TIME_STAMP_DATA_ASSET_DIM_Z_ATTRIBUTE );
+
         return newTimestamp;
     }
 
-    private float ReadAttribute(XmlNode node, string attributeName)
+    private float ReadAttribute( XmlNode node, string attributeName )
     {
         float value = 0;
         try
         {
-            string valueString = node.Attributes[attributeName].Value;
-            value = (float.Parse(valueString, CultureInfo.InvariantCulture.NumberFormat));
+            string valueString = node.Attributes[ attributeName ].Value;
+            value = ( float.Parse( valueString, CultureInfo.InvariantCulture.NumberFormat ) );
         }
-        catch (Exception e)
+        catch ( Exception )
         {
             // No problem!
         }
 
         return value;
     }
+
+
 }

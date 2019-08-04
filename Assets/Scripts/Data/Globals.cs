@@ -1,7 +1,12 @@
-﻿using System;
+﻿using SFB;
+using System;
 
 public struct Globals
 {
+    public static readonly ExtensionFilter[] XML_FILE_FILTER = new ExtensionFilter[] {
+        new ExtensionFilter("Xml File", "xml")
+    };
+
     public const string SAVE_PROJECTS_PATH = "Assets/Saved_Projects/";
     public const string TEXTURE3D_FOLDER_NAME = "texture3D/";
     public const string TEXTURE3D_PREFEX = "tex3d_";

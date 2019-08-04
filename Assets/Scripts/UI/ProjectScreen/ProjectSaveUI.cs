@@ -1,17 +1,13 @@
-﻿using System;
+﻿using SFB;
+using System;
 using System.Collections;
+using System.IO;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using SFB;
-using TMPro;
-using System.IO;
 
 public class ProjectSaveUI : MonoBehaviour
 {
-    private static readonly ExtensionFilter[] FILE_FILTER = new ExtensionFilter[] {
-        new ExtensionFilter("Xml File", "xml")
-    };
-
     [SerializeField] private DataManager m_DataManager;
     [SerializeField] private GameObject m_TransferFunctionUIPanel;
     [SerializeField] private GameObject m_SaveScreen;
@@ -21,60 +17,59 @@ public class ProjectSaveUI : MonoBehaviour
     [SerializeField] private Button m_SaveProjectAsButton;
     [SerializeField] private GameObject m_ProjectScreen;
 
-    private string HOME_SAVE_DIR = Directory.GetCurrentDirectory() + "/" + Globals.SAVE_PROJECTS_PATH;
+    private string m_DefaultProjectDir = Directory.GetCurrentDirectory() + "/" + Globals.SAVE_PROJECTS_PATH;
 
     // Start is called before the first frame update
     void Start()
     {
-        m_SaveProjectAsButton.onClick.AddListener(SaveAsProject);
-        m_SaveProjectButton.onClick.AddListener(SaveProject);
+        m_SaveProjectAsButton.onClick.AddListener( this.SaveAsProject );
+        m_SaveProjectButton.onClick.AddListener( this.SaveProject );
     }
 
     private void SaveProject()
     {
-        this.SaveProject(HOME_SAVE_DIR, true);
+        this.SaveProject( m_DataManager.m_MetaData.DataName, m_DefaultProjectDir, true );
     }
 
-    private void SaveProject(string _projectFolderPath, bool _saveOnlyXml)
+    private void SaveProject( string _projectFileName, string _projectFolderPath, bool _saveOnlyXml )
     {
-        Log.Info(this, " Selected folder is " + _projectFolderPath);
+        Log.Info( this, " Selected folder is " + _projectFolderPath );
 
         // This is a little hackey but works for now
-        m_TransferFunctionUIPanel.SetActive(false);
-        m_ProjectScreen.SetActive(false);
+        m_TransferFunctionUIPanel.SetActive( false );
+        m_ProjectScreen.SetActive( false );
 
-        this.StartCoroutine(SaveProjectCoroutine(_projectFolderPath, _saveOnlyXml));
+        this.StartCoroutine( this.SaveProjectCoroutine( _projectFileName, _projectFolderPath, _saveOnlyXml ) );
     }
 
     private void SaveAsProject()
     {
-        string[] folders = StandaloneFileBrowser.OpenFolderPanel("Save project at...", HOME_SAVE_DIR, false);
+        string file = StandaloneFileBrowser.SaveFilePanel( "Save project as...", m_DefaultProjectDir, m_DataManager.m_MetaData.DataName, Globals.XML_FILE_FILTER );
+
+        file = Path.GetFileNameWithoutExtension( file );
 
         // Only continue, if one folder was selected
-        if(folders.Length > 0)
-        {
-            string projectFolderPath = folders[0] + "/";
-
-            this.SaveProject(projectFolderPath, false);
-        }
+        this.SaveProject( file, m_DefaultProjectDir, false );
     }
 
-    private IEnumerator SaveProjectCoroutine(string _projectFolderPath, bool _saveOnlyXml)
+    private IEnumerator SaveProjectCoroutine( string _projectFileName, string _projectFolderPath, bool _saveOnlyXml )
     {
         m_SaveProgressBar.fillAmount = 0;
         m_SaveProgressBarText.text = "0 %";
-        m_SaveScreen.SetActive(true);
+        m_SaveScreen.SetActive( true );
 
         // We are waiting for two frames so that unity has enough time to redraw the ui
         // which apparently it needs or otherwise the positions are off...
         yield return null;
         yield return null;
 
-        m_DataManager.SaveProject(_projectFolderPath, _saveOnlyXml, new Progress<float>(progress => {
+        m_DataManager.SaveProject( _projectFileName, _projectFolderPath, _saveOnlyXml, new Progress<float>( progress =>
+        {
             m_SaveProgressBar.fillAmount = progress;
-            m_SaveProgressBarText.text = $"{(progress * 100).ToString("0")} %";
-        }), () => {
-            m_SaveScreen.SetActive(false);
-        });
+            m_SaveProgressBarText.text = $"{( progress * 100 ).ToString( "0" )} %";
+        } ), () =>
+        {
+            m_SaveScreen.SetActive( false );
+        } );
     }
 }

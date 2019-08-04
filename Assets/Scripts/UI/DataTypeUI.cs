@@ -1,60 +1,73 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
-public class DataTypeUI : MonoBehaviour {
+public class DataTypeUI : MonoBehaviour
+{
     [SerializeField] private DataManager m_DataManager;
     [SerializeField] private Toggle m_DataTypeTogglePrefab;
 
     private bool m_Initialized;
 
-    private void Start() {
-        
-        Initialize();
+    private void Start()
+    {
+
+        this.Initialize();
     }
 
-    private void OnNewImport() {
+    private void OnNewImport()
+    {
         // Clean up any old toggles
-        for (int i = 0; i < transform.childCount; i++) {
-            Destroy(transform.GetChild(i).gameObject);
+        for (int i = 0; i < this.transform.childCount; i++)
+        {
+            Destroy( this.transform.GetChild( i ).gameObject );
         }
 
         // Create toggles for all variables
-        foreach (IVariable variable in m_DataManager.m_MetaData.Variables) {
+        foreach (IVariable variable in this.m_DataManager.m_MetaData.Variables)
+        {
             string name = variable.Name;
-            Toggle toggle = Instantiate(m_DataTypeTogglePrefab, transform);
-            toggle.isOn = name == m_DataManager.m_CurrentVariable;
+            Toggle toggle = Instantiate( this.m_DataTypeTogglePrefab, this.transform );
+            toggle.isOn = name == this.m_DataManager.m_CurrentVariable;
 
-            TMP_Text label = toggle.transform.Find("Label").GetComponent<TMP_Text>();
+            TMP_Text label = toggle.transform.Find( "Label" ).GetComponent<TMP_Text>();
             label.text = name;
 
-            toggle.onValueChanged.AddListener(isOn => {
-                if (isOn) {
-                    m_DataManager.SetCurrentVariable(name);
-                    Toggle[] toggles = transform.GetComponentsInChildren<Toggle>();
-                    if (toggles.Length > 1) {
-                        foreach (Toggle t in toggles) {
-                            if (t != toggle) {
+            toggle.onValueChanged.AddListener( isOn =>
+            {
+                if (isOn)
+                {
+                    this.m_DataManager.SetCurrentVariable( name );
+                    Toggle[] toggles = this.transform.GetComponentsInChildren<Toggle>();
+                    if (toggles.Length > 1)
+                    {
+                        foreach (Toggle t in toggles)
+                        {
+                            if (t != toggle)
+                            {
                                 t.isOn = false;
                             }
                         }
                     }
                 }
-            });
+            } );
         }
     }
 
-    private void Initialize() {
-        if (m_Initialized) {
+    private void Initialize()
+    {
+        if (this.m_Initialized)
+        {
             return;
         }
 
-        m_DataManager.OnNewImport += OnNewImport;
+        this.m_DataManager.OnNewImport += this.OnNewImport;
 
-        if (m_DataManager.m_CurrentAsset != null) {
-            OnNewImport();
+        if (this.m_DataManager.m_CurrentAsset != null)
+        {
+            this.OnNewImport();
         }
 
-        m_Initialized = true;
+        this.m_Initialized = true;
     }
 }
