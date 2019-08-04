@@ -45,7 +45,7 @@ Material:
     - _SliceAxis3Min: 0
     - _SphereRadius: 0.5
     - _Steps: 1024
-    - _StretchPower: 1.5
+    - _StretchPower: 1.93
     m_Colors:
     - _AltitudeBounds: {r: 0.9, g: 1, b: 0, a: 0}
     - _Axis: {r: 1, g: 3, b: 2, a: 1}
