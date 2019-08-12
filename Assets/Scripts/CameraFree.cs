@@ -15,6 +15,8 @@
 /// </summary>
 public class CameraFree : MonoBehaviour
 {
+    [SerializeField] private GameObject m_DataTypeTogglePanel;
+    [SerializeField] private GameObject m_CameraModeTogglePanel;
 
     public float movementSpeed = 0.5f;
     public float fastMovementSpeed = 1f;
@@ -57,7 +59,13 @@ public class CameraFree : MonoBehaviour
         {
             transform.position = transform.position + (-transform.up * movementSpeed * Time.deltaTime);
         }
-        
+
+        if ( Input.anyKey )
+        {
+            m_DataTypeTogglePanel.SetActive( false );
+            m_CameraModeTogglePanel.SetActive( false );
+        }
+
         if (looking)
         {
             float newRotationX = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * freeLookSensitivity;
