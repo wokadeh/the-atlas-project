@@ -62,7 +62,6 @@ public class ProjectLoadUI : MonoBehaviour
         m_DataManager.LoadProject(_projectFolderPath, Utils.CreateProgressBarProgress(m_LoadProgressBar, m_LoadProgressBarText, m_LoadScreen), () => {
             m_LoadScreen.SetActive(false);
             m_SaveProjectButton.interactable = true;
-            m_SaveProjectAsButton.interactable = true;
             m_VolumeRenderer.gameObject.SetActive(true);
         }); ;
     }

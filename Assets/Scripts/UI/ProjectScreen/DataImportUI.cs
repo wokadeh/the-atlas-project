@@ -54,7 +54,7 @@ public class DataImportUI : MonoBehaviour {
             m_ImportProgressBarText.text = $"{(progress * 100).ToString("0")} %";
         }), () => {
             m_ImportScreen.SetActive(false);
-            m_SaveProjectButton.interactable = true;
+            m_SaveProjectButton.interactable = false;
             m_SaveProjectAsButton.interactable = true;
             m_VolumeRenderer.gameObject.SetActive(true);
         });

@@ -69,6 +69,8 @@ public class ProjectSaveUI : MonoBehaviour
             m_SaveProgressBarText.text = $"{( progress * 100 ).ToString( "0" )} %";
         } ), () =>
         {
+            m_SaveProjectButton.interactable = true;
+            m_SaveProjectAsButton.interactable = false;
             m_SaveScreen.SetActive( false );
         } );
     }

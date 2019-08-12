@@ -123,25 +123,29 @@ public class DataManager : MonoBehaviour
 
     private IEnumerator CreateAssets( IProgress<float> _progress )
     {
+
         for ( int varIndex = 0; varIndex < this.m_MetaData.Variables.Count; varIndex++ )
         {
-            IVariable variable = this.m_MetaData.Variables[ varIndex ];
 
-            string variablePath = Path.Combine( Globals.SAVE_PROJECTS_PATH, this.m_MetaData.DataName, variable.Name );
+                IVariable variable = this.m_MetaData.Variables[ varIndex ];
 
-            // Temperature/texture3D
-            if ( !Directory.Exists( variablePath ) )
-            {
-                Directory.CreateDirectory( variablePath );
+                string variablePath = Path.Combine( Globals.SAVE_PROJECTS_PATH, this.m_MetaData.DataName, variable.Name );
+
+                Log.Warn( this, "Save assets to: " + variablePath );
+
+                // Temperature/texture3D
+                if ( !Directory.Exists( variablePath ) )
+                {
+                    Directory.CreateDirectory( variablePath );
+                }
+
+                yield return this.StartCoroutine( this.SaveVariableRoutine( variable, variablePath, varIndex, new Progress<float>( value =>
+                {
+                    // Do overall progress report
+                    float progression = varIndex / ( float ) this.m_MetaData.Variables.Count;
+                    _progress.Report( progression + ( value / this.m_MetaData.Variables.Count ) );
+                } ) ) );
             }
-
-            yield return this.StartCoroutine( this.SaveVariableRoutine( variable, variablePath, varIndex, new Progress<float>( value =>
-              {
-                  // Do overall progress report
-                  float progression = varIndex / ( float ) this.m_MetaData.Variables.Count;
-                  _progress.Report( progression + ( value / this.m_MetaData.Variables.Count ) );
-              } ) ) );
-        }
     }
 
     private IEnumerator ImportDataCoroutine( string _projectFilePath, IProgress<float> _progress, Action _callback )
@@ -281,10 +285,14 @@ public class DataManager : MonoBehaviour
         foreach ( TimeStepDataAsset asset in m_DataAssets[ _variable.Name ] )
         {
             string dateTimeString = this.m_MetaData.Timestamps[ varIndex ][ timestampIndex ].DateTime.ToString().Replace( ',', '.' );
-            string assetName = Globals.TEXTURE3D_PREFEX + _variable.Name + "_" + dateTimeString;
+            string assetName = Globals.TEXTURE3D_PREFEX + m_MetaData.DataName + "_" + _variable.Name + "_" + dateTimeString;
             string assetPath = textureAssetPath + "/";
 
-            AssetDatabase.CreateAsset( asset.DataTexture, assetPath + assetName + ".asset" );
+            string assetCompleteName = assetPath + assetName + ".asset";
+
+            Log.Info( this, "Create asset " + assetCompleteName );
+
+            AssetDatabase.CreateAsset( asset.DataTexture, assetCompleteName );
 
             // Report progress
             float progression = ( timestampIndex + 1 ) / ( float ) m_DataAssets.Count;
