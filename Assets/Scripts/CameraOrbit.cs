@@ -7,7 +7,7 @@ public class CameraOrbit : MonoBehaviour
     [SerializeField] private GameObject m_DataTypeTogglePanel;
     [SerializeField] private GameObject m_CameraModeTogglePanel;
 
-    public Transform m_Target;
+    public Transform m_VolumeRenderer;
     public float m_Distance = 2.5f;
     public float m_XSpeed = 120.0f;
     public float m_YSpeed = 120.0f;
@@ -46,12 +46,12 @@ public class CameraOrbit : MonoBehaviour
         Quaternion rotation = Quaternion.Euler( m_YPos, m_XPos, 0 );
         m_Distance = Mathf.Clamp( m_Distance - Input.GetAxis( "Mouse ScrollWheel" ) * 1, m_DistanceMin, m_DistanceMax );
         RaycastHit hit;
-        if ( Physics.Linecast( m_Target.position, this.transform.position, out hit ) )
+        if ( Physics.Linecast( m_VolumeRenderer.position, this.transform.position, out hit ) )
         {
             m_Distance -= hit.distance;
         }
         Vector3 negDistance = new Vector3( 0.0f, 0.0f, -m_Distance );
-        Vector3 position = rotation * negDistance + m_Target.position;
+        Vector3 position = rotation * negDistance + m_VolumeRenderer.position;
 
         this.transform.rotation = rotation;
         this.transform.position = position;
@@ -59,9 +59,12 @@ public class CameraOrbit : MonoBehaviour
         if ( Input.GetMouseButtonDown( m_MoveButton ) && !orbit )
         {
             orbit = true;
+
+            m_DataTypeTogglePanel.SetActive( false );
+            m_CameraModeTogglePanel.SetActive( false );
         }
 
-        if ( m_Target && orbit )
+        if ( m_VolumeRenderer && orbit )
         {
             m_XPos += Input.GetAxis( "Mouse X" ) * m_XSpeed * m_Distance * 0.02f;
             m_YPos -= Input.GetAxis( "Mouse Y" ) * m_YSpeed * 0.02f;
