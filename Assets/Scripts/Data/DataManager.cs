@@ -371,5 +371,8 @@ public class DataManager : MonoBehaviour
         yield return null;
     }
 
-
+    public void DisableVolumeRenderer()
+    {
+        m_VolumeRenderer.Disable();
+    }
 }

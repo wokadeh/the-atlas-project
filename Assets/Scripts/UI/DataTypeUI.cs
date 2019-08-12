@@ -23,6 +23,8 @@ public class DataTypeUI : MonoBehaviour
             Destroy( this.transform.GetChild( i ).gameObject );
         }
 
+        
+
         // Create toggles for all variables
         foreach (IVariable variable in this.m_DataManager.m_MetaData.Variables)
         {
@@ -35,21 +37,41 @@ public class DataTypeUI : MonoBehaviour
 
             toggle.onValueChanged.AddListener( isOn =>
             {
-                if (isOn)
+                if ( isOn )
                 {
                     this.m_DataManager.SetCurrentVariable( name );
                     Toggle[] toggles = this.transform.GetComponentsInChildren<Toggle>();
-                    if (toggles.Length > 1)
+                    if ( toggles.Length > 1 )
                     {
-                        foreach (Toggle t in toggles)
+                        foreach ( Toggle t in toggles )
                         {
-                            if (t != toggle)
+                            if ( t != toggle )
                             {
                                 t.isOn = false;
                             }
+                            
                         }
                     }
                 }
+                else
+                {
+                    Toggle[] toggles = this.transform.GetComponentsInChildren<Toggle>();
+                    bool isOneToggleOn = false;
+
+                    foreach ( Toggle t in toggles )
+                    {
+                        if ( t.isOn == true )
+                        {
+                            isOneToggleOn = true;
+                        }
+                    }
+                    if ( isOneToggleOn == false )
+                    {
+                        m_DataManager.DisableVolumeRenderer();
+                    }
+                }
+
+
             } );
         }
     }
