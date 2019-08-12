@@ -20,8 +20,9 @@ public class CameraModeUI : MonoBehaviour
 
         this.m_CameraModeList = new List<string>();
 
-        this.m_CameraModeList.Add( Globals.CAMERA_ORBIT_TITLE );
         this.m_CameraModeList.Add( Globals.CAMERA_FIRSTP_TITLE );
+        this.m_CameraModeList.Add( Globals.CAMERA_ORBIT_TITLE );
+
 
         int index = 0;
 

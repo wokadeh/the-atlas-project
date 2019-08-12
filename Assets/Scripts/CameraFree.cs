@@ -33,38 +33,52 @@ public class CameraFree : MonoBehaviour
         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
         {
             transform.position = transform.position + (-transform.right * movementSpeed * Time.deltaTime);
+
+            m_DataTypeTogglePanel.SetActive( false );
+            m_CameraModeTogglePanel.SetActive( false );
         }
 
         if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
         {
             transform.position = transform.position + (transform.right * movementSpeed * Time.deltaTime);
+
+            m_DataTypeTogglePanel.SetActive( false );
+            m_CameraModeTogglePanel.SetActive( false );
         }
 
         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
         {
             transform.position = transform.position + (transform.forward * movementSpeed * Time.deltaTime);
+
+            m_DataTypeTogglePanel.SetActive( false );
+            m_CameraModeTogglePanel.SetActive( false );
         }
 
         if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
         {
             transform.position = transform.position + (-transform.forward * movementSpeed * Time.deltaTime);
+
+            m_DataTypeTogglePanel.SetActive( false );
+            m_CameraModeTogglePanel.SetActive( false );
         }
 
         if (Input.GetKey(KeyCode.Q))
         {
             transform.position = transform.position + (transform.up * movementSpeed * Time.deltaTime);
+
+            m_DataTypeTogglePanel.SetActive( false );
+            m_CameraModeTogglePanel.SetActive( false );
         }
 
         if (Input.GetKey(KeyCode.E))
         {
             transform.position = transform.position + (-transform.up * movementSpeed * Time.deltaTime);
-        }
 
-        if ( Input.anyKey )
-        {
             m_DataTypeTogglePanel.SetActive( false );
             m_CameraModeTogglePanel.SetActive( false );
+
         }
+
 
         if (looking)
         {
@@ -83,10 +97,16 @@ public class CameraFree : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Mouse1))
         {
             StartLooking();
+
+            m_DataTypeTogglePanel.SetActive( false );
+            m_CameraModeTogglePanel.SetActive( false );
         }
         else if (Input.GetKeyUp(KeyCode.Mouse1))
         {
             StopLooking();
+
+            m_DataTypeTogglePanel.SetActive( false );
+            m_CameraModeTogglePanel.SetActive( false );
         }
     }
 
