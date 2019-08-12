@@ -61,9 +61,4 @@ public class CameraModeUI : MonoBehaviour
             index++;
         }
     }
-
-    private void Awake()
-    {
-        this.m_DataTypeTogglePanel.SetActive( false );
-    }
 }

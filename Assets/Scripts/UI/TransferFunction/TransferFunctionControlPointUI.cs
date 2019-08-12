@@ -61,7 +61,7 @@ public class TransferFunctionControlPointUI : MonoBehaviour, IPointerEnterHandle
 
                 m_TransferFunctionUI.SelectPoint(this);
             }
-        } else if (_eventData.button == PointerEventData.InputButton.Middle) {
+        } else if (_eventData.button == PointerEventData.InputButton.Right) {
             m_TransferFunctionUI.DeletePoint(this);
         }
     }

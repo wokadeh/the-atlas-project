@@ -6026,7 +6026,6 @@ MonoBehaviour:
   m_DataManager: {fileID: 631215805}
   m_DataTypeTogglePrefab: {fileID: 7051726273880053243, guid: d4e5cb8c5a171014581182ade828df91,
     type: 3}
-  m_DataTypeTogglePanel: {fileID: 1521054917}
 --- !u!114 &816077034
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13956,13 +13955,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f526714d418bdf94791874d53dd11c43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 1023572785}
-  distance: 5
-  xSpeed: 120
-  ySpeed: 120
-  moveButton: 1
-  distanceMin: 0.5
-  distanceMax: 15
+  m_DataTypeTogglePanel: {fileID: 816077028}
+  m_CameraModeTogglePanel: {fileID: 1521054917}
+  m_Target: {fileID: 0}
+  m_Distance: 2.5
+  m_XSpeed: 120
+  m_YSpeed: 120
+  m_MoveButton: 1
+  m_DistanceMin: 0.5
+  m_DistanceMax: 5
 --- !u!114 &1679480392
 MonoBehaviour:
   m_ObjectHideFlags: 0
