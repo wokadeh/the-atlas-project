@@ -169,6 +169,8 @@ public class DataManager : MonoBehaviour
         IDataLoader tiffLoader = new DataLoaderFromTIFFs( metaData.Width, metaData.Height, metaData.Levels );
         ITimeStepDataAssetBuilder timeAssetBuilder = new TimeStepDataAssetBuilder( metaData.Width, metaData.Height, metaData.Levels );
 
+        Log.Info(this, "Found " + metaData.Variables.Count + " variables");
+
         for ( int i = 0; i < metaData.Variables.Count; i++ )
         {
             IVariable variable = metaData.Variables[ i ];
@@ -177,6 +179,8 @@ public class DataManager : MonoBehaviour
             m_DataAssets[ variable.Name ] = new List<TimeStepDataAsset>();
 
             string folder = Path.Combine( Path.GetDirectoryName( _projectFilePath ), variable.Name.ToLower() );
+            Log.Info( this, "Create folders and files for variable " + variable.Name );
+
             if ( Directory.Exists( folder ) )
             {
                 yield return this.StartCoroutine( this.ImportVariableRoutine( tiffLoader, timeAssetBuilder, folder, m_DataAssets[ variable.Name ], bitDepth, new Progress<float>( value =>
@@ -294,10 +298,11 @@ public class DataManager : MonoBehaviour
 
             AssetDatabase.CreateAsset( asset.DataTexture, assetCompleteName );
 
+            timestampIndex++;
             // Report progress
             float progression = ( timestampIndex + 1 ) / ( float ) m_DataAssets.Count;
             _progress.Report( progression );
-            timestampIndex++;
+            
 
             yield return null;
         }
@@ -334,7 +339,7 @@ public class DataManager : MonoBehaviour
                 assetFileIndex++;
 
                 // Report progress
-                float progression = ( assetFileIndex ) / ( float ) assets.Length;
+                float progression = ( assetFileIndex + 1 ) / ( float ) assets.Length;
                 _progress.Report( progression );
                 yield return null;
             }
@@ -349,17 +354,16 @@ public class DataManager : MonoBehaviour
         // We assume every directory is a time stamp which contains the level tiffs
         string[] directories = Directory.GetDirectories( _projectFolder );
 
+        Log.Info( this, "Start variable importing routine" );
+
         for ( int i = 0; i < directories.Length; i++ )
         {
             string directory = directories[ i ];
 
-            TimeStepDataAsset asset;
-            switch ( _bitDepth )
-            {
-                case Utils.BitDepth.Depth8: asset = _timestepDataAssetBuilder.BuildTimestepDataAssetFromData( _loader.Load8Bit( directory ) ); break;
-                case Utils.BitDepth.Depth16: asset = _timestepDataAssetBuilder.Build16Bit( _loader.Load16Bit( directory ) ); break;
-                default: yield break;
-            }
+            Log.Info( this, "Creating asset from image from " + directory );
+
+            TimeStepDataAsset asset = _timestepDataAssetBuilder.BuildTimestepDataAssetFromData( _loader.ImportImageFiles( directory ) );
+
             _timestepDataAssetList.Add( asset );
 
             // Report progress
