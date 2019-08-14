@@ -2,6 +2,7 @@
 // adapted from a Cg example by Nvidia
 // http://developer.download.nvidia.com/SDK/10/opengl/samples.html
 // Gilles Ferrand, University of Manitoba / RIKEN, 2016–2017
+// https://github.com/gillesferrand/Unity-RayTracing
 
 Shader "Custom/Ray Casting" {
 	

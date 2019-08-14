@@ -8,19 +8,20 @@ using UnityEngine;
 
 public class DataManager : MonoBehaviour
 {
-
-
+    [SerializeField] private CameraModeUI m_CameraModeUI;
+    [SerializeField] private DataTypeUI m_DataTypeUI;
     [SerializeField] private VolumeRenderer m_VolumeRenderer;
     [SerializeField] private TransferFunctionUI m_TransferFunctionUI;
+    [SerializeField] private TimelineUI m_TimelineUI;
 
     private Dictionary<string, List<TimeStepDataAsset>> m_DataAssets;
-    public IReadOnlyList<TimeStepDataAsset> DataAssets => m_DataAssets[ this.m_CurrentVariable ];
+    public IReadOnlyList<TimeStepDataAsset> CurrentDataAssets => m_DataAssets[ CurrentVariable ];
 
     public event Action OnNewImport;
     public event Action<TimeStepDataAsset> OnDataAssetChanged;
 
     public IMetaData m_MetaData { get; private set; }
-    public string m_CurrentVariable { get; private set; }
+    public string CurrentVariable { get; private set; }
     public TimeStepDataAsset m_CurrentAsset { get; private set; }
     private IMetaDataManager m_MetaDataManager;
     private IDataLoader m_DataLoder;
@@ -34,9 +35,12 @@ public class DataManager : MonoBehaviour
     {
         m_MetaDataManager = new MetaDataManager();
         m_DataAssets = new Dictionary<string, List<TimeStepDataAsset>>();
-        this.m_CurrentAsset = null;
-        this.m_CurrentVariable = "";
-        this.m_MetaData = null;
+        CurrentVariable = "";
+        m_MetaData = null;
+
+        m_TimelineUI.Show( false );
+        m_CameraModeUI.Show( false );
+        m_DataTypeUI.Show( false );
     }
 
     public void ImportData( string _projectFilePath, IProgress<float> _progress, Action _callback )
@@ -56,17 +60,17 @@ public class DataManager : MonoBehaviour
         this.StartCoroutine( this.LoadProjectCoroutine( _projectFilePath, _progress, _callback ) );
     }
 
-    public void SetCurrentAsset( TimeStepDataAsset _earthDataFrame )
+    public void SetCurrentAsset( TimeStepDataAsset _timeStepDataAsset )
     {
-        this.m_CurrentAsset = _earthDataFrame;
-        OnDataAssetChanged?.Invoke( _earthDataFrame );
+        m_CurrentAsset = _timeStepDataAsset;
+        OnDataAssetChanged?.Invoke( _timeStepDataAsset );
     }
 
     public void SetCurrentVariable( string _variable )
     {
-        this.m_CurrentVariable = _variable;
+        this.CurrentVariable = _variable;
 
-        this.SetCurrentAsset( this.DataAssets.First() );
+        this.SetCurrentAsset( this.CurrentDataAssets.First() );
 
         // Set new data
         m_VolumeRenderer.SetData( this.m_CurrentAsset );
@@ -89,11 +93,7 @@ public class DataManager : MonoBehaviour
                 }
                 string filePath = Path.Combine( projectFileAndFolderPath, _projectFileName + ".xml" );
 
-                Log.Info( this, "MetaData name is " + m_MetaData.DataName );
-
-                m_MetaData = m_MetaDataManager.SetMetaDataName( _projectFileName, m_MetaData );
-
-                Log.Info( this, "MetaData name is " + m_MetaData.DataName );
+                this.m_MetaData = m_MetaDataManager.SetMetaDataName( _projectFileName, this.m_MetaData );
 
                 m_MetaDataManager.Write( filePath, this.m_MetaData, m_DataAssets );
 
@@ -127,25 +127,25 @@ public class DataManager : MonoBehaviour
         for ( int varIndex = 0; varIndex < this.m_MetaData.Variables.Count; varIndex++ )
         {
 
-                IVariable variable = this.m_MetaData.Variables[ varIndex ];
+            IVariable variable = this.m_MetaData.Variables[ varIndex ];
 
-                string variablePath = Path.Combine( Globals.SAVE_PROJECTS_PATH, this.m_MetaData.DataName, variable.Name );
+            string variablePath = Path.Combine( Globals.SAVE_PROJECTS_PATH, this.m_MetaData.DataName, variable.Name );
 
-                Log.Warn( this, "Save assets to: " + variablePath );
+            Log.Warn( this, "Save assets to: " + variablePath );
 
-                // Temperature/texture3D
-                if ( !Directory.Exists( variablePath ) )
-                {
-                    Directory.CreateDirectory( variablePath );
-                }
-
-                yield return this.StartCoroutine( this.SaveVariableRoutine( variable, variablePath, varIndex, new Progress<float>( value =>
-                {
-                    // Do overall progress report
-                    float progression = varIndex / ( float ) this.m_MetaData.Variables.Count;
-                    _progress.Report( progression + ( value / this.m_MetaData.Variables.Count ) );
-                } ) ) );
+            // Temperature/texture3D
+            if ( !Directory.Exists( variablePath ) )
+            {
+                Directory.CreateDirectory( variablePath );
             }
+
+            yield return this.StartCoroutine( this.SaveVariableRoutine( variable, variablePath, varIndex, new Progress<float>( value =>
+            {
+                // Do overall progress report
+                float progression = ( varIndex + 1 ) / ( float ) this.m_MetaData.Variables.Count;
+                _progress.Report( progression + ( value / this.m_MetaData.Variables.Count ) );
+            } ) ) );
+        }
     }
 
     private IEnumerator ImportDataCoroutine( string _projectFilePath, IProgress<float> _progress, Action _callback )
@@ -169,7 +169,7 @@ public class DataManager : MonoBehaviour
         IDataLoader tiffLoader = new DataLoaderFromTIFFs( metaData.Width, metaData.Height, metaData.Levels );
         ITimeStepDataAssetBuilder timeAssetBuilder = new TimeStepDataAssetBuilder( metaData.Width, metaData.Height, metaData.Levels );
 
-        Log.Info(this, "Found " + metaData.Variables.Count + " variables");
+        Log.Info( this, "Found " + metaData.Variables.Count + " variables" );
 
         for ( int i = 0; i < metaData.Variables.Count; i++ )
         {
@@ -200,8 +200,8 @@ public class DataManager : MonoBehaviour
         Log.Info( this, "Loading and creating assets took " + ( stopwatch.ElapsedMilliseconds / 1000.0f ).ToString( "0.00" ) + "seconds." );
 
         this.m_MetaData = metaData;
-        this.m_CurrentVariable = m_DataAssets.First().Key;
-        this.m_CurrentAsset = this.DataAssets.First();
+        this.CurrentVariable = m_DataAssets.First().Key;
+        this.m_CurrentAsset = this.CurrentDataAssets.First();
 
         // Set new data
         m_VolumeRenderer.SetData( this.m_CurrentAsset );
@@ -264,8 +264,8 @@ public class DataManager : MonoBehaviour
         Log.Info( this, "Loading and creating assets took " + ( stopwatch.ElapsedMilliseconds / 1000.0f ).ToString( "0.00" ) + "seconds." );
 
         this.m_MetaData = metaData;
-        this.m_CurrentVariable = m_DataAssets.First().Key;
-        this.m_CurrentAsset = this.DataAssets.First();
+        this.CurrentVariable = m_DataAssets.First().Key;
+        this.m_CurrentAsset = this.CurrentDataAssets.First();
 
         // Set new data
         m_VolumeRenderer.SetData( this.m_CurrentAsset );
@@ -276,7 +276,7 @@ public class DataManager : MonoBehaviour
         _callback?.Invoke();
     }
 
-    private IEnumerator SaveVariableRoutine( IVariable _variable, string _variablePath, int varIndex, IProgress<float> _progress )
+    private IEnumerator SaveVariableRoutine( IVariable _variable, string _variablePath, int _varIndex, IProgress<float> _progress )
     {
         string textureAssetPath = Path.Combine( _variablePath, Globals.TEXTURE3D_FOLDER_NAME );
         // Only create if it does not exist, yet
@@ -285,24 +285,23 @@ public class DataManager : MonoBehaviour
             Directory.CreateDirectory( textureAssetPath );
         }
 
-        int timestampIndex = 0;
-        foreach ( TimeStepDataAsset asset in m_DataAssets[ _variable.Name ] )
+        for ( int i = 0; i < m_DataAssets[ _variable.Name ].Count; i++ )
         {
-            string dateTimeString = this.m_MetaData.Timestamps[ varIndex ][ timestampIndex ].DateTime.ToString().Replace( ',', '.' );
-            string assetName = Globals.TEXTURE3D_PREFEX + m_MetaData.DataName + "_" + _variable.Name + "_" + dateTimeString;
+            string dateTimeString = this.m_MetaData.Timestamps[ _varIndex ][ i ].DateTime.ToString().Replace( ',', '.' );
+            string assetName = Globals.TEXTURE3D_PREFEX + this.m_MetaData.DataName + "_" + _variable.Name + "_" + dateTimeString;
             string assetPath = textureAssetPath + "/";
 
             string assetCompleteName = assetPath + assetName + ".asset";
 
             Log.Info( this, "Create asset " + assetCompleteName );
 
+            TimeStepDataAsset asset = m_DataAssets[ _variable.Name ][ i ];
             AssetDatabase.CreateAsset( asset.DataTexture, assetCompleteName );
 
-            timestampIndex++;
             // Report progress
-            float progression = ( timestampIndex + 1 ) / ( float ) m_DataAssets.Count;
+            float progression = i / ( float ) m_DataAssets.Count;
             _progress.Report( progression );
-            
+
 
             yield return null;
         }

@@ -6,10 +6,16 @@ using UnityEngine.UI;
 public class CameraModeUI : MonoBehaviour
 {
     [SerializeField] private Toggle m_CameraModeTogglePrefab;
+    [SerializeField] private GameObject m_CameraModeTogglePanel;
     [SerializeField] private GameObject m_DataTypeTogglePanel;
     [SerializeField] private CameraMode m_CameraMode;
 
     private List<string> m_CameraModeList;
+
+    public void Show(bool _isShown)
+    {
+        m_CameraModeTogglePanel.SetActive( _isShown );
+    }
 
     private void Start()
     {

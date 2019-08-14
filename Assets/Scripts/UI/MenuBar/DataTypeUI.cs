@@ -6,6 +6,7 @@ public class DataTypeUI : MonoBehaviour
 {
     [SerializeField] private DataManager m_DataManager;
     [SerializeField] private Toggle m_DataTypeTogglePrefab;
+    [SerializeField] private GameObject m_DataTypeTogglePanel;
 
     private bool m_Initialized;
 
@@ -13,6 +14,11 @@ public class DataTypeUI : MonoBehaviour
     {
 
         this.Initialize();
+    }
+
+    public void Show(bool _isShown)
+    {
+        m_DataTypeTogglePanel.SetActive( _isShown );
     }
 
     private void OnNewImport()
@@ -30,7 +36,7 @@ public class DataTypeUI : MonoBehaviour
         {
             string name = variable.Name;
             Toggle toggle = Instantiate( this.m_DataTypeTogglePrefab, this.transform );
-            toggle.isOn = name == this.m_DataManager.m_CurrentVariable;
+            toggle.isOn = name == this.m_DataManager.CurrentVariable;
 
             TMP_Text label = toggle.transform.Find( "Label" ).GetComponent<TMP_Text>();
             label.text = name;

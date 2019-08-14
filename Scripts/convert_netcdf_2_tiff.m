@@ -8,7 +8,7 @@
 BIT_DEPTH = 8;
 DATA_DIR = 'C:\Users\wokad\Documents\Projects\Uniy_Clouds_n_Bones\Data\';
 
-FILE_NAME = '2018-01-00061218-1-1000_sdfdsf';
+FILE_NAME = '2019-01-010203040506_00061218_1-1000_gp_pv_025._ERA5';
 TIFF_DIR = DATA_DIR; %'../Data/';
 FILE_SURFIX = '.nc';
 FILE = strcat( FILE_NAME, FILE_SURFIX );
