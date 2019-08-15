@@ -285,7 +285,9 @@ public class DataManager : MonoBehaviour
             Directory.CreateDirectory( textureAssetPath );
         }
 
-        for ( int i = 0; i < m_DataAssets[ _variable.Name ].Count; i++ )
+        List<TimeStepDataAsset> currentVariableTimeStepList = m_DataAssets[ _variable.Name ];
+
+        for ( int i = 0; i < currentVariableTimeStepList.Count; i++ )
         {
             string dateTimeString = this.m_MetaData.Timestamps[ _varIndex ][ i ].DateTime.ToString().Replace( ',', '.' );
             string assetName = Globals.TEXTURE3D_PREFEX + this.m_MetaData.DataName + "_" + _variable.Name + "_" + dateTimeString;
@@ -295,11 +297,11 @@ public class DataManager : MonoBehaviour
 
             Log.Info( this, "Create asset " + assetCompleteName );
 
-            TimeStepDataAsset asset = m_DataAssets[ _variable.Name ][ i ];
+            TimeStepDataAsset asset = currentVariableTimeStepList[ i ];
             AssetDatabase.CreateAsset( asset.DataTexture, assetCompleteName );
 
             // Report progress
-            float progression = i / ( float ) m_DataAssets.Count;
+            float progression = i / ( float ) currentVariableTimeStepList.Count;
             _progress.Report( progression );
 
 
@@ -319,8 +321,6 @@ public class DataManager : MonoBehaviour
 
         Log.Info( this, "Found " + assets.Length + " assets" );
 
-        //object[] assets = AssetDatabase.LoadAllAssetsAtPath(assetPath);
-        //object[] assets = Resources.LoadAll(assetPath);
         Texture3D asset = null;
         int assetFileIndex = 0;
         foreach ( string file in assets )
