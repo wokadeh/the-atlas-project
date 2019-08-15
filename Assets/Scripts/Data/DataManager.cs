@@ -142,8 +142,7 @@ public class DataManager : MonoBehaviour
             yield return this.StartCoroutine( this.SaveVariableRoutine( variable, variablePath, varIndex, new Progress<float>( value =>
             {
                 // Do overall progress report
-                float progression = ( varIndex + 1 ) / ( float ) this.m_MetaData.Variables.Count;
-                _progress.Report( progression + ( value / this.m_MetaData.Variables.Count ) );
+                _progress.Report( Utils.CalculateProgress( varIndex, m_MetaData.Variables.Count, value ) );
             } ) ) );
         }
     }
@@ -186,8 +185,7 @@ public class DataManager : MonoBehaviour
                 yield return this.StartCoroutine( this.ImportVariableRoutine( tiffLoader, timeAssetBuilder, folder, m_DataAssets[ variable.Name ], bitDepth, new Progress<float>( value =>
                 {
                     // Do overall progress report
-                    float progression = i / ( float ) metaData.Variables.Count;
-                    _progress.Report( progression + ( value / metaData.Variables.Count ) );
+                    _progress.Report( Utils.CalculateProgress( i, metaData.Variables.Count, value ) );
                 } ) ) );
             }
             else
@@ -211,6 +209,8 @@ public class DataManager : MonoBehaviour
 
         _callback?.Invoke();
     }
+
+
 
     private IEnumerator LoadProjectCoroutine( string _projectFilePath, IProgress<float> _progress, Action _callback )
     {
@@ -250,8 +250,7 @@ public class DataManager : MonoBehaviour
                 yield return this.StartCoroutine( this.LoadVariableRoutine( variableFolderPath, timeAssetBuilder, m_DataAssets[ variable.Name ], variable, bitDepth, new Progress<float>( value =>
                 {
                     // Do overall progress report
-                    float progression = i / ( float ) metaData.Variables.Count;
-                    _progress.Report( progression + ( value / metaData.Variables.Count ) );
+                    _progress.Report( Utils.CalculateProgress( i, metaData.Variables.Count, value ) );
                 } ) ) );
             }
             else

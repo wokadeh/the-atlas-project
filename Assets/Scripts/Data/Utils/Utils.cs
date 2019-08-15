@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*
+    Note:   This class is meant to be a home for little helper functions to clean up the 
+            important classes!
+
+*/
+
+using System;
 using System.Xml;
 using UnityEngine.UI;
 using TMPro;
@@ -20,6 +26,12 @@ public static class Utils
             case 16: return BitDepth.Depth16;
             default: throw new Exception("Failed to determine bit depth!");
         }
+    }
+
+    public static float CalculateProgress( int _index, int _maximum, float _value )
+    {
+        float progression = _index / ( float ) _maximum;
+        return progression + ( _value / _maximum );
     }
 
     public static int ReadIntegerAttribute(XmlElement _relement, string _name)
@@ -64,13 +76,6 @@ public static class Utils
     public static string convertFloatToString(float _number)
     {
         return "";
-
-
-
-
-
-
-
     }
 
     public static Progress<float> CreateProgressBarProgress(Image _progressBar, TMP_Text _progressBarText, GameObject _screen)

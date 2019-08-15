@@ -19,19 +19,26 @@ public class DataLoaderFromTIFFs : IDataLoader
     private int[] m_Raster;
     private byte[][] m_Buffer;
 
-    public DataLoaderFromTIFFs( int _width, int _height, int _bithDepth )
+    public DataLoaderFromTIFFs( int _width, int _height, int _bitDepth )
     {
         m_Width = _width;
         m_Height = _height;
-        m_Levels = _bithDepth;
+        m_Levels = _bitDepth;
 
         // The raster and buffer for tiff loading can be reused and therefore need only to be created once
         int size = _width * _height;
         m_Raster = new int[ size ];
-        m_Buffer = new byte[ _bithDepth ][];
-        for ( int i = 0; i < _bithDepth; i++ )
+        m_Buffer = new byte[ _bitDepth ][];
+
+        this.CreateEmptyBuffer( _bitDepth, size );
+    }
+
+    private void CreateEmptyBuffer( int _bitDepth, int _size )
+    {
+        // Create empty buffer
+        for ( int i = 0; i < _bitDepth; i++ )
         {
-            m_Buffer[ i ] = new byte[ size ];
+            m_Buffer[ i ] = new byte[ _size ];
         }
     }
 
