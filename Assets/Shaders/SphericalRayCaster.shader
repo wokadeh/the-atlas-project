@@ -4,9 +4,11 @@
 // Gilles Ferrand, University of Manitoba / RIKEN, 2016–2017
 // https://github.com/gillesferrand/Unity-RayTracing
 
-Shader "Custom/Spherical Ray Casting" {
+Shader "Custom/Spherical Ray Casting" 
+{
 
-	Properties{
+	Properties
+	{
 		// the data cube
 		[NoScaleOffset] _Data("Data Texture", 3D) = "" {}
 	//	_HistTex("Histogram Texture", 2D) = "white" {}
@@ -34,7 +36,8 @@ Shader "Custom/Spherical Ray Casting" {
 		_Steps("Max number of steps", Range(1,2048)) = 2048 // should ideally be as large as data resolution, strongly affects frame rate
 	}
 
-		SubShader{
+		SubShader
+		{
 
 			Tags { "Queue" = "Transparent" "RenderType" = "Transparent" }
 
@@ -59,23 +62,29 @@ Shader "Custom/Spherical Ray Casting" {
 
 				sampler3D _Data;
 				sampler2D _TFTex;
+
 				float _OuterSphereRadius;
 				float _InnerSphereRadius;
 				float _EarthRadius;
+
 				float2 _LongitudeBounds;
 				float2 _LatitudeBounds;
 				float2 _AltitudeBounds;
 				float4 _DataChannel;
+
 				float _SliceAxis1Min, _SliceAxis1Max;
 				float _SliceAxis2Min, _SliceAxis2Max;
 				float _SliceAxis3Min, _SliceAxis3Max;
+
 				float _DataMin, _DataMax;
+
 				float _StretchPower;
 				float _NormPerStep;
 				float _NormPerRay;
 				float _Steps;
 
-				bool intersect_sphere(float3 ray_o, float3 ray_d, float radius, out float tNear, out float tFar) {
+				bool intersect_sphere(float3 ray_o, float3 ray_d, float radius, out float tNear, out float tFar) 
+				{
 					float3 origin = ray_o;
 					float3 direction = ray_d;
 
@@ -85,140 +94,151 @@ Shader "Custom/Spherical Ray Casting" {
 					float d = b * b - 4. * c;
 
 					// we can bail here
-					if (d < 0) {
+					if (d < 0) 
+					{
 						return false;
 					}
 
 					float t0 = (-b - sqrt(d)) / 2.;
 					float t1 = (-b + sqrt(d)) / 2.;
 
-					if (t0 < t1) {
+					if (t0 < t1) 
+					{
 						tNear = t0;
 						tFar = t1;
 					}
-	 else {
-	  tNear = t1;
-	  tFar = t0;
-  }
+					else 
+					{
+						tNear = t1;
+						tFar = t0;
+					}
 
-  return true;
-}
+					return true;
+				}
 
-struct vert_input {
-	float4 pos : POSITION;
-};
+				struct vert_input 
+				{
+					float4 pos : POSITION;
+				};
 
-struct frag_input {
-	float4 pos : SV_POSITION;
-	float3 ray_o : TEXCOORD1; // ray origin
-	float3 ray_d : TEXCOORD2; // ray direction
-};
+				struct frag_input 
+				{
+					float4 pos : SV_POSITION;
+					float3 ray_o : TEXCOORD1; // ray origin
+					float3 ray_d : TEXCOORD2; // ray direction
+				};
 
-// vertex program
-frag_input vert(vert_input i) {
-	frag_input o;
+				// vertex program
+				frag_input vert(vert_input i) 
+				{
+					frag_input o;
 
-	// calculate eye ray in object space
-	o.ray_d = -ObjSpaceViewDir(i.pos);
-	o.ray_o = i.pos.xyz - o.ray_d;
-	// calculate position on screen (unused)
-	o.pos = UnityObjectToClipPos(i.pos);
+					// calculate eye ray in object space
+					o.ray_d = -ObjSpaceViewDir(i.pos);
+					o.ray_o = i.pos.xyz - o.ray_d;
+					// calculate position on screen (unused)
+					o.pos = UnityObjectToClipPos(i.pos);
 
-	return o;
-}
+					return o;
+				}
 
-// gets data value at a given position
-float4 get_data(float3 pos) {
-	// sample texture (pos is normalized in [0,1])
-	float3 posTex = pos;
+				// gets data value at a given position
+				float4 get_data(float3 pos) 
+				{
+					// sample texture (pos is normalized in [0,1])
+					float3 posTex = pos;
 
-	float4 data4 = tex3Dlod(_Data, float4(posTex,0));
-	float data = _DataChannel[0] * data4.r + _DataChannel[1] * data4.g + _DataChannel[2] * data4.b + _DataChannel[3] * data4.a;
-	// slice and threshold
-	data *= step(_SliceAxis1Min, posTex.x);
-	data *= step(_SliceAxis2Min, posTex.y);
-	data *= step(_SliceAxis3Min, posTex.z);
-	data *= step(posTex.x, _SliceAxis1Max);
-	data *= step(posTex.y, _SliceAxis2Max);
-	data *= step(posTex.z, _SliceAxis3Max);
-	data *= step(_DataMin, data);
-	data *= step(data, _DataMax);
-	// colourize
-	float4 col = float4(data, data, data, data);
-	return col;
-}
+					float4 data4 = tex3Dlod(_Data, float4(posTex,0));
+					float data = _DataChannel[0] * data4.r + _DataChannel[1] * data4.g + _DataChannel[2] * data4.b + _DataChannel[3] * data4.a;
+					// slice and threshold
+					data *= step(_SliceAxis1Min, posTex.x);
+					data *= step(_SliceAxis2Min, posTex.y);
+					data *= step(_SliceAxis3Min, posTex.z);
+					data *= step(posTex.x, _SliceAxis1Max);
+					data *= step(posTex.y, _SliceAxis2Max);
+					data *= step(posTex.z, _SliceAxis3Max);
+					data *= step(_DataMin, data);
+					data *= step(data, _DataMax);
+					// colourize
+					float4 col = float4(data, data, data, data);
+					return col;
+				}
 
-float4 get_transfer_function(float density) {
-	return tex2Dlod(_TFTex, float4(density, 0, 0, 0));
-}
+				float4 get_transfer_function(float density) 
+				{
+					return tex2Dlod(_TFTex, float4(density, 0, 0, 0));
+				}
 
-float3 convert_to_spherical(float3 pos) {
-	float radius = _EarthRadius;
-	float rho = sqrt(pos.x * pos.x + pos.y * pos.y + pos.z * pos.z);
-	float longitude = atan2(pos.x, pos.y);
-	float latitude = asin(pos.z / rho);
-	float altitude = rho - radius;
-	return float3(longitude, latitude, altitude);
-}
+				float3 convert_to_spherical(float3 pos) 
+				{
+					float radius = _EarthRadius;
+					float rho = sqrt(pos.x * pos.x + pos.y * pos.y + pos.z * pos.z);
+					float longitude = atan2(pos.x, pos.y);
+					float latitude = asin(pos.z / rho);
+					float altitude = rho - radius;
+					return float3(longitude, latitude, altitude);
+				}
 
-float3 convert_to_texture(float3 spherical) {
-	float u = (spherical.x - _LongitudeBounds.x) / (_LongitudeBounds.y - _LongitudeBounds.x);
-	float v = (spherical.y - _LatitudeBounds.x) / (_LatitudeBounds.y - _LatitudeBounds.x);
-	float s = 1 - ((spherical.z - _AltitudeBounds.x) / (_AltitudeBounds.y - _AltitudeBounds.x));
+				float3 convert_to_texture(float3 spherical) 
+				{
+					float u = (spherical.x - _LongitudeBounds.x) / (_LongitudeBounds.y - _LongitudeBounds.x);
+					float v = (spherical.y - _LatitudeBounds.x) / (_LatitudeBounds.y - _LatitudeBounds.x);
+					float s = 1 - ((spherical.z - _AltitudeBounds.x) / (_AltitudeBounds.y - _AltitudeBounds.x));
 
-	return float3(u, v, s);
-}
+					return float3(u, v, s);
+				}
 
-// fragment program
-float4 frag(frag_input i) : COLOR {
-	i.ray_d = normalize(i.ray_d);
+			// fragment program
+				float4 frag(frag_input i) : COLOR 
+				{
+					i.ray_d = normalize(i.ray_d);
 
-// calculate eye ray intersection with sphere bounding box
-float tNear, tFar;
-bool hit = intersect_sphere(i.ray_o, i.ray_d, _OuterSphereRadius, tNear, tFar);
-if (!hit) discard;
-if (tNear < 0.0) tNear = 0.0;
-float3 pNear = i.ray_o + i.ray_d * tNear;
-float3 pFar = i.ray_o + i.ray_d * tFar;
+					// calculate eye ray intersection with sphere bounding box
+					float tNear, tFar;
+					bool hit = intersect_sphere(i.ray_o, i.ray_d, _OuterSphereRadius, tNear, tFar);
+					if (!hit) discard;
+					if (tNear < 0.0) tNear = 0.0;
+					float3 pNear = i.ray_o + i.ray_d * tNear;
+					float3 pFar = i.ray_o + i.ray_d * tFar;
 
-// march along ray inside the cube, accumulating color
-float3 ray_pos = pNear;
-float3 ray_dir = pFar - pNear;
+					// march along ray inside the cube, accumulating color
+					float3 ray_pos = pNear;
+					float3 ray_dir = pFar - pNear;
 
-float3 ray_step = normalize(ray_dir) * sqrt(3) / _Steps;
-float4 ray_col = 0;
-int count = 0;
+					float3 ray_step = normalize(ray_dir) * sqrt(3) / _Steps;
+					float4 ray_col = 0;
+					int count = 0;
 
-[loop]
-for (int k = 0; k < _Steps; k++)
-{
-	float3 spherical = convert_to_spherical(ray_pos);
-	float3 tex_coord = convert_to_texture(spherical);
-	float4 voxel_col = get_data(tex_coord);
+					[loop]
+					for (int k = 0; k < _Steps; k++)
+					{
+						float3 spherical = convert_to_spherical(ray_pos);
+						float3 tex_coord = convert_to_texture(spherical);
+						float4 voxel_col = get_data(tex_coord);
 
-	float density = voxel_col.r;
-	if (density == 0) count = count + 1;
-	if (density != 0) count = 0;
-	if (count > 20) break;
-	float4 tf_col = get_transfer_function(density);
+						float density = voxel_col.r;
+						if (density == 0) count = count + 1;
+						if (density != 0) count = 0;
+						if (count > 20) break;
+						float4 tf_col = get_transfer_function(density);
 
-	tf_col.a = _NormPerStep * length(ray_step) * pow(tf_col.a,_StretchPower);
+						tf_col.a = _NormPerStep * length(ray_step) * pow(tf_col.a,_StretchPower);
 
-	ray_col.rgb = ray_col.rgb + (1 - ray_col.a) * tf_col.a * tf_col.rgb;
-	ray_col.a = ray_col.a + (1 - ray_col.a) * tf_col.a;
+						ray_col.rgb = ray_col.rgb + (1 - ray_col.a) * tf_col.a * tf_col.rgb;
+						ray_col.a = ray_col.a + (1 - ray_col.a) * tf_col.a;
 
-	ray_pos += ray_step;
-}
+						ray_pos += ray_step;
+					}
 
-ray_col *= _NormPerRay;
-ray_col = clamp(ray_col,0,1);
+					ray_col *= _NormPerRay;
+					ray_col = clamp(ray_col,0,1);
 
-return ray_col;
-}
+					return ray_col;
+				}
 
-ENDCG
-}
+				ENDCG
+			}
 		}
 
-			FallBack Off
+		FallBack Off
 }

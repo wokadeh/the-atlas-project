@@ -1,4 +1,9 @@
-﻿using SFB;
+﻿// Performance & Tricks
+// Microsoft and Unity
+// https://docs.microsoft.com/en-us/windows/mixed-reality/performance-recommendations-for-unity
+
+
+using SFB;
 using System;
 
 public struct Globals
