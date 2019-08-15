@@ -34,6 +34,11 @@ public static class Utils
         return progression + ( _value / _maximum );
     }
 
+    public static float CalculateProgress( int _index, int _maximum )
+    {
+        return _index / ( float ) _maximum;
+    }
+
     public static int ReadIntegerAttribute(XmlElement _relement, string _name)
     {
         int attribute;

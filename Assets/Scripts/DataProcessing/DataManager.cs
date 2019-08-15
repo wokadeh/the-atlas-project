@@ -300,9 +300,7 @@ public class DataManager : MonoBehaviour
             AssetDatabase.CreateAsset( asset.DataTexture, assetCompleteName );
 
             // Report progress
-            float progression = i / ( float ) currentVariableTimeStepList.Count;
-            _progress.Report( progression );
-
+            _progress.Report( Utils.CalculateProgress( i, currentVariableTimeStepList.Count ) );
 
             yield return null;
         }
@@ -337,8 +335,7 @@ public class DataManager : MonoBehaviour
                 assetFileIndex++;
 
                 // Report progress
-                float progression = ( assetFileIndex + 1 ) / ( float ) assets.Length;
-                _progress.Report( progression );
+                _progress.Report( Utils.CalculateProgress( assetFileIndex, assets.Length ) );
                 yield return null;
             }
         }
