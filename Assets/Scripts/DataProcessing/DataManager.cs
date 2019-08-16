@@ -168,9 +168,11 @@ public class DataManager : MonoBehaviour
         IDataLoader tiffLoader = new DataLoaderFromTIFFs( metaData.Width, metaData.Height, metaData.Levels );
         ITimeStepDataAssetBuilder timeAssetBuilder = new TimeStepDataAssetBuilder( metaData.Width, metaData.Height, metaData.Levels );
 
-        Log.Info( this, "Found " + metaData.Variables.Count + " variables" );
+        int numberOfVariables = metaData.Variables.Count;
 
-        for ( int i = 0; i < metaData.Variables.Count; i++ )
+        Log.Info( this, "Found " + numberOfVariables + " variables" );
+
+        for ( int i = 0; i < numberOfVariables; i++ )
         {
             IVariable variable = metaData.Variables[ i ];
 
@@ -185,7 +187,7 @@ public class DataManager : MonoBehaviour
                 yield return this.StartCoroutine( this.ImportVariableRoutine( tiffLoader, timeAssetBuilder, folder, m_DataAssets[ variable.Name ], bitDepth, new Progress<float>( value =>
                 {
                     // Do overall progress report
-                    _progress.Report( Utils.CalculateProgress( i, metaData.Variables.Count, value ) );
+                    _progress.Report( Utils.CalculateProgress( i, numberOfVariables, value ) );
                 } ) ) );
             }
             else

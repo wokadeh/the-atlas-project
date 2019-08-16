@@ -28,6 +28,9 @@ Shader "Custom/Ray Casting" {
 		_NormPerStep ("Intensity normalization per step", Float) = 1
 		_NormPerRay  ("Intensity normalization per ray" , Float) = 1
 		_Steps ("Max number of steps", Range(1,1024)) = 128 // should ideally be as large as data resolution, strongly affects frame rate
+		_LogFactor("Atmospheric Log Factor", Float) = 0.1
+		_MaxPressure ("Atmospheric pressure maximum", Float) = 1000
+		_LogMaxPressure("Natural Log of Max Pressure Ln(MaxOressure)", Float) = 6.907755279
 	}
 
 	SubShader {
@@ -66,8 +69,9 @@ Shader "Custom/Ray Casting" {
 			float _NormPerStep;
 			float _NormPerRay;
 			float _Steps;
-
-
+			float _MaxPressure;
+			float _LogFactor;
+			float _LogMaxPressure;
 
 			// calculates intersection between a ray and a box
 			// http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter3.htm
@@ -75,23 +79,63 @@ Shader "Custom/Ray Casting" {
 			{
 			    // compute intersection of ray with all six bbox planes
 			    float3 invR = 1.0 / ray_d;
-			    float3 tBot = invR * (boxMin.xyz - ray_o);
-			    float3 tTop = invR * (boxMax.xyz - ray_o);
+
+			    float3 tBot = invR * ( boxMin.xyz - ray_o );
+			    float3 tTop = invR * ( boxMax.xyz - ray_o );
+
 			    // re-order intersections to find smallest and largest on each axis
-			    float3 tMin = min (tTop, tBot);
-			    float3 tMax = max (tTop, tBot);
+			    float3 tMin = min ( tTop, tBot );
+			    float3 tMax = max ( tTop, tBot );
+
 			    // find the largest tMin and the smallest tMax
-			    float2 t0 = max (tMin.xx, tMin.yz);
-			    float largest_tMin = max (t0.x, t0.y);
-			    t0 = min (tMax.xx, tMax.yz);
-			    float smallest_tMax = min (t0.x, t0.y);
+			    float2 t0 = max ( tMin.xx, tMin.yz );
+			    float largest_tMin = max ( t0.x, t0.y );
+
+			    t0 = min ( tMax.xx, tMax.yz );
+
+			    float smallest_tMax = min ( t0.x, t0.y );
+
 			    // check for hit
-			    bool hit = (largest_tMin <= smallest_tMax);
+			    bool hit = ( largest_tMin <= smallest_tMax );
+
 			    tNear = largest_tMin;
 			    tFar = smallest_tMax;
+
 			    return hit;
 			}
 
+			// gets data value at a given position
+			float4 get_data(float3 pos)
+			{
+				// sample texture (pos is normalized in [0,1])
+				float z = 1 - pos[_Axis[2] - 1];
+				float newLogZ = log(z * _MaxPressure) / _LogMaxPressure;
+
+				float3 posTex = float3(pos[_Axis[0] - 1], pos[_Axis[1] - 1], _LogFactor * pos[_Axis[2] - 1]);
+
+				posTex = (posTex - 0.5) * _TexFilling + 0.5;
+
+				float4 data4 = tex3Dlod(_Data, float4(posTex, 0));
+				float data = _DataChannel[0] * data4.r + _DataChannel[1] * data4.g + _DataChannel[2] * data4.b + _DataChannel[3] * data4.a;
+
+				// slice and threshold
+				data *= step(_SliceAxis1Min, posTex.x);
+				data *= step(_SliceAxis2Min, posTex.y);
+				data *= step(_SliceAxis3Min, posTex.z);
+				data *= step(posTex.x, _SliceAxis1Max);
+				data *= step(posTex.y, _SliceAxis2Max);
+				data *= step(posTex.z, _SliceAxis3Max);
+				data *= step(_DataMin, data);
+				data *= step(data, _DataMax);
+
+				// colourize
+				float4 col = float4(data, data, data, data);
+				return col;
+			}
+
+			float4 get_transfer_function(float density) {
+				return tex2D(_TFTex, float2(density, 0));
+			}
 
 
 			struct vert_input {
@@ -104,57 +148,41 @@ Shader "Custom/Ray Casting" {
 			    float3 ray_d : TEXCOORD2; // ray direction
 			};
 
+			// ---------------------------------------- VERTEX SHADER ----------------------------------------
 			// vertex program
 			frag_input vert(vert_input i)
 			{
 				frag_input o;
 
 			    // calculate eye ray in object space
-				o.ray_d = -ObjSpaceViewDir(i.pos);
+				o.ray_d = -ObjSpaceViewDir( i.pos );
 				o.ray_o = i.pos.xyz - o.ray_d;
 				// calculate position on screen (unused)
-				o.pos = UnityObjectToClipPos(i.pos);
+				o.pos = UnityObjectToClipPos( i.pos );
 
 				return o;
 			}
+			// ---------------------------------------- !VERTEX SHADER ---------------------------------------
 
-			// gets data value at a given position
-			float4 get_data(float3 pos) {
-				// sample texture (pos is normalized in [0,1])
-				float3 posTex = float3(pos[_Axis[0]-1],pos[_Axis[1]-1],pos[_Axis[2]-1]);
-				posTex = (posTex-0.5) * _TexFilling + 0.5;
-				float4 data4 = tex3Dlod(_Data, float4(posTex,0));
-				float data = _DataChannel[0]*data4.r + _DataChannel[1]*data4.g + _DataChannel[2]*data4.b + _DataChannel[3]*data4.a;
-				// slice and threshold
-				data *= step(_SliceAxis1Min, posTex.x);
-				data *= step(_SliceAxis2Min, posTex.y);
-				data *= step(_SliceAxis3Min, posTex.z);
-				data *= step(posTex.x, _SliceAxis1Max);
-				data *= step(posTex.y, _SliceAxis2Max);
-				data *= step(posTex.z, _SliceAxis3Max);
-				data *= step(_DataMin, data);
-				data *= step(data, _DataMax);
-				// colourize
-				float4 col = float4(data, data, data, data);
-				return col;
-			}
 
-			float4 get_transfer_function(float density) {
-				return tex2D(_TFTex, float2(density, 0));
-			}
 
-			// fragment program
+			
+			// ---------------------------------------- FRAGMENT SHADER ----------------------------------------
 			float4 frag(frag_input i) : COLOR
 			{
 			    i.ray_d = normalize(i.ray_d);
 			    // calculate eye ray intersection with cube bounding box
 				float3 boxMin = { -0.5, -0.5, -0.5 };
 				float3 boxMax = {  0.5,  0.5,  0.5 };
+
 			    float tNear, tFar;
+
 			    bool hit = IntersectBox(i.ray_o, i.ray_d, boxMin, boxMax, tNear, tFar);
+
 			    if (!hit) discard;
 			    if (tNear < 0.0) tNear = 0.0;
-			    // calculate intersection points
+			    
+				// calculate intersection points
 			    float3 pNear = i.ray_o + i.ray_d*tNear;
 			    float3 pFar  = i.ray_o + i.ray_d*tFar;
 			    // convert to texture space
@@ -167,6 +195,7 @@ Shader "Custom/Ray Casting" {
 
 				float3 ray_step = normalize(ray_dir) * sqrt(3) / _Steps;
 				float4 ray_col = 0;
+
 				[loop]
 				for(int k = 0; k < _Steps; k++)
 				{
@@ -188,7 +217,7 @@ Shader "Custom/Ray Casting" {
 				ray_col = clamp(ray_col,0,1);
 		    	return ray_col;
 			}
-
+				// ---------------------------------------- !FRAGMENT SHADER ----------------------------------------
 			ENDCG
 
 		}

@@ -57,6 +57,7 @@ public class TimeStepDataAssetBuilder : ITimeStepDataAssetBuilder
     private Texture3D BuildDataTexture( byte[][] data )
     {
         int size2d = m_Width * m_Height;
+
         // Get color data from all textures
         for ( int i = 0; i < data.Length; i++ )
         {
