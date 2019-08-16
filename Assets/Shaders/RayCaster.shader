@@ -105,13 +105,20 @@ Shader "Custom/Ray Casting" {
 			}
 
 			// gets data value at a given position
-			float4 get_data(float3 pos)
+			float4 GetDataFromTexture(float3 pos)
 			{
 				// sample texture (pos is normalized in [0,1])
 				float z = 1 - pos[_Axis[2] - 1];
-				float newLogZ = log(z * _MaxPressure) / _LogMaxPressure;
+				float newLogZ = 1 - ( log(z * _MaxPressure) / _LogMaxPressure);
 
-				float3 posTex = float3(pos[_Axis[0] - 1], pos[_Axis[1] - 1], _LogFactor * pos[_Axis[2] - 1]);
+				// debugging. Ask a question and get red as reward
+				if (newLogZ > 1.5)
+				{
+					return float4(1, 0, 0, 1);
+				}
+
+
+				float3 posTex = float3(pos[_Axis[0] - 1], pos[_Axis[1] - 1], newLogZ);
 
 				posTex = (posTex - 0.5) * _TexFilling + 0.5;
 
@@ -199,7 +206,7 @@ Shader "Custom/Ray Casting" {
 				[loop]
 				for(int k = 0; k < _Steps; k++)
 				{
-					float4 voxel_col = get_data(ray_pos);
+					float4 voxel_col = GetDataFromTexture(ray_pos);
 					float density = voxel_col.r;
 
 					float4 tf_col = get_transfer_function(density);

@@ -34,6 +34,9 @@ Shader "Custom/Spherical Ray Casting"
 		_NormPerStep("Intensity normalization per step", Float) = 1
 		_NormPerRay("Intensity normalization per ray" , Float) = 1
 		_Steps("Max number of steps", Range(1,2048)) = 2048 // should ideally be as large as data resolution, strongly affects frame rate
+		_LogFactor("Atmospheric Log Factor", Float) = 0.1
+		_MaxPressure("Atmospheric pressure maximum", Float) = 1000
+		_LogMaxPressure("Natural Log of Max Pressure Ln(MaxOressure)", Float) = 6.907755279
 	}
 
 		SubShader
@@ -82,6 +85,9 @@ Shader "Custom/Spherical Ray Casting"
 				float _NormPerStep;
 				float _NormPerRay;
 				float _Steps;
+				float _MaxPressure;
+				float _LogFactor;
+				float _LogMaxPressure;
 
 				bool intersect_sphere(float3 ray_o, float3 ray_d, float radius, out float tNear, out float tFar) 
 				{
@@ -147,6 +153,11 @@ Shader "Custom/Spherical Ray Casting"
 				{
 					// sample texture (pos is normalized in [0,1])
 					float3 posTex = pos;
+
+					float z = 1 - pos.z;
+					float newLogZ = 1 - (log(z * _MaxPressure) / _LogMaxPressure);
+
+					posTex.z = newLogZ;
 
 					float4 data4 = tex3Dlod(_Data, float4(posTex,0));
 					float data = _DataChannel[0] * data4.r + _DataChannel[1] * data4.g + _DataChannel[2] * data4.b + _DataChannel[3] * data4.a;
