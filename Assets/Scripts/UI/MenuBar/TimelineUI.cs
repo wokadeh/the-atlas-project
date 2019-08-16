@@ -117,7 +117,7 @@ public class TimelineUI : MonoBehaviour
 
         for ( int f = start; f <= m_TimelineSlider.maxValue; f++ )
         {
-            yield return new WaitForSeconds( 1.0f / m_FPS );
+            yield return new WaitForSeconds( (1.0f / m_FPS) * Time.deltaTime );
 
             m_TimelineSlider.value = f;
 
