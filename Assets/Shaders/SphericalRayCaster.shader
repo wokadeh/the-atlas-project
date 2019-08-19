@@ -89,7 +89,7 @@ Shader "Custom/Spherical Ray Casting"
 				float _LogFactor;
 				float _LogMaxPressure;
 
-				bool intersect_sphere(float3 ray_o, float3 ray_d, float radius, out float tNear, out float tFar) 
+				bool IntersectSphere(float3 ray_o, float3 ray_d, float radius, out float tNear, out float tFar)
 				{
 					float3 origin = ray_o;
 					float3 direction = ray_d;
@@ -122,34 +122,9 @@ Shader "Custom/Spherical Ray Casting"
 					return true;
 				}
 
-				struct vert_input 
-				{
-					float4 pos : POSITION;
-				};
-
-				struct frag_input 
-				{
-					float4 pos : SV_POSITION;
-					float3 ray_o : TEXCOORD1; // ray origin
-					float3 ray_d : TEXCOORD2; // ray direction
-				};
-
-				// vertex program
-				frag_input vert(vert_input i) 
-				{
-					frag_input o;
-
-					// calculate eye ray in object space
-					o.ray_d = -ObjSpaceViewDir(i.pos);
-					o.ray_o = i.pos.xyz - o.ray_d;
-					// calculate position on screen (unused)
-					o.pos = UnityObjectToClipPos(i.pos);
-
-					return o;
-				}
 
 				// gets data value at a given position
-				float4 get_data(float3 pos) 
+				float4 GetDataFromTexture(float3 pos)
 				{
 					// sample texture (pos is normalized in [0,1])
 					float3 posTex = pos;
@@ -157,9 +132,9 @@ Shader "Custom/Spherical Ray Casting"
 					float z = 1 - pos.z;
 					float newLogZ = 1 - (log(z * _MaxPressure) / _LogMaxPressure);
 
-					posTex.z = newLogZ;
+					posTex.z = pos.z;
 
-					float4 data4 = tex3Dlod(_Data, float4(posTex,0));
+					float4 data4 = tex3Dlod(_Data, float4(posTex, 0));
 					float data = _DataChannel[0] * data4.r + _DataChannel[1] * data4.g + _DataChannel[2] * data4.b + _DataChannel[3] * data4.a;
 					// slice and threshold
 					data *= step(_SliceAxis1Min, posTex.x);
@@ -175,12 +150,12 @@ Shader "Custom/Spherical Ray Casting"
 					return col;
 				}
 
-				float4 get_transfer_function(float density) 
+				float4 GetTransferFunction(float density)
 				{
 					return tex2Dlod(_TFTex, float4(density, 0, 0, 0));
 				}
 
-				float3 convert_to_spherical(float3 pos) 
+				float3 ConvertToSpherical(float3 pos)
 				{
 					float radius = _EarthRadius;
 					float rho = sqrt(pos.x * pos.x + pos.y * pos.y + pos.z * pos.z);
@@ -190,23 +165,52 @@ Shader "Custom/Spherical Ray Casting"
 					return float3(longitude, latitude, altitude);
 				}
 
-				float3 convert_to_texture(float3 spherical) 
+				float3 ConvertToTexture(float3 sphericalPos)
 				{
-					float u = (spherical.x - _LongitudeBounds.x) / (_LongitudeBounds.y - _LongitudeBounds.x);
-					float v = (spherical.y - _LatitudeBounds.x) / (_LatitudeBounds.y - _LatitudeBounds.x);
-					float s = 1 - ((spherical.z - _AltitudeBounds.x) / (_AltitudeBounds.y - _AltitudeBounds.x));
+					float u = (sphericalPos.x - _LongitudeBounds.x) / (_LongitudeBounds.y - _LongitudeBounds.x);
+					float v = (sphericalPos.y - _LatitudeBounds.x) / (_LatitudeBounds.y - _LatitudeBounds.x);
+					float s = 1 - ((sphericalPos.z - _AltitudeBounds.x) / (_AltitudeBounds.y - _AltitudeBounds.x));
 
 					return float3(u, v, s);
 				}
 
-			// fragment program
+				struct vert_input 
+				{
+					float4 pos : POSITION;
+				};
+
+				struct frag_input 
+				{
+					float4 pos : SV_POSITION;
+					float3 ray_o : TEXCOORD1; // ray origin
+					float3 ray_d : TEXCOORD2; // ray direction
+				};
+
+				// ---------------------------------------- VERTEX SHADER ----------------------------------------
+				// vertex program
+				frag_input vert(vert_input i) 
+				{
+					frag_input o;
+
+					// calculate eye ray in object space
+					o.ray_d = -ObjSpaceViewDir(i.pos);
+					o.ray_o = i.pos.xyz - o.ray_d;
+					// calculate position on screen (unused)
+					o.pos = UnityObjectToClipPos(i.pos);
+
+					return o;
+				}
+				// ---------------------------------------- !VERTEX SHADER ---------------------------------------
+
+				// ---------------------------------------- FRAGMENT SHADER ----------------------------------------
+				// fragment program
 				float4 frag(frag_input i) : COLOR 
 				{
 					i.ray_d = normalize(i.ray_d);
 
 					// calculate eye ray intersection with sphere bounding box
 					float tNear, tFar;
-					bool hit = intersect_sphere(i.ray_o, i.ray_d, _OuterSphereRadius, tNear, tFar);
+					bool hit = IntersectSphere(i.ray_o, i.ray_d, _OuterSphereRadius, tNear, tFar);
 					if (!hit) discard;
 					if (tNear < 0.0) tNear = 0.0;
 					float3 pNear = i.ray_o + i.ray_d * tNear;
@@ -223,15 +227,15 @@ Shader "Custom/Spherical Ray Casting"
 					[loop]
 					for (int k = 0; k < _Steps; k++)
 					{
-						float3 spherical = convert_to_spherical(ray_pos);
-						float3 tex_coord = convert_to_texture(spherical);
-						float4 voxel_col = get_data(tex_coord);
+						float3 sphericalPos = ConvertToSpherical(ray_pos);
+						float3 tex_coord = ConvertToTexture(sphericalPos);
+						float4 voxel_col = GetDataFromTexture(tex_coord);
 
 						float density = voxel_col.r;
 						if (density == 0) count = count + 1;
 						if (density != 0) count = 0;
 						if (count > 20) break;
-						float4 tf_col = get_transfer_function(density);
+						float4 tf_col = GetTransferFunction(density);
 
 						tf_col.a = _NormPerStep * length(ray_step) * pow(tf_col.a,_StretchPower);
 
@@ -246,7 +250,7 @@ Shader "Custom/Spherical Ray Casting"
 
 					return ray_col;
 				}
-
+				// ---------------------------------------- !FRAGMENT SHADER ----------------------------------------
 				ENDCG
 			}
 		}
