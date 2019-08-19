@@ -46,5 +46,5 @@ public struct Globals
     public const string CAMERA_ORBIT_TITLE = "Orbit";
     public const string CAMERA_FIRSTP_TITLE = "First Person";
 
-    public const float TIMELINE_SPEEDFACTOR = 500;
+    public const float TIMELINE_SPEEDFACTOR = 100;
 }

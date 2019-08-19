@@ -15,6 +15,7 @@ public class TimelineUI : MonoBehaviour
     [SerializeField] private Button m_StepBackwardsButton;
     [SerializeField] private Button m_PlayButton;
     [SerializeField] private TMP_Text m_PlayButtonText;
+    [SerializeField] private TMP_Text m_SpeedLabelText;
     [SerializeField] private Button m_StepForwardButton;
     [SerializeField] private Button m_ToEndButton;
     [SerializeField] private Button m_LoopButton;
@@ -89,24 +90,21 @@ public class TimelineUI : MonoBehaviour
         {
             m_SpeedCounter += change;
 
-
             if ( m_SpeedCounter < 0 ) // We are slow already
             {
-                Log.Info( this, "Small step" );
+                m_SpeedLabelText.text = Mathf.Abs( m_SpeedCounter  - 1 ) + "x";
                 m_SpeedFactor = 1F / ( Globals.TIMELINE_SPEEDFACTOR * Mathf.Abs( m_SpeedCounter ) );
             }
-            else if ( m_SpeedCounter > 0 )// We are fast already
+            else if ( m_SpeedCounter > 0 ) // We are fast already
             {
-                Log.Info( this, "Big step" );
+                m_SpeedLabelText.text = "1/" + Mathf.Abs( m_SpeedCounter + 1 ) + "x";
                 m_SpeedFactor = Globals.TIMELINE_SPEEDFACTOR * Mathf.Abs( m_SpeedCounter );
             }
             else
             {
+                m_SpeedLabelText.text = "";
                 m_SpeedFactor = 1;
             }
-
-            Log.Info( this, "SpeedCounter is now " + m_SpeedCounter );
-            Log.Info( this, "Speedfactor is now " + m_SpeedFactor );
         }
     }
 
