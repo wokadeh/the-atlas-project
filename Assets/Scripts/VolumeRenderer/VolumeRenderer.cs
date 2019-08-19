@@ -9,6 +9,8 @@ public class VolumeRenderer : MonoBehaviour
     [SerializeField] private MeshRenderer m_Groundplane;
     [SerializeField] private MeshRenderer m_EarthSphere;
 
+    [SerializeField] private GameObject Volume_Renderer_Cartesian_Altitude_Bar;
+
     public VolumeRendererMode Mode { get; private set; }
 
     private MeshRenderer m_Renderer;
@@ -16,6 +18,8 @@ public class VolumeRenderer : MonoBehaviour
     private void Start()
     {
         m_Renderer = this.GetComponent<MeshRenderer>();
+
+        Volume_Renderer_Cartesian_Altitude_Bar.transform.localScale = new Vector3( 0.1f, 5F, 0.1f );
 
         // We always start of in cartesian mode
         this.SetMode( VolumeRendererMode.Cartesian );
