@@ -20,23 +20,28 @@ public class TimelineUI : MonoBehaviour
     [SerializeField] private Button m_LoopButton;
     [SerializeField] private TMP_Text m_LoopButtonText;
 
-    private float m_FrameWaitTime;
-    private bool m_Playing;
+    private float m_SpeedFactor;
+    private float m_SpeedCounter;
+    private bool m_IsPlaying;
     private bool m_ShouldLoop;
 
     private void Start()
     {
+        this.Reset();
+
         m_TimelineSlider.onValueChanged.AddListener( this.OnTimelineChanged );
         m_ToStartButton.onClick.AddListener( () => m_TimelineSlider.value = 0 );
-        m_StepBackwardsButton.onClick.AddListener( () => m_TimelineSlider.value-- );
+        m_StepBackwardsButton.onClick.AddListener( this.OnBackward );
         m_PlayButton.onClick.AddListener( this.OnPlay );
-        m_StepForwardButton.onClick.AddListener( () => m_TimelineSlider.value++ );
+        m_StepForwardButton.onClick.AddListener( this.OnForward );
         m_ToEndButton.onClick.AddListener( () => m_TimelineSlider.value = m_TimelineSlider.maxValue );
         m_LoopButton.onClick.AddListener( this.OnLoop );
     }
 
     private void OnEnable()
     {
+        this.Reset();
+
         if ( m_DataManager.m_CurrentAsset != null )
         {
             m_TimelineSlider.minValue = 0;
@@ -47,13 +52,65 @@ public class TimelineUI : MonoBehaviour
 
     private void OnDisable()
     {
-        if ( m_Playing )
+        this.Reset();
+
+        if ( m_IsPlaying )
         {
             this.OnPlay();
         }
     }
 
-    public void Show(bool _isShown)
+    private void OnForward()
+    {
+        this.ChangeSpeed( -1 );
+    }
+
+    private void OnBackward()
+    {
+        this.ChangeSpeed( 1 );
+    }
+
+    private void Reset()
+    {
+        m_SpeedFactor = 1F;
+        m_SpeedCounter = 0F;
+        m_IsPlaying = false;
+        m_ShouldLoop = false;
+    }
+
+    private void ChangeSpeed( float change )
+    {
+        Log.Info( this, "OnChange speed " + change );
+        if ( !m_IsPlaying )
+        {
+            m_TimelineSlider.value += change;
+        }
+        else
+        {
+            m_SpeedCounter += change;
+
+
+            if ( m_SpeedCounter < 0 ) // We are slow already
+            {
+                Log.Info( this, "Small step" );
+                m_SpeedFactor = 1F / ( Globals.TIMELINE_SPEEDFACTOR * Mathf.Abs( m_SpeedCounter ) );
+            }
+            else if ( m_SpeedCounter > 0 )// We are fast already
+            {
+                Log.Info( this, "Big step" );
+                m_SpeedFactor = Globals.TIMELINE_SPEEDFACTOR * Mathf.Abs( m_SpeedCounter );
+            }
+            else
+            {
+                m_SpeedFactor = 1;
+            }
+
+            Log.Info( this, "SpeedCounter is now " + m_SpeedCounter );
+            Log.Info( this, "Speedfactor is now " + m_SpeedFactor );
+        }
+    }
+
+    public void Show( bool _isShown )
     {
         // Warning: Normally the timelinepanel will be toggles from Unity UI (Button -> onClick() -> TogglePanel (item)
         m_TimelinePanel.SetActive( _isShown );
@@ -67,9 +124,9 @@ public class TimelineUI : MonoBehaviour
             return;
         }
 
-        m_Playing = !m_Playing;
+        m_IsPlaying = !m_IsPlaying;
 
-        if ( m_Playing )
+        if ( m_IsPlaying )
         {
             m_PlayButtonText.text = "\uf04c";
             m_TimelineSlider.interactable = false;
@@ -117,7 +174,7 @@ public class TimelineUI : MonoBehaviour
 
         for ( int f = start; f <= m_TimelineSlider.maxValue; f++ )
         {
-            yield return new WaitForSeconds( (1.0f / m_FPS) * Time.deltaTime );
+            yield return new WaitForSeconds( ( 1F / m_FPS ) * m_SpeedFactor * Time.deltaTime );
 
             m_TimelineSlider.value = f;
 
