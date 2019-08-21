@@ -111,13 +111,6 @@ Shader "Custom/Ray Casting" {
 				float z = 1 - pos[_Axis[2] - 1];
 				float newLogZ = 1 - ( log(z * _MaxPressure) / _LogMaxPressure);
 
-				// debugging. Ask a question and get red as reward
-				if (newLogZ > 1.5)
-				{
-					return float4(1, 0, 0, 1);
-				}
-
-
 				float3 posTex = float3(pos[_Axis[0] - 1], pos[_Axis[1] - 1], newLogZ);
 
 				posTex = (posTex - 0.5) * _TexFilling + 0.5;

@@ -28,7 +28,7 @@ public class ProjectSaveUI : MonoBehaviour
 
     private void SaveProject()
     {
-        this.SaveProject( m_DataManager.m_MetaData.DataName, m_DefaultProjectDir, true );
+        this.SaveProject( m_DataManager.MetaData.DataName, m_DefaultProjectDir, true );
     }
 
     private void SaveProject( string _projectFileName, string _projectFolderPath, bool _saveOnlyXml )
@@ -44,7 +44,7 @@ public class ProjectSaveUI : MonoBehaviour
 
     private void SaveAsProject()
     {
-        string file = StandaloneFileBrowser.SaveFilePanel( "Save project as...", m_DefaultProjectDir, m_DataManager.m_MetaData.DataName, Globals.XML_FILE_FILTER );
+        string file = StandaloneFileBrowser.SaveFilePanel( "Save project as...", m_DefaultProjectDir, m_DataManager.MetaData.DataName, Globals.XML_FILE_FILTER );
 
         file = Path.GetFileNameWithoutExtension( file );
 

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 [RequireComponent( typeof( MeshRenderer ) )]
 public class VolumeRenderer : MonoBehaviour
@@ -9,63 +10,113 @@ public class VolumeRenderer : MonoBehaviour
     [SerializeField] private MeshRenderer m_Groundplane;
     [SerializeField] private MeshRenderer m_EarthSphere;
 
-    [SerializeField] private GameObject Volume_Renderer_Cartesian_Altitude_Bar;
+    [SerializeField] private GameObject m_CartesianAltitudeLevelContainerPrefab;
+    [SerializeField] private GameObject m_CartesianAltitudePrefab;
+
+    [SerializeField] private DataManager m_DataManager;
+    [SerializeField] private bool m_ShowAltitudeLevels;
 
     public VolumeRendererMode Mode { get; private set; }
 
     private MeshRenderer m_Renderer;
+    private GameObject m_CartesianAltitudeLevelContainer;
+    private List<GameObject> m_Levels;
 
     private void Start()
     {
         m_Renderer = this.GetComponent<MeshRenderer>();
 
-        Volume_Renderer_Cartesian_Altitude_Bar.transform.localScale = new Vector3( 0.1f, 5F, 0.1f );
-
         // We always start of in cartesian mode
         this.SetMode( VolumeRendererMode.Cartesian );
     }
 
-    public void SetMode( VolumeRendererMode mode )
+    public void SetMode( VolumeRendererMode _mode )
     {
-        this.Mode = mode;
+        this.Mode = _mode;
 
-        if ( mode == VolumeRendererMode.Cartesian )
+        if ( _mode == VolumeRendererMode.Cartesian )
         {
-            m_Groundplane.enabled = true;
-            m_EarthSphere.enabled = false;
-            m_Renderer.material = m_CartesianMaterial;
-            this.transform.localScale = new Vector3( 1f, 0.2f, -0.75f );
-            this.transform.rotation = Quaternion.Euler( 180, 0, 0 );
+            this.InitMode( true, m_CartesianMaterial, Globals.CARTESIAN_SCALE, Globals.CARTESIAN_ROTATION );
+
+            this.SetAltitudeLevelGridActive( m_ShowAltitudeLevels );
         }
-        else if ( mode == VolumeRendererMode.Spherical )
+        else if ( _mode == VolumeRendererMode.Spherical )
         {
-            m_Groundplane.enabled = false;
-            m_EarthSphere.enabled = true;
-            m_Renderer.material = m_SphericalMaterial;
-            this.transform.localScale = new Vector3( 1f, 1f, 1f );
-            this.transform.rotation = Quaternion.Euler( -90, 0, 0 );
+            this.InitMode( true, m_SphericalMaterial, Globals.SPHERICAL_SCALE, Globals.SPHERIAL_ROTATION );
+
+            this.ClearCartesianLevels();
         }
     }
 
-    public void SetData( TimeStepDataAsset data )
+    public void InitMode( bool _isGround, Material _material, Vector3 _scale, Quaternion _rot )
     {
-        if( m_Renderer )
+        m_Groundplane.enabled = _isGround;
+        m_EarthSphere.enabled = !_isGround;
+
+        m_Renderer.material = _material;
+        this.transform.localScale = _scale;
+        this.transform.rotation = _rot;
+    }
+
+    public void SetData( TimeStepDataAsset _data )
+    {
+        if ( m_Renderer )
         {
             m_Renderer.enabled = true;
         }
 
-        m_CartesianMaterial.SetTexture( "_Data", data.DataTexture );
-        m_SphericalMaterial.SetTexture( "_Data", data.DataTexture );
+        m_CartesianMaterial.SetTexture( "_Data", _data.DataTexture );
+        m_SphericalMaterial.SetTexture( "_Data", _data.DataTexture );
     }
 
-    public void SetTransferFunction( Texture2D transferFunction )
+    public void SetTransferFunction( Texture2D _transferFunction )
     {
-        m_CartesianMaterial.SetTexture( "_TFTex", transferFunction );
-        m_SphericalMaterial.SetTexture( "_TFTex", transferFunction );
+        m_CartesianMaterial.SetTexture( "_TFTex", _transferFunction );
+        m_SphericalMaterial.SetTexture( "_TFTex", _transferFunction );
     }
 
     public void Disable()
     {
         m_Renderer.enabled = false;
+    }
+
+    private void SetAltitudeLevelGridActive( bool _isActive )
+    {
+        Log.Info( this, "Create altitude level grid: " + _isActive );
+        if ( _isActive )
+        {
+
+            m_CartesianAltitudeLevelContainer = Instantiate( m_CartesianAltitudeLevelContainerPrefab, this.transform );
+            m_CartesianAltitudeLevelContainer.name = $"Cartesian_Altitude_Container";
+            m_CartesianAltitudeLevelContainer.transform.localScale = this.transform.localScale;
+            m_CartesianAltitudeLevelContainer.transform.rotation = this.transform.rotation;
+
+            m_Levels = new List<GameObject>();
+
+            for ( int i = 0; i < m_DataManager.MetaData.Levels; i++ )
+            {
+                Log.Info( this, "Create level " + i );
+                GameObject cartesianAltitudeLevel = Instantiate( m_CartesianAltitudePrefab );
+
+                float y = i * ( 1F / m_DataManager.MetaData.Levels );
+                cartesianAltitudeLevel.transform.position = new Vector3( 0, y, 0 );
+
+                m_Levels.Add( cartesianAltitudeLevel );
+            }
+        }
+    }
+
+    private void ClearCartesianLevels()
+    {
+        if ( m_Levels != null )
+        {
+            foreach ( var level in m_Levels )
+            {
+                Destroy( level.gameObject );
+            }
+            m_Levels.Clear();
+
+            Destroy( m_CartesianAltitudeLevelContainer.gameObject );
+        }
     }
 }

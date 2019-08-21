@@ -20,9 +20,9 @@ public class DataManager : MonoBehaviour
     public event Action OnNewImport;
     public event Action<TimeStepDataAsset> OnDataAssetChanged;
 
-    public IMetaData m_MetaData { get; private set; }
+    public IMetaData MetaData { get; private set; }
     public string CurrentVariable { get; private set; }
-    public TimeStepDataAsset m_CurrentAsset { get; private set; }
+    public TimeStepDataAsset CurrentAsset { get; private set; }
     private IMetaDataManager m_MetaDataManager;
     private IDataLoader m_DataLoder;
 
@@ -36,7 +36,7 @@ public class DataManager : MonoBehaviour
         m_MetaDataManager = new MetaDataManager();
         m_DataAssets = new Dictionary<string, List<TimeStepDataAsset>>();
         CurrentVariable = "";
-        m_MetaData = null;
+        MetaData = null;
 
         m_TimelineUI.Show( false );
         m_CameraModeUI.Show( false );
@@ -62,7 +62,7 @@ public class DataManager : MonoBehaviour
 
     public void SetCurrentAsset( TimeStepDataAsset _timeStepDataAsset )
     {
-        m_CurrentAsset = _timeStepDataAsset;
+        CurrentAsset = _timeStepDataAsset;
         OnDataAssetChanged?.Invoke( _timeStepDataAsset );
     }
 
@@ -73,13 +73,13 @@ public class DataManager : MonoBehaviour
         this.SetCurrentAsset( this.CurrentDataAssets.First() );
 
         // Set new data
-        m_VolumeRenderer.SetData( this.m_CurrentAsset );
+        m_VolumeRenderer.SetData( this.CurrentAsset );
     }
 
     private IEnumerator SaveProjectCoroutine( string _projectFileName, string _projectFolderPath, bool _saveOnlyXml, IProgress<float> _progress, Action _callback )
     {
         // 1. Write new xml file with all previous data (bitdepth, levels, etc.)
-        if ( this.m_MetaData != null )
+        if ( this.MetaData != null )
         {
             // Warning! Make sure always MetaData has been filled by importing/loading!!!!
             string projectFileAndFolderPath = Path.Combine( _projectFolderPath, _projectFileName );
@@ -93,9 +93,9 @@ public class DataManager : MonoBehaviour
                 }
                 string filePath = Path.Combine( projectFileAndFolderPath, _projectFileName + ".xml" );
 
-                this.m_MetaData = m_MetaDataManager.SetMetaDataName( _projectFileName, this.m_MetaData );
+                this.MetaData = m_MetaDataManager.SetMetaDataName( _projectFileName, this.MetaData );
 
-                m_MetaDataManager.Write( filePath, this.m_MetaData, m_DataAssets );
+                m_MetaDataManager.Write( filePath, this.MetaData, m_DataAssets );
 
                 Log.Info( this, "Successfully wrote project XML to: " + filePath );
             }
@@ -124,12 +124,12 @@ public class DataManager : MonoBehaviour
     private IEnumerator CreateAssets( IProgress<float> _progress )
     {
 
-        for ( int varIndex = 0; varIndex < this.m_MetaData.Variables.Count; varIndex++ )
+        for ( int varIndex = 0; varIndex < this.MetaData.Variables.Count; varIndex++ )
         {
 
-            IVariable variable = this.m_MetaData.Variables[ varIndex ];
+            IVariable variable = this.MetaData.Variables[ varIndex ];
 
-            string variablePath = Path.Combine( Globals.SAVE_PROJECTS_PATH, this.m_MetaData.DataName, variable.Name );
+            string variablePath = Path.Combine( Globals.SAVE_PROJECTS_PATH, this.MetaData.DataName, variable.Name );
 
             Log.Warn( this, "Save assets to: " + variablePath );
 
@@ -142,7 +142,7 @@ public class DataManager : MonoBehaviour
             yield return this.StartCoroutine( this.SaveVariableRoutine( variable, variablePath, varIndex, new Progress<float>( value =>
             {
                 // Do overall progress report
-                _progress.Report( Utils.CalculateProgress( varIndex, m_MetaData.Variables.Count, value ) );
+                _progress.Report( Utils.CalculateProgress( varIndex, MetaData.Variables.Count, value ) );
             } ) ) );
         }
     }
@@ -199,12 +199,12 @@ public class DataManager : MonoBehaviour
 
         Log.Info( this, "Loading and creating assets took " + ( stopwatch.ElapsedMilliseconds / 1000.0f ).ToString( "0.00" ) + "seconds." );
 
-        this.m_MetaData = metaData;
+        this.MetaData = metaData;
         this.CurrentVariable = m_DataAssets.First().Key;
-        this.m_CurrentAsset = this.CurrentDataAssets.First();
+        this.CurrentAsset = this.CurrentDataAssets.First();
 
         // Set new data
-        m_VolumeRenderer.SetData( this.m_CurrentAsset );
+        m_VolumeRenderer.SetData( this.CurrentAsset );
         m_TransferFunctionUI.Redraw();
 
         OnNewImport?.Invoke();
@@ -264,12 +264,12 @@ public class DataManager : MonoBehaviour
 
         Log.Info( this, "Loading and creating assets took " + ( stopwatch.ElapsedMilliseconds / 1000.0f ).ToString( "0.00" ) + "seconds." );
 
-        this.m_MetaData = metaData;
+        this.MetaData = metaData;
         this.CurrentVariable = m_DataAssets.First().Key;
-        this.m_CurrentAsset = this.CurrentDataAssets.First();
+        this.CurrentAsset = this.CurrentDataAssets.First();
 
         // Set new data
-        m_VolumeRenderer.SetData( this.m_CurrentAsset );
+        m_VolumeRenderer.SetData( this.CurrentAsset );
         m_TransferFunctionUI.Redraw();
 
         OnNewImport?.Invoke();
@@ -290,8 +290,8 @@ public class DataManager : MonoBehaviour
 
         for ( int i = 0; i < currentVariableTimeStepList.Count; i++ )
         {
-            string dateTimeString = this.m_MetaData.Timestamps[ _varIndex ][ i ].DateTime.ToString().Replace( ',', '.' );
-            string assetName = Globals.TEXTURE3D_PREFEX + this.m_MetaData.DataName + "_" + _variable.Name + "_" + dateTimeString;
+            string dateTimeString = this.MetaData.Timestamps[ _varIndex ][ i ].DateTime.ToString().Replace( ',', '.' );
+            string assetName = Globals.TEXTURE3D_PREFEX + this.MetaData.DataName + "_" + _variable.Name + "_" + dateTimeString;
             string assetPath = textureAssetPath + "/";
 
             string assetCompleteName = assetPath + assetName + ".asset";

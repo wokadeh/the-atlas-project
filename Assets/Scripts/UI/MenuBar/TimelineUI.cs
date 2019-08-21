@@ -43,7 +43,7 @@ public class TimelineUI : MonoBehaviour
     {
         this.Reset();
 
-        if ( m_DataManager.m_CurrentAsset != null )
+        if ( m_DataManager.CurrentAsset != null )
         {
             m_TimelineSlider.minValue = 0;
             m_TimelineSlider.maxValue = m_DataManager.CurrentDataAssets.Count - 1;

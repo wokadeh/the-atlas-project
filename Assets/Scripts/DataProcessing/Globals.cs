@@ -4,7 +4,8 @@
 
 
 using SFB;
-using System;
+using Unity;
+using UnityEngine;
 
 public struct Globals
 {
@@ -47,4 +48,9 @@ public struct Globals
     public const string CAMERA_FIRSTP_TITLE = "First Person";
 
     public const float TIMELINE_SPEEDFACTOR = 100;
+
+    public static Vector3 CARTESIAN_SCALE = new Vector3( 1, 0.2f, -0.75f );
+    public static Quaternion CARTESIAN_ROTATION = Quaternion.Euler( 180, 0, 0 );
+    public static Vector3 SPHERICAL_SCALE = new Vector3( 1, 1, 1 );
+    public static Quaternion SPHERIAL_ROTATION = Quaternion.Euler( -90, 0, 0 );
 }

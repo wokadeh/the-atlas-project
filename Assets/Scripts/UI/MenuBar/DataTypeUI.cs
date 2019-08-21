@@ -32,7 +32,7 @@ public class DataTypeUI : MonoBehaviour
         
 
         // Create toggles for all variables
-        foreach (IVariable variable in this.m_DataManager.m_MetaData.Variables)
+        foreach (IVariable variable in this.m_DataManager.MetaData.Variables)
         {
             string name = variable.Name;
             Toggle toggle = Instantiate( this.m_DataTypeTogglePrefab, this.transform );
@@ -91,7 +91,7 @@ public class DataTypeUI : MonoBehaviour
 
         this.m_DataManager.OnNewImport += this.OnNewImport;
 
-        if (this.m_DataManager.m_CurrentAsset != null)
+        if (this.m_DataManager.CurrentAsset != null)
         {
             this.OnNewImport();
         }
