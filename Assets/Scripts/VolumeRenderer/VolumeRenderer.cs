@@ -10,7 +10,6 @@ public class VolumeRenderer : MonoBehaviour
     [SerializeField] private MeshRenderer m_Groundplane;
     [SerializeField] private MeshRenderer m_EarthSphere;
 
-    [SerializeField] private GameObject m_CartesianAltitudeLevelContainerPrefab;
     [SerializeField] private GameObject m_CartesianAltitudePrefab;
 
     [SerializeField] private DataManager m_DataManager;
@@ -34,13 +33,13 @@ public class VolumeRenderer : MonoBehaviour
     {
         this.Mode = _mode;
 
-        if ( _mode == VolumeRendererMode.Cartesian )
+        if( _mode == VolumeRendererMode.Cartesian )
         {
             this.InitMode( true, m_CartesianMaterial, Globals.CARTESIAN_SCALE, Globals.CARTESIAN_ROTATION );
 
             this.SetAltitudeLevelGridActive( m_ShowAltitudeLevels );
         }
-        else if ( _mode == VolumeRendererMode.Spherical )
+        else if( _mode == VolumeRendererMode.Spherical )
         {
             this.InitMode( true, m_SphericalMaterial, Globals.SPHERICAL_SCALE, Globals.SPHERIAL_ROTATION );
 
@@ -60,7 +59,7 @@ public class VolumeRenderer : MonoBehaviour
 
     public void SetData( TimeStepDataAsset _data )
     {
-        if ( m_Renderer )
+        if( m_Renderer )
         {
             m_Renderer.enabled = true;
         }
@@ -82,24 +81,17 @@ public class VolumeRenderer : MonoBehaviour
 
     private void SetAltitudeLevelGridActive( bool _isActive )
     {
-        Log.Info( this, "Create altitude level grid: " + _isActive );
-        if ( _isActive )
+        if( _isActive )
         {
-
-            m_CartesianAltitudeLevelContainer = Instantiate( m_CartesianAltitudeLevelContainerPrefab, this.transform );
-            m_CartesianAltitudeLevelContainer.name = $"Cartesian_Altitude_Container";
-            m_CartesianAltitudeLevelContainer.transform.localScale = this.transform.localScale;
-            m_CartesianAltitudeLevelContainer.transform.rotation = this.transform.rotation;
-
             m_Levels = new List<GameObject>();
-
-            for ( int i = 0; i < m_DataManager.MetaData.Levels; i++ )
+            for( int i = 0; i < m_DataManager.MetaData.Levels; i++ )
             {
-                Log.Info( this, "Create level " + i );
-                GameObject cartesianAltitudeLevel = Instantiate( m_CartesianAltitudePrefab );
+                GameObject cartesianAltitudeLevel = Instantiate(m_CartesianAltitudePrefab, this.transform);
+                cartesianAltitudeLevel.name = $"Cartesian_Altitude_Level_" + i;
 
-                float y = i * ( 1F / m_DataManager.MetaData.Levels );
-                cartesianAltitudeLevel.transform.position = new Vector3( 0, y, 0 );
+                float y = ((float)i / m_DataManager.MetaData.Levels) * this.transform.localScale.y;
+
+                cartesianAltitudeLevel.transform.position = new Vector3( 0, y - ( this.transform.localScale.y / 2 ), 0 );
 
                 m_Levels.Add( cartesianAltitudeLevel );
             }
@@ -108,15 +100,13 @@ public class VolumeRenderer : MonoBehaviour
 
     private void ClearCartesianLevels()
     {
-        if ( m_Levels != null )
+        if( m_Levels != null )
         {
-            foreach ( var level in m_Levels )
+            foreach( var level in m_Levels )
             {
                 Destroy( level.gameObject );
             }
             m_Levels.Clear();
-
-            Destroy( m_CartesianAltitudeLevelContainer.gameObject );
         }
     }
 }
