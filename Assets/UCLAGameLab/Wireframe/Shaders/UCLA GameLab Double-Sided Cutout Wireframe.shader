@@ -5,6 +5,7 @@ Shader "UCLA Game Lab/Wireframe/Double-Sided Cutout"
 		_Color ("Line Color", Color) = (1,1,1,1)
 		_MainTex ("Main Texture", 2D) = "white" {}
 		_Thickness ("Thickness", Float) = 1
+		_Radius ("Radius", Range(0.001, 500)) = 10
 	}
 
 	SubShader 
@@ -37,11 +38,13 @@ Shader "UCLA Game Lab/Wireframe/Double-Sided Cutout"
 				{
 					UCLAGL_geom( p, triStream);
 				}
+
+				float _Radius;
 				
 				// Fragment Shader
-				float4 frag(UCLAGL_g2f input) : COLOR
+				float4 frag(UCLAGL_g2f input) : SV_Target
 				{	
-					float4 col = UCLAGL_frag(input);
+					float4 col = UCLAGL_frag(input, _Radius);
 					if( col.a < 0.5f ) discard;
 					else col.a = 1.0f;
 					

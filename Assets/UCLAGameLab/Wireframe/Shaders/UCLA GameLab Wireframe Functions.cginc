@@ -12,16 +12,18 @@
 // Vertex to Geometry
 struct UCLAGL_v2g
 {
-	float4	pos		: POSITION;		// vertex position
+	float4	pos		: SV_POSITION;	// vertex position
 	float2  uv		: TEXCOORD0;	// vertex uv coordinate
+	float4 worldpos	: TEXCOORD1;
 };
 
 // Geometry to  UCLAGL_fragment
 struct UCLAGL_g2f
 {
-	float4	pos		: POSITION;		// fragment position
+	float4	pos		: SV_POSITION;	// fragment position
 	float2	uv		: TEXCOORD0;	// fragment uv coordinate
-	float3  dist	: TEXCOORD1;	// distance to each edge of the triangle
+	float4 worldpos	: TEXCOORD1;
+	float3  dist	: TEXCOORD2;	// distance to each edge of the triangle
 };
 
 // PARAMETERS //
@@ -37,8 +39,10 @@ sampler2D _MainTex;			// Texture used for the line
 UCLAGL_v2g UCLAGL_vert(appdata_base v)
 {
 	UCLAGL_v2g output;
+
 	output.pos =  UnityObjectToClipPos(v.vertex);
 	output.uv = TRANSFORM_TEX (v.texcoord, _MainTex);//v.texcoord;
+	output.worldpos = mul(unity_ObjectToWorld, v.vertex);
 
 	return output;
 }
@@ -71,26 +75,30 @@ void UCLAGL_geom(triangle UCLAGL_v2g p[3], inout TriangleStream<UCLAGL_g2f> triS
 	pIn.pos = p[0].pos;
 	pIn.uv = p[0].uv;
 	pIn.dist = float3(dist0,0,0);
+	pIn.worldpos = p[0].worldpos;
 	triStream.Append(pIn);
 
 	//add the second point
 	pIn.pos =  p[1].pos;
 	pIn.uv = p[1].uv;
 	pIn.dist = float3(0,dist1,0);
+	pIn.worldpos = p[1].worldpos;
 	triStream.Append(pIn);
 	
 	//add the third point
 	pIn.pos = p[2].pos;
 	pIn.uv = p[2].uv;
 	pIn.dist = float3(0,0,dist2);
+	pIn.worldpos = p[2].worldpos;
 	triStream.Append(pIn);
 }
 
 // Fragment Shader
-float4 UCLAGL_frag(UCLAGL_g2f input) : COLOR
+float4 UCLAGL_frag(UCLAGL_g2f input, float radius) : SV_Target 
 {			
 	//find the smallest distance
 	float val = min( input.dist.x, min( input.dist.y, input.dist.z));
+	float farDist = distance(input.worldpos, _WorldSpaceCameraPos);
 	
 	//calculate power to 2 to thin the line
 	val = exp2( -1/_Thickness * val * val );
@@ -99,7 +107,13 @@ float4 UCLAGL_frag(UCLAGL_g2f input) : COLOR
 	float4 targetColor = _Color * tex2D( _MainTex, input.uv);
 	float4 transCol = _Color * tex2D( _MainTex, input.uv);
 	transCol.a = 0;
-	return val * targetColor + ( 1 - val ) * transCol;
+	
+	float4 finalColor = val * targetColor + ( 1 - val ) * transCol;
+
+	// make color transparent over distance
+	finalColor.a = (radius/farDist);
+
+	return finalColor;
 }
 
 

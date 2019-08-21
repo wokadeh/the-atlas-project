@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 Shader "UCLA Game Lab/Wireframe/Double-Sided" 
 {
 	Properties 
@@ -5,6 +7,7 @@ Shader "UCLA Game Lab/Wireframe/Double-Sided"
 		_Color ("Line Color", Color) = (1,1,1,1)
 		_MainTex ("Main Texture", 2D) = "white" {}
 		_Thickness ("Thickness", Float) = 1
+        _Radius ("Radius", Range(0.001, 500)) = 10
 	}
 
 	SubShader 
@@ -32,6 +35,8 @@ Shader "UCLA Game Lab/Wireframe/Double-Sided"
 				{
 					return UCLAGL_vert(v);
 				}
+ 
+				float _Radius;
 				
 				// Geometry Shader
 				[maxvertexcount(3)]
@@ -41,9 +46,9 @@ Shader "UCLA Game Lab/Wireframe/Double-Sided"
 				}
 				
 				// Fragment Shader
-				float4 frag(UCLAGL_g2f input) : COLOR
+				float4 frag(UCLAGL_g2f input) : SV_Target
 				{	
-					return UCLAGL_frag(input);
+					return UCLAGL_frag(input, _Radius);
 				}
 			
 			ENDCG
@@ -70,6 +75,8 @@ Shader "UCLA Game Lab/Wireframe/Double-Sided"
 				{
 					return UCLAGL_vert(v);
 				}
+				float _Radius;
+
 				
 				// Geometry Shader
 				[maxvertexcount(3)]
@@ -81,7 +88,7 @@ Shader "UCLA Game Lab/Wireframe/Double-Sided"
 				// Fragment Shader
 				float4 frag(UCLAGL_g2f input) : COLOR
 				{	
-					return UCLAGL_frag(input);
+					return UCLAGL_frag(input, _Radius);
 				}
 			
 			ENDCG
