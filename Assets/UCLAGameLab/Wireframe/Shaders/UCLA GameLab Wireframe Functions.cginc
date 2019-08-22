@@ -106,14 +106,16 @@ float4 UCLAGL_frag(UCLAGL_g2f input, float radius) : SV_Target
 	//blend between the lines and the negative space to give illusion of anti aliasing
 	float4 targetColor = _Color * tex2D( _MainTex, input.uv);
 	float4 transCol = _Color * tex2D( _MainTex, input.uv);
+
 	transCol.a = 0;
-	
-	float4 finalColor = val * targetColor + ( 1 - val ) * transCol;
 
 	// make color transparent over distance
-	finalColor.a = (radius/farDist);
+	if(farDist > 0.2)
+	{
+		targetColor.a = saturate(exp2( -1/_Thickness * farDist * farDist) - 0.8);
+	}
 
-	return finalColor;
+	return val * targetColor + ( 1 - val ) * transCol;
 }
 
 
