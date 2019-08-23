@@ -101,7 +101,7 @@ float4 UCLAGL_frag(UCLAGL_g2f input, float radius) : SV_Target
 	float farDist = distance(input.worldpos, _WorldSpaceCameraPos);
 	
 	//calculate power to 2 to thin the line
-	val = exp2( -1/_Thickness * val * val );
+	val = exp2( -1/_Thickness * val );
 		
 	//blend between the lines and the negative space to give illusion of anti aliasing
 	float4 targetColor = _Color * tex2D( _MainTex, input.uv);
@@ -110,12 +110,21 @@ float4 UCLAGL_frag(UCLAGL_g2f input, float radius) : SV_Target
 	transCol.a = 0;
 
 	// make color transparent over distance
-	if(farDist > 0.2)
+	if(farDist > 0.3)
 	{
 		targetColor.a = saturate(exp2( -1/_Thickness * farDist * farDist) - 0.8);
+
+
+	}
+	float4 finalColor = val * targetColor + ( 1 - val ) * transCol;
+
+
+	if(radius == 0)
+	{
+		finalColor.a = finalColor.a - 0.2;
 	}
 
-	return val * targetColor + ( 1 - val ) * transCol;
+	return finalColor;
 }
 
 

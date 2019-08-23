@@ -48,7 +48,7 @@ Shader "UCLA Game Lab/Wireframe/Double-Sided"
 				// Fragment Shader
 				float4 frag(UCLAGL_g2f input) : SV_Target
 				{	
-					return UCLAGL_frag(input, _Radius);
+					return UCLAGL_frag(input, 0);
 				}
 			
 			ENDCG
@@ -75,9 +75,9 @@ Shader "UCLA Game Lab/Wireframe/Double-Sided"
 				{
 					return UCLAGL_vert(v);
 				}
+
 				float _Radius;
 
-				
 				// Geometry Shader
 				[maxvertexcount(3)]
 				void geom(triangle UCLAGL_v2g p[3], inout TriangleStream<UCLAGL_g2f> triStream)
@@ -86,9 +86,9 @@ Shader "UCLA Game Lab/Wireframe/Double-Sided"
 				}
 				
 				// Fragment Shader
-				float4 frag(UCLAGL_g2f input) : COLOR
+				float4 frag(UCLAGL_g2f input) : SV_Target
 				{	
-					return UCLAGL_frag(input, _Radius);
+					return UCLAGL_frag(input, 1);
 				}
 			
 			ENDCG
