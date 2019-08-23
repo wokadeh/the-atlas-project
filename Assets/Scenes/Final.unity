@@ -7939,9 +7939,7 @@ MonoBehaviour:
   m_SphericalMaterial: {fileID: 2100000, guid: dbf9b90ed5ae8cf48ae99cefa557a654, type: 2}
   m_Groundplane: {fileID: 258605666}
   m_EarthSphere: {fileID: 1920428497}
-  m_CartesianAltitudeLevelContainerPrefab: {fileID: 7552898540531199876, guid: a843909e859c3b54d8a2aa7a65109491,
-    type: 3}
-  m_CartesianAltitudePrefab: {fileID: 6113171767946308786, guid: f428f2461efc0224aadbab7b08535988,
+  m_CartesianLevelScalePlanePrefab: {fileID: 6113171767946308786, guid: f428f2461efc0224aadbab7b08535988,
     type: 3}
   m_DataManager: {fileID: 631215805}
   m_ShowAltitudeLevels: 1

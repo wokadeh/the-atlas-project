@@ -1,4 +1,4 @@
-﻿Shader "Unlit/NewUnlitShader"
+﻿Shader "Unlit/LevelScaleShader"
 {
     Properties
     {
@@ -42,6 +42,8 @@
             sampler2D _MainTex;
             float4 _MainTex_ST;
 			float _Levels;
+			float _MaxPressure;
+			float _LogMaxPressure;
 
             v2f vert (appdata v)
             {
@@ -63,8 +65,10 @@
 				// draw the level lines
 				for(int i = 0; i < _Levels; i++)
 				{
-					float lineIdx = (float) i / _Levels;
-					if(input.uv.x <= ( lineIdx + bounds ) && input.uv.x >= ( lineIdx - bounds ) )
+					float linIdx = (float) i / _Levels;
+					float logIdx = ( log( linIdx * _MaxPressure ) / _LogMaxPressure );
+
+					if(input.uv.x <= ( logIdx + bounds ) && input.uv.x >= ( logIdx - bounds ) )
 					{
 						col = fixed4(1,1,1,1);
 					}

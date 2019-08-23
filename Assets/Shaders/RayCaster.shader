@@ -109,9 +109,8 @@ Shader "Custom/Ray Casting" {
 			{
 				// sample texture (pos is normalized in [0,1])
 				float z = 1 - pos[_Axis[2] - 1];
-
-				// distribute values with logarithm in altitude
 				float newLogZ = 1 - ( log(z * _MaxPressure) / _LogMaxPressure);
+
 				float3 posTex = float3(pos[_Axis[0] - 1], pos[_Axis[1] - 1], newLogZ);
 
 				posTex = (posTex - 0.5) * _TexFilling + 0.5;

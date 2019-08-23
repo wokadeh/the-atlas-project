@@ -12,9 +12,8 @@ GameObject:
   - component: {fileID: 7464927845349308270}
   - component: {fileID: 1249663390269004207}
   - component: {fileID: 2373550512500769834}
-  - component: {fileID: -4941119766245003377}
   m_Layer: 0
-  m_Name: AltitudePlane
+  m_Name: CartesianLevelScalePlane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -59,7 +58,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d715c2b7c4f339246987a5de296315bc, type: 2}
+  - {fileID: 2100000, guid: 2cfb06aec49e0fa46970888abaab3650, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -94,17 +93,3 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 14
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &-4941119766245003377
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6113171767946308786}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 66fa6185189082140a0bdfe45b85342e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  subdivisionLevel: 2
-  timesToSubdivide: 4
