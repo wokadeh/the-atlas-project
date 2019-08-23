@@ -21,6 +21,8 @@ public class TimelineUI : MonoBehaviour
     [SerializeField] private Button m_LoopButton;
     [SerializeField] private TMP_Text m_LoopButtonText;
 
+    public timestamp timestampLable;
+
     private float m_SpeedFactor;
     private float m_SpeedCounter;
     private bool m_IsPlaying;
@@ -37,6 +39,8 @@ public class TimelineUI : MonoBehaviour
         m_StepForwardButton.onClick.AddListener( this.OnForward );
         m_ToEndButton.onClick.AddListener( () => m_TimelineSlider.value = m_TimelineSlider.maxValue );
         m_LoopButton.onClick.AddListener( this.OnLoop );
+
+        
     }
 
     private void OnEnable()
@@ -164,6 +168,8 @@ public class TimelineUI : MonoBehaviour
         TimeStepDataAsset asset = m_DataManager.CurrentDataAssets[ ( int ) value ];
         m_DataManager.SetCurrentAsset( asset );
         m_VolumeRenderer.SetData( asset );
+
+        timestampLable.updateTimestamp((int)value);
     }
 
     private IEnumerator PlayAnimation()

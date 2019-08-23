@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+[System.Serializable]
 public class TimeStepDataAsset {
     public Vector3 Dimensions { get; set; }
     public Texture3D DataTexture { get; set; }

@@ -26,6 +26,9 @@ public class DataManager : MonoBehaviour
     private IMetaDataManager m_MetaDataManager;
     private IDataLoader m_DataLoder;
 
+    
+    public timestamp timestamp;
+
     private void Start()
     {
         this.Clear();
@@ -74,6 +77,8 @@ public class DataManager : MonoBehaviour
 
         // Set new data
         m_VolumeRenderer.SetData( this.CurrentAsset );
+
+        timestamp.updateTimestamp(timestamp.currentIndex);
     }
 
     private IEnumerator SaveProjectCoroutine( string _projectFileName, string _projectFolderPath, bool _saveOnlyXml, IProgress<float> _progress, Action _callback )
@@ -274,6 +279,8 @@ public class DataManager : MonoBehaviour
 
         OnNewImport?.Invoke();
 
+        timestamp.updateTimestamp(timestamp.currentIndex);
+
         _callback?.Invoke();
     }
 
@@ -293,6 +300,7 @@ public class DataManager : MonoBehaviour
             string dateTimeString = this.MetaData.Timestamps[ _varIndex ][ i ].DateTime.ToString().Replace( ',', '.' );
             string assetName = Globals.TEXTURE3D_PREFEX + this.MetaData.DataName + "_" + _variable.Name + "_" + dateTimeString;
             string assetPath = textureAssetPath + "/";
+
 
             string assetCompleteName = assetPath + assetName + ".asset";
 

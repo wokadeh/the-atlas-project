@@ -92,6 +92,8 @@ public class MetaDataManager : IMetaDataManager
 
                     string currentTimeStamp = _metaData.Timestamps[ j ][ i ].DateTime.ToString().Replace( ',', '.' );
 
+                    Debug.Log(currentTimeStamp);
+
                     Log.Info( this, "Save timestamp to XML: " + currentTimeStamp );
 
                     earthFrameDataNode.SetAttribute( Globals.TIMESTAMP_DATETIME_ATTRIBUTE, currentTimeStamp );
@@ -213,6 +215,8 @@ public class MetaDataManager : IMetaDataManager
         TimeStepDataAsset newTimestamp = new TimeStepDataAsset();
 
         newTimestamp.DateTime = this.ReadAttribute( timestampNode, Globals.TIMESTAMP_DATETIME_ATTRIBUTE );
+
+        Debug.Log("loading timestamps: " + newTimestamp.DateTime);
 
         Vector3 dim = new Vector3();
         dim.x = this.ReadAttribute( timestampNode, Globals.TIME_STAMP_DATA_ASSET_DIM_X_ATTRIBUTE );

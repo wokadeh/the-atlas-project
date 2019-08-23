@@ -47,6 +47,7 @@ public class DataTypeUI : MonoBehaviour
                 {
                     this.m_DataManager.SetCurrentVariable( name );
                     Toggle[] toggles = this.transform.GetComponentsInChildren<Toggle>();
+
                     if ( toggles.Length > 1 )
                     {
                         foreach ( Toggle t in toggles )
