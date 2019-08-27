@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7464927845349308270}
   - component: {fileID: 1249663390269004207}
   - component: {fileID: 2373550512500769834}
-  - component: {fileID: -9155336123747694564}
+  - component: {fileID: 2267885504502307558}
   m_Layer: 0
   m_Name: CartesianLevelScalePlane
   m_TagString: Untagged
@@ -94,7 +94,7 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 14
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &-9155336123747694564
+--- !u!114 &2267885504502307558
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -108,3 +108,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_LevelLabelPrefab: {fileID: 1462128688317433678, guid: 49b8c8e41f861514684ea5f7f1be524a,
     type: 3}
+  m_CartesianLevelScaleLabelPrefab: {fileID: 0}
+  m_Camera: {fileID: 0}

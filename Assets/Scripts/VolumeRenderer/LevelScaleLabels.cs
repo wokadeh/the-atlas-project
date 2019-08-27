@@ -11,11 +11,13 @@ using TMPro;
 public class LevelScaleLabels : MonoBehaviour
 {
     [SerializeField] private GameObject m_LevelLabelPrefab;
+    private Camera m_Camera;
     private List<GameObject> m_LabelList;
 
     // Start is called before the first frame update
     void Start()
     {
+        m_Camera = Camera.main;
         int[] levelList = Globals.LEVEL_LIST_37();
         m_LabelList = new List<GameObject>();
         Debug.Log( "level list length " + levelList.Length   );
@@ -37,9 +39,12 @@ public class LevelScaleLabels : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
-        
+        foreach(GameObject label in m_LabelList)
+        {
+            label.transform.rotation = m_Camera.transform.rotation;
+        }
+
     }
 }
