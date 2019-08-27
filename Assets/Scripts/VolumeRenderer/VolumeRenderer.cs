@@ -43,7 +43,7 @@ public class VolumeRenderer : MonoBehaviour
         }
         else if( _mode == VolumeRendererMode.Spherical )
         {
-            this.InitMode( true, m_SphericalMaterial, Globals.SPHERICAL_SCALE, Globals.SPHERIAL_ROTATION );
+            this.InitMode( false, m_SphericalMaterial, Globals.SPHERICAL_SCALE, Globals.SPHERIAL_ROTATION );
 
             this.ClearCartesianLevels();
         }
