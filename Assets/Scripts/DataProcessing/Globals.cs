@@ -53,4 +53,21 @@ public struct Globals
     public static Quaternion CARTESIAN_ROTATION = Quaternion.Euler( 180, 0, 0 );
     public static Vector3 SPHERICAL_SCALE = new Vector3( 1, 1, 1 );
     public static Quaternion SPHERIAL_ROTATION = Quaternion.Euler( -90, 0, 0 );
+
+    public static int[] LEVEL_LIST_37()
+    {
+        int[] outputLevels = new int[37];
+
+            outputLevels[ 0 ] = 1;
+            outputLevels[ 1 ] = 2;
+            outputLevels[ 2 ] = 3;
+            outputLevels[ 3 ] = 5;
+            outputLevels[ 4 ] = 7;
+
+        for(int i = 5; i < 11; i++ )   outputLevels[ i ] = outputLevels[ i - 5 ] * 10;
+
+        for( int i = 11; i < 37; i++ )  outputLevels[ i ] = outputLevels[ i - 1 ] + 25;
+
+        return outputLevels;
+    }
 }

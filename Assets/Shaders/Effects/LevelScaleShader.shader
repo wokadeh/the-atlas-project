@@ -6,6 +6,7 @@
 		_Levels ("Levels", int) = 37
 		_MaxPressure ("Atmospheric pressure maximum", Float) = 1000
 		_LogMaxPressure("Natural Log of Max Pressure Ln(MaxOressure)", Float) = 6.907755279
+		_LineThickness("Thickness of lines", Float) = 0.001
     }
     SubShader
     {
@@ -44,6 +45,7 @@
 			float _Levels;
 			float _MaxPressure;
 			float _LogMaxPressure;
+			float _LineThickness;
 
             v2f vert (appdata v)
             {
@@ -59,17 +61,16 @@
                 fixed4 col = tex2D(_MainTex, input.uv);
 				col.a = 0;
 
-				//float newLogZ = 1 - ( log(i.uv.x * _MaxPressure) / _LogMaxPressure);
-				float bounds = 0.001;
-
 				// draw the level lines
 				for(int i = 0; i < _Levels; i++)
 				{
 					float linIdx = (float) i / _Levels;
 					float logIdx = ( log( linIdx * _MaxPressure ) / _LogMaxPressure );
 
-					if(input.uv.x <= ( logIdx + bounds ) && input.uv.x >= ( logIdx - bounds ) )
+					// if is bad
+					if(input.uv.x <= ( logIdx + _LineThickness ) && input.uv.x >= ( logIdx - _LineThickness ) )
 					{
+						// white pixel line
 						col = fixed4(1,1,1,1);
 					}
 				}
