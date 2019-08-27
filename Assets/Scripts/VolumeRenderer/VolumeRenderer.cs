@@ -86,7 +86,7 @@ public class VolumeRenderer : MonoBehaviour
         m_IsScaleActive = _isActive;
         //GameObject cartesianAltitudeLevel = Instantiate(m_CartesianAltitudeContainerPrefab, this.transform);
         //cartesianAltitudeLevel.name = $"Cartesian_Altitude_Container";
-        if( _isActive )
+
         {
             GameObject cartesianLevelScaleX = Instantiate(m_CartesianLevelScalePlanePrefab, this.transform);
             cartesianLevelScaleX.name = $"Cartesian_Altitude_Scale_X";
