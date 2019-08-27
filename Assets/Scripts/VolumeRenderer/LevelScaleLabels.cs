@@ -18,24 +18,22 @@ public class LevelScaleLabels : MonoBehaviour
     {
         int[] levelList = Globals.LEVEL_LIST_37();
         m_LabelList = new List<GameObject>();
-        int i = 0;
         Debug.Log( "level list length " + levelList.Length   );
 
-        foreach(int levl in levelList)
+        for( int i = 0; i < levelList.Length; i++)
         {
             GameObject label = Instantiate( m_LevelLabelPrefab );
-            label.GetComponent<TextMeshPro>().text = levl.ToString();
+            label.GetComponent<TextMeshPro>().text = levelList[i].ToString();
             label.name = $"Cartesian_Altitude_Level_" + i;
             label.transform.SetParent( this.transform, false );
-            label.transform.localScale = new Vector3( 0.01f, 0.01f, 0.1f );
-            label.transform.position = new Vector3( 0,  - 0.1f + ((float) i / (0.5f* levelList.Length)) * label.transform.localScale.y * 10, label.transform.localScale.z * 3.5F );
+            label.transform.localScale = new Vector3( 0.005f, 0.01f, 0.1f );
+            label.transform.position = new Vector3( 0,  - 0.1f + ((levelList.Length - i) / (0.5f* levelList.Length)) * label.transform.localScale.y * 10, 0.375f );
             label.transform.Rotate( 90, 0, 0 );
             m_LabelList.Add(label);
 
             Debug.Log( "Position: " + i + " is " + label.transform.position );
             Debug.Log( "Local Scale: " + label.transform.localScale );
             Debug.Log( "Local Rotation: " + label.transform.rotation );
-            i++;
         }
     }
 
