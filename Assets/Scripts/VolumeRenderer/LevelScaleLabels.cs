@@ -20,7 +20,6 @@ public class LevelScaleLabels : MonoBehaviour
         m_Camera = Camera.main;
         int[] levelList = Globals.LEVEL_LIST_37();
         m_LabelList = new List<GameObject>();
-        Debug.Log( "level list length " + levelList.Length   );
 
         for( int i = 0; i < levelList.Length; i++)
         {
@@ -32,10 +31,6 @@ public class LevelScaleLabels : MonoBehaviour
             label.transform.position = new Vector3( 0,  - 0.1f + ((levelList.Length - i) / (0.5f* levelList.Length)) * label.transform.localScale.y * 10, 0.375f );
             label.transform.Rotate( 90, 0, 0 );
             m_LabelList.Add(label);
-
-            Debug.Log( "Position: " + i + " is " + label.transform.position );
-            Debug.Log( "Local Scale: " + label.transform.localScale );
-            Debug.Log( "Local Rotation: " + label.transform.rotation );
         }
     }
 

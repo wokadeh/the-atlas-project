@@ -1,51 +1,62 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using TMPro;
 using System;
 
 public class timestamp : MonoBehaviour
 {
-    DataManager dataManager;
-    TextMeshProUGUI text;
+    [SerializeField] private TextMeshProUGUI m_Text;
 
-    IMetaData currentData;
+    DataManager m_DataManager;
 
-    public string currentDate;
-    public double varDate;
-    public int currentIndex;
+    IMetaData m_CurrentData;
 
-    public DateTime dateTime;
+    public string m_CurrentDate;
+    public double m_VarDate;
+    public int m_CurrentIndex;
+
+    public DateTime m_DateTime;
 
     void Start()
     {
-        dataManager = GameObject.Find("SCRIPTS").GetComponent<DataManager>();
-        text = transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+        m_DataManager = GameObject.Find( "SCRIPTS" ).GetComponent<DataManager>();
+        m_Text = this.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
 
-        updateTimestamp(0);
+        this.UpdateTimestamp( 0 );
     }
 
-    public void updateTimestamp(int dateIndex)
+    public void UpdateTimestamp( int _dateIndex )
     {
-        Debug.Log("updating time");
+        Debug.Log( "updating time index: " + _dateIndex );
 
-        currentData = dataManager.MetaData;
+        m_CurrentData = m_DataManager.MetaData;
 
-        if (currentData != null)
+        if( m_CurrentData != null )
         {
-            currentIndex = dateIndex;
+            if( m_DataManager.CurrentVariable != null )
+            {
+                m_CurrentIndex = _dateIndex;
 
-            varDate = currentData.Timestamps[0][dateIndex].DateTime;
-            dateTime = DateTime.FromOADate(varDate - 693960);
+                m_VarDate = m_CurrentData.Timestamps[ 0 ][ _dateIndex ].DateTime;
+                m_DateTime = DateTime.FromOADate( m_VarDate - Globals.DATE_FIX_NUMBER );
 
-            currentDate = dataManager.CurrentVariable + "_" + dateTime.ToString();
+               
 
-            text.text = "Variable: " + dataManager.CurrentVariable + "\n"
-            + "Time: " + dateTime.ToString();
+                m_CurrentDate = m_DataManager.CurrentVariable + "_" + m_DateTime.ToString();
+
+                Log.Info( this, "Current date is: " + m_CurrentDate );
+
+                m_Text.text = m_DataManager.CurrentVariable + "\n" + m_DateTime.ToString();
+
+                Log.Info( this, "Text is: " + m_Text );
+            }
+            else
+            {
+                Log.Info( this, "No data to show in label, current variable is null." );
+            }
         }
         else
         {
-            Debug.Log("no Data");
+            Log.Info( this, "No data to show in label, current data is null." );
         }
     }
 

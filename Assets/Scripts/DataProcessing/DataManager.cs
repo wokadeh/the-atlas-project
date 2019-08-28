@@ -26,7 +26,7 @@ public class DataManager : MonoBehaviour
     private IMetaDataManager m_MetaDataManager;
     private IDataLoader m_DataLoder;
 
-    
+
     public timestamp timestamp;
 
     private void Start()
@@ -71,6 +71,7 @@ public class DataManager : MonoBehaviour
 
     public void SetCurrentVariable( string _variable )
     {
+        Log.Info( this, "Current variable changed to " + _variable );
         this.CurrentVariable = _variable;
 
         this.SetCurrentAsset( this.CurrentDataAssets.First() );
@@ -78,13 +79,13 @@ public class DataManager : MonoBehaviour
         // Set new data
         m_VolumeRenderer.SetData( this.CurrentAsset );
 
-        timestamp.updateTimestamp(timestamp.currentIndex);
+        timestamp.UpdateTimestamp( timestamp.m_CurrentIndex );
     }
 
     private IEnumerator SaveProjectCoroutine( string _projectFileName, string _projectFolderPath, bool _saveOnlyXml, IProgress<float> _progress, Action _callback )
     {
         // 1. Write new xml file with all previous data (bitdepth, levels, etc.)
-        if ( this.MetaData != null )
+        if( this.MetaData != null )
         {
             // Warning! Make sure always MetaData has been filled by importing/loading!!!!
             string projectFileAndFolderPath = Path.Combine( _projectFolderPath, _projectFileName );
@@ -92,7 +93,7 @@ public class DataManager : MonoBehaviour
             try
             {
                 // Only create if it does not exist, yet
-                if ( !Directory.Exists( projectFileAndFolderPath ) )
+                if( !Directory.Exists( projectFileAndFolderPath ) )
                 {
                     Directory.CreateDirectory( projectFileAndFolderPath );
                 }
@@ -104,14 +105,14 @@ public class DataManager : MonoBehaviour
 
                 Log.Info( this, "Successfully wrote project XML to: " + filePath );
             }
-            catch ( Exception e )
+            catch( Exception e )
             {
                 Log.ThrowException( this, "Failed to save meta data: " + projectFileAndFolderPath + " with exception:\n " + e.GetType().Name + "-" + e.Message );
                 _callback?.Invoke();
                 yield break;
             }
 
-            if ( !_saveOnlyXml )
+            if( !_saveOnlyXml )
             {
                 // 2. write 3dTexture assets to folders of variables
                 yield return this.CreateAssets( _progress );
@@ -129,7 +130,7 @@ public class DataManager : MonoBehaviour
     private IEnumerator CreateAssets( IProgress<float> _progress )
     {
 
-        for ( int varIndex = 0; varIndex < this.MetaData.Variables.Count; varIndex++ )
+        for( int varIndex = 0; varIndex < this.MetaData.Variables.Count; varIndex++ )
         {
 
             IVariable variable = this.MetaData.Variables[ varIndex ];
@@ -139,7 +140,7 @@ public class DataManager : MonoBehaviour
             Log.Warn( this, "Save assets to: " + variablePath );
 
             // Temperature/texture3D
-            if ( !Directory.Exists( variablePath ) )
+            if( !Directory.Exists( variablePath ) )
             {
                 Directory.CreateDirectory( variablePath );
             }
@@ -164,7 +165,7 @@ public class DataManager : MonoBehaviour
             metaData = m_MetaDataManager.Import( _projectFilePath );
             bitDepth = Utils.GetBitDepth( metaData );
         }
-        catch ( Exception e )
+        catch( Exception e )
         {
             Log.ThrowException( this, "Failed to read meta data: " + _projectFilePath + " with exception:\n " + e.GetType().Name + "-" + e.Message );
             _callback?.Invoke();
@@ -177,7 +178,7 @@ public class DataManager : MonoBehaviour
 
         Log.Info( this, "Found " + numberOfVariables + " variables" );
 
-        for ( int i = 0; i < numberOfVariables; i++ )
+        for( int i = 0; i < numberOfVariables; i++ )
         {
             IVariable variable = metaData.Variables[ i ];
 
@@ -187,7 +188,7 @@ public class DataManager : MonoBehaviour
             string folder = Path.Combine( Path.GetDirectoryName( _projectFilePath ), variable.Name.ToLower() );
             Log.Info( this, "Create folders and files for variable " + variable.Name );
 
-            if ( Directory.Exists( folder ) )
+            if( Directory.Exists( folder ) )
             {
                 yield return this.StartCoroutine( this.ImportVariableRoutine( tiffLoader, timeAssetBuilder, folder, m_DataAssets[ variable.Name ], bitDepth, new Progress<float>( value =>
                 {
@@ -234,7 +235,7 @@ public class DataManager : MonoBehaviour
             metaData = m_MetaDataManager.Load( _projectFilePath );
             bitDepth = Utils.GetBitDepth( metaData );
         }
-        catch ( Exception e )
+        catch( Exception e )
         {
             Log.ThrowException( this, "Failed to read meta data: " + _projectFilePath + " with exception:\n " + e.GetType().Name + "-" + e.Message );
             _callback?.Invoke();
@@ -242,7 +243,7 @@ public class DataManager : MonoBehaviour
 
         ITimeStepDataAssetBuilder timeAssetBuilder = new TimeStepDataAssetBuilder( metaData.Width, metaData.Height, metaData.Levels );
 
-        for ( int i = 0; i < metaData.Variables.Count; i++ )
+        for( int i = 0; i < metaData.Variables.Count; i++ )
         {
             IVariable variable = metaData.Variables[ i ];
 
@@ -252,7 +253,7 @@ public class DataManager : MonoBehaviour
             string projectAssetPath = Globals.SAVE_PROJECTS_PATH + metaData.DataName;
 
             string variableFolderPath = Path.Combine( projectAssetPath, variable.Name.ToLower() );
-            if ( Directory.Exists( projectAssetPath ) )
+            if( Directory.Exists( projectAssetPath ) )
             {
                 yield return this.StartCoroutine( this.LoadVariableRoutine( variableFolderPath, timeAssetBuilder, m_DataAssets[ variable.Name ], variable, bitDepth, new Progress<float>( value =>
                 {
@@ -279,7 +280,7 @@ public class DataManager : MonoBehaviour
 
         OnNewImport?.Invoke();
 
-        timestamp.updateTimestamp(timestamp.currentIndex);
+        timestamp.UpdateTimestamp( timestamp.m_CurrentIndex );
 
         _callback?.Invoke();
     }
@@ -288,14 +289,14 @@ public class DataManager : MonoBehaviour
     {
         string textureAssetPath = Path.Combine( _variablePath, Globals.TEXTURE3D_FOLDER_NAME );
         // Only create if it does not exist, yet
-        if ( !Directory.Exists( textureAssetPath ) )
+        if( !Directory.Exists( textureAssetPath ) )
         {
             Directory.CreateDirectory( textureAssetPath );
         }
 
         List<TimeStepDataAsset> currentVariableTimeStepList = m_DataAssets[ _variable.Name ];
 
-        for ( int i = 0; i < currentVariableTimeStepList.Count; i++ )
+        for( int i = 0; i < currentVariableTimeStepList.Count; i++ )
         {
             string dateTimeString = this.MetaData.Timestamps[ _varIndex ][ i ].DateTime.ToString().Replace( ',', '.' );
             string assetName = Globals.TEXTURE3D_PREFEX + this.MetaData.DataName + "_" + _variable.Name + "_" + dateTimeString;
@@ -330,9 +331,9 @@ public class DataManager : MonoBehaviour
 
         Texture3D asset = null;
         int assetFileIndex = 0;
-        foreach ( string file in assets )
+        foreach( string file in assets )
         {
-            if ( file.EndsWith( ".asset" ) )
+            if( file.EndsWith( ".asset" ) )
             {
                 Log.Info( this, "Found " + file );
 
@@ -361,7 +362,7 @@ public class DataManager : MonoBehaviour
 
         Log.Info( this, "Start variable importing routine" );
 
-        for ( int i = 0; i < directories.Length; i++ )
+        for( int i = 0; i < directories.Length; i++ )
         {
             string directory = directories[ i ];
 

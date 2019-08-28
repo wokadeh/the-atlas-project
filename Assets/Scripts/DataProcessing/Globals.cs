@@ -54,6 +54,8 @@ public struct Globals
     public static Vector3 SPHERICAL_SCALE = new Vector3( 1, 1, 1 );
     public static Quaternion SPHERIAL_ROTATION = Quaternion.Euler( -90, 0, 0 );
 
+    public static int DATE_FIX_NUMBER = 693960;
+
     public static int[] LEVEL_LIST_37()
     {
         int[] outputLevels = new int[38];
