@@ -21,7 +21,7 @@ public class TimelineUI : MonoBehaviour
     [SerializeField] private Button m_LoopButton;
     [SerializeField] private TMP_Text m_LoopButtonText;
 
-    public timestamp timestampLable;
+    public TimestampUI timestampLable;
 
     private float m_SpeedFactor;
     private float m_SpeedCounter;

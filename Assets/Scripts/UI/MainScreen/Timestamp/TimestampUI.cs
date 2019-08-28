@@ -2,9 +2,15 @@
 using TMPro;
 using System;
 
-public class timestamp : MonoBehaviour
+// ****************************** LOCATION ********************************
+//
+// [UI] TimestampLabelPanel -> attached
+//
+// ************************************************************************
+
+public class TimestampUI : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI m_Text;
+    private TextMeshProUGUI m_Text;
 
     DataManager m_DataManager;
 

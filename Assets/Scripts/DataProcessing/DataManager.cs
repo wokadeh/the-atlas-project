@@ -27,7 +27,7 @@ public class DataManager : MonoBehaviour
     private IDataLoader m_DataLoder;
 
 
-    public timestamp timestamp;
+    public TimestampUI timestamp;
 
     private void Start()
     {

@@ -2,11 +2,11 @@
 using UnityEngine;
 using TMPro;
 
-// ********** LOCATION ************
+// ****************************** LOCATION ********************************
 //
 // [UI] CartesianLevelScalePlane (Prefeb Asset) -> attached
 //
-// ********************************
+// ************************************************************************
 
 public class LevelScaleLabels : MonoBehaviour
 {

@@ -18,7 +18,7 @@ public class SnapshotHandler : MonoBehaviour
 
     public DataManager dataManager;
 
-    public timestamp timestamp;
+    public TimestampUI timestamp;
 
     private void Awake()
     {
