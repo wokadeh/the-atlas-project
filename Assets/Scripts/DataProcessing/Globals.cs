@@ -58,19 +58,18 @@ public struct Globals
 
     public static int[] LEVEL_LIST_37()
     {
-        int[] outputLevels = new int[38];
+        int[] outputLevels = new int[37];
 
-            outputLevels[ 0 ] = 1;
-            outputLevels[ 1 ] = 2;
-            outputLevels[ 2 ] = 3;
-            outputLevels[ 3 ] = 5;
-            outputLevels[ 4 ] = 7;
+        outputLevels[ 0 ] = 1;
+        outputLevels[ 1 ] = 2;
+        outputLevels[ 2 ] = 3;
+        outputLevels[ 3 ] = 5;
+        outputLevels[ 4 ] = 7;
 
-        for(int i = 5; i < 11; i++ )   outputLevels[ i ] = outputLevels[ i - 5 ] * 10;
-
-        for( int i = 11; i < 38; i++ )  outputLevels[ i ] = outputLevels[ i - 1 ] + 25;
-
-        for( int i = 0; i < outputLevels.Length; i++ ) Debug.Log( outputLevels[ i ] );
+        for( int i = 5; i < 11; i++ ) outputLevels[ i ] = outputLevels[ i - 5 ] * 10;
+        for( int i = 11; i < 17; i++ ) outputLevels[ i ] = outputLevels[ i - 1 ] + 25;
+        for( int i = 17; i < 27; i++ ) outputLevels[ i ] = outputLevels[ i - 1 ] + 50;
+        for( int i = 27; i < 37; i++ ) outputLevels[ i ] = outputLevels[ i - 1 ] + 25;
 
         return outputLevels;
     }
