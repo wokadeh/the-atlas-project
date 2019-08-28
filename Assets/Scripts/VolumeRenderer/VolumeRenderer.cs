@@ -1,4 +1,10 @@
-﻿using System.Collections.Generic;
+﻿// ****************************** LOCATION ********************************
+//
+// [UI] SCRIPTS -> attached
+//
+// ************************************************************************
+
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent( typeof( MeshRenderer ) )]
@@ -6,14 +12,13 @@ public class VolumeRenderer : MonoBehaviour
 {
     [SerializeField] private Material m_CartesianMaterial;
     [SerializeField] private Material m_SphericalMaterial;
-
-    [SerializeField] private MeshRenderer m_Groundplane;
-    [SerializeField] private MeshRenderer m_EarthSphere;
-
     [SerializeField] private GameObject m_CartesianLevelScalePlanePrefab;
-
-    [SerializeField] private DataManager m_DataManager;
     [SerializeField] private bool m_ShowAltitudeLevels;
+
+    private MeshRenderer m_Groundplane;
+    private MeshRenderer m_EarthSphere;
+    private DataManager m_DataManager;
+
 
     public VolumeRendererMode Mode { get; private set; }
 
@@ -26,6 +31,9 @@ public class VolumeRenderer : MonoBehaviour
     private void Start()
     {
         m_Renderer = this.GetComponent<MeshRenderer>();
+        m_Groundplane = GameObject.Find( "Groundplane" ).GetComponent <MeshRenderer>();
+        m_EarthSphere = GameObject.Find( "Earth_Octahedron_Sphere" ).GetComponent <MeshRenderer>();
+        m_DataManager = GameObject.Find( "SCRIPTS" ).GetComponent<DataManager>();
 
         // We always start of in cartesian mode
         this.SetMode( VolumeRendererMode.Cartesian );

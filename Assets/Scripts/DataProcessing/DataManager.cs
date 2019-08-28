@@ -1,4 +1,10 @@
-﻿using System;
+﻿// ****************************** LOCATION ********************************
+//
+// [UI] CartesianLevelScalePlane (Prefeb Asset) -> attached
+//
+// ************************************************************************
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -24,10 +30,10 @@ public class DataManager : MonoBehaviour
     public string CurrentVariable { get; private set; }
     public TimeStepDataAsset CurrentAsset { get; private set; }
     private IMetaDataManager m_MetaDataManager;
-    private IDataLoader m_DataLoder;
+    private IDataLoader m_DataLoader;
 
 
-    public TimestampUI timestamp;
+    public TimestampUI m_TimestampUI;
 
     private void Start()
     {
@@ -79,7 +85,7 @@ public class DataManager : MonoBehaviour
         // Set new data
         m_VolumeRenderer.SetData( this.CurrentAsset );
 
-        timestamp.UpdateTimestamp( timestamp.m_CurrentIndex );
+        m_TimestampUI.UpdateTimestamp( m_TimestampUI.CurrentIndex );
     }
 
     private IEnumerator SaveProjectCoroutine( string _projectFileName, string _projectFolderPath, bool _saveOnlyXml, IProgress<float> _progress, Action _callback )
@@ -280,7 +286,7 @@ public class DataManager : MonoBehaviour
 
         OnNewImport?.Invoke();
 
-        timestamp.UpdateTimestamp( timestamp.m_CurrentIndex );
+        m_TimestampUI.UpdateTimestamp( m_TimestampUI.CurrentIndex );
 
         _callback?.Invoke();
     }

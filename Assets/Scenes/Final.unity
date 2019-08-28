@@ -549,7 +549,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 1763, y: -54.17}
+  m_AnchoredPosition: {x: 27, y: -54.17}
   m_SizeDelta: {x: 150, y: 30}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &48588466
@@ -574,7 +574,7 @@ MonoBehaviour:
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_PressedColor: {r: 0.48627454, g: 0.8196079, b: 1, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
@@ -591,7 +591,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 48588467}
+  m_TargetGraphic: {fileID: 486094874}
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
@@ -3589,10 +3589,10 @@ RectTransform:
   m_Father: {fileID: 48588465}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -3278.7, y: 0.67333984}
-  m_SizeDelta: {x: 0, y: -2}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -8, y: -4}
+  m_SizeDelta: {x: 150, y: 28}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &486094874
 MonoBehaviour:
@@ -4574,7 +4574,7 @@ MonoBehaviour:
   m_VolumeRenderer: {fileID: 1023572782}
   m_TransferFunctionUI: {fileID: 541401439}
   m_TimelineUI: {fileID: 1373890074}
-  timestamp: {fileID: 1539972832}
+  m_TimestampUI: {fileID: 1539972832}
 --- !u!4 &631215806
 Transform:
   m_ObjectHideFlags: 0
@@ -8232,7 +8232,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_CartesianMaterial: {fileID: 2100000, guid: 83ab474cbb242b744825db2d0bc653d1, type: 2}
   m_SphericalMaterial: {fileID: 2100000, guid: dbf9b90ed5ae8cf48ae99cefa557a654, type: 2}
-  m_Groundplane: {fileID: 258605666}
   m_EarthSphere: {fileID: 1920428497}
   m_CartesianLevelScalePlanePrefab: {fileID: 6113171767946308786, guid: f428f2461efc0224aadbab7b08535988,
     type: 3}
@@ -13414,7 +13413,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_CurrentDate: 
   m_VarDate: 0
-  m_CurrentIndex: 0
+  CurrentIndex: 0
 --- !u!114 &1539972833
 MonoBehaviour:
   m_ObjectHideFlags: 0

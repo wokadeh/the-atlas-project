@@ -108,5 +108,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_LevelLabelPrefab: {fileID: 1462128688317433678, guid: 49b8c8e41f861514684ea5f7f1be524a,
     type: 3}
-  m_CartesianLevelScaleLabelPrefab: {fileID: 0}
-  m_Camera: {fileID: 0}

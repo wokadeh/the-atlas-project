@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-using TMPro;
-
-// ****************************** LOCATION ********************************
+﻿// ****************************** LOCATION ********************************
 //
 // [UI] CartesianLevelScalePlane (Prefeb Asset) -> attached
 //
 // ************************************************************************
+
+using System.Collections.Generic;
+using UnityEngine;
+using TMPro;
 
 public class LevelScaleLabels : MonoBehaviour
 {
@@ -33,7 +33,7 @@ public class LevelScaleLabels : MonoBehaviour
             m_LabelList.Add(label);
         }
     }
-
+    // Billboard the label so it always faces the camera
     void LateUpdate()
     {
         foreach(GameObject label in m_LabelList)

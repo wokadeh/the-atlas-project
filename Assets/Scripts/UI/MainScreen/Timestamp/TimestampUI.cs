@@ -1,12 +1,12 @@
-﻿using UnityEngine;
-using TMPro;
-using System;
-
-// ****************************** LOCATION ********************************
+﻿// ****************************** LOCATION ********************************
 //
 // [UI] TimestampLabelPanel -> attached
 //
 // ************************************************************************
+
+using UnityEngine;
+using TMPro;
+using System;
 
 public class TimestampUI : MonoBehaviour
 {
@@ -18,7 +18,7 @@ public class TimestampUI : MonoBehaviour
 
     public string m_CurrentDate;
     public double m_VarDate;
-    public int m_CurrentIndex;
+    public int CurrentIndex;
 
     public DateTime m_DateTime;
 
@@ -40,20 +40,13 @@ public class TimestampUI : MonoBehaviour
         {
             if( m_DataManager.CurrentVariable != null )
             {
-                m_CurrentIndex = _dateIndex;
+                CurrentIndex = _dateIndex;
 
                 m_VarDate = m_CurrentData.Timestamps[ 0 ][ _dateIndex ].DateTime;
                 m_DateTime = DateTime.FromOADate( m_VarDate - Globals.DATE_FIX_NUMBER );
 
-               
-
                 m_CurrentDate = m_DataManager.CurrentVariable + "_" + m_DateTime.ToString();
-
-                Log.Info( this, "Current date is: " + m_CurrentDate );
-
                 m_Text.text = m_DataManager.CurrentVariable + "\n" + m_DateTime.ToString();
-
-                Log.Info( this, "Text is: " + m_Text );
             }
             else
             {
