@@ -13,12 +13,13 @@ public class VolumeRenderer : MonoBehaviour
     [SerializeField] private Material m_CartesianMaterial;
     [SerializeField] private Material m_SphericalMaterial;
     [SerializeField] private GameObject m_CartesianLevelScalePlanePrefab;
+    
     [SerializeField] private bool m_ShowAltitudeLevels;
 
     private MeshRenderer m_Groundplane;
     private MeshRenderer m_EarthSphere;
     private DataManager m_DataManager;
-
+    private GameObject m_CartesianLevelScalePlane;
 
     public VolumeRendererMode Mode { get; private set; }
 
@@ -54,6 +55,8 @@ public class VolumeRenderer : MonoBehaviour
             this.InitMode( false, m_SphericalMaterial, Globals.SPHERICAL_SCALE, Globals.SPHERIAL_ROTATION );
 
             this.ClearCartesianLevels();
+
+            this.SetAltitudeLevelGridActive( false );
         }
     }
 
@@ -95,26 +98,18 @@ public class VolumeRenderer : MonoBehaviour
         //GameObject cartesianAltitudeLevel = Instantiate(m_CartesianAltitudeContainerPrefab, this.transform);
         //cartesianAltitudeLevel.name = $"Cartesian_Altitude_Container";
 
+        if(m_IsScaleActive)
         {
-            GameObject cartesianLevelScaleX = Instantiate(m_CartesianLevelScalePlanePrefab, this.transform);
-            cartesianLevelScaleX.name = $"Cartesian_Altitude_Scale_X";
-            //float x = (float) ( 40.0 / (float) m_DataManager.MetaData.Width ) * m_DataManager.MetaData.Width;
-
-            //cartesianLevelScaleX.transform.position = new Vector3( 0, x - ( this.transform.localScale.x / 2 ), 0 );
-            cartesianLevelScaleX.transform.rotation = Quaternion.Euler( 0, 0, 90 );
-
-            //m_Levels = new List<GameObject>();
-            //for( int i = 0; i < m_DataManager.MetaData.Levels; i++ )
-            //{
-            //    GameObject cartesianAltitudeLevel = Instantiate(m_CartesianAltitudePrefab, this.transform);
-            //    cartesianAltitudeLevel.name = $"Cartesian_Altitude_Level_" + i;
-
-            //    float y = ((float)i / m_DataManager.MetaData.Levels) * this.transform.localScale.y;
-
-            //    cartesianAltitudeLevel.transform.position = new Vector3( 0, y - ( this.transform.localScale.y / 2 ), 0 );
-
-            //    m_Levels.Add( cartesianAltitudeLevel );
-            //}
+            m_CartesianLevelScalePlane = Instantiate(m_CartesianLevelScalePlanePrefab, this.transform);
+            m_CartesianLevelScalePlane.name = $"Cartesian_Altitude_Scale_X";
+            m_CartesianLevelScalePlane.transform.rotation = Quaternion.Euler( 0, 0, 90 );
+        }
+        else
+        {
+            if( m_CartesianLevelScalePlane )
+            {
+                Destroy( m_CartesianLevelScalePlane );
+            }
         }
     }
 

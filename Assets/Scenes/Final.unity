@@ -8232,10 +8232,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_CartesianMaterial: {fileID: 2100000, guid: 83ab474cbb242b744825db2d0bc653d1, type: 2}
   m_SphericalMaterial: {fileID: 2100000, guid: dbf9b90ed5ae8cf48ae99cefa557a654, type: 2}
-  m_EarthSphere: {fileID: 1920428497}
   m_CartesianLevelScalePlanePrefab: {fileID: 6113171767946308786, guid: f428f2461efc0224aadbab7b08535988,
     type: 3}
-  m_DataManager: {fileID: 631215805}
   m_ShowAltitudeLevels: 1
 --- !u!23 &1023572783
 MeshRenderer:
@@ -13373,7 +13371,7 @@ GameObject:
   - component: {fileID: 1539972833}
   - component: {fileID: 1539972832}
   m_Layer: 5
-  m_Name: TimestampLabelPanel
+  m_Name: Timestamp_Label_Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
