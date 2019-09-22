@@ -4,46 +4,42 @@ using UnityEngine;
 
 public class SnapshotHandler : MonoBehaviour
 {
-    private static SnapshotHandler instance;
-    private Camera myCam;
-    private bool takeSnapshotNextFrame;
+    private Camera m_Camera;
+    private bool m_IsTakeSnapshotNextFrame;
 
-    public int picWidth;
-    public int picHeight;
+    public int m_PicWidth;
+    public int m_PicHeight;
 
-    public string dataName = "camerasnapshot";
-    public string snapshotPath;
+    public string m_DataName = "camerasnapshot";
+    public string m_SnapshotPath;
 
-    public bool captureAlpha = true;
+    public bool m_CaptureAlpha = true;
 
-    public DataManager dataManager;
+    public DataManager m_DataManager;
 
-    public TimestampUI timestamp;
+    public TimestampUI m_Timestamp;
 
     private void Awake()
     {
-        instance = this;
-        myCam = gameObject.GetComponent<Camera>();
+        m_Camera = gameObject.GetComponent<Camera>();
 
-        picWidth = Screen.width;
-        picHeight = Screen.height;
+        m_PicWidth = Screen.width;
+        m_PicHeight = Screen.height;
 
-        snapshotPath = Application.dataPath + "/Snapshots";
+        m_SnapshotPath = Application.dataPath + "/Snapshots";
     }
 
     private void OnPostRender()
     {
-        if (takeSnapshotNextFrame)
+        if (m_IsTakeSnapshotNextFrame)
         {
-            takeSnapshotNextFrame = false;
-
+            m_IsTakeSnapshotNextFrame = false;
 
             //grab Texture from camera
-            RenderTexture renderTexture = myCam.targetTexture;
+            RenderTexture renderTexture = m_Camera.targetTexture;
             Texture2D renderResult;
 
-
-            if (captureAlpha)
+            if (m_CaptureAlpha)
             {
                 renderResult = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.ARGB32, false);
             }
@@ -58,35 +54,33 @@ public class SnapshotHandler : MonoBehaviour
             //store as PNG
             byte[] byteArray = renderResult.EncodeToPNG();
 
-            dataName = timestamp.m_CurrentDate.Replace(":", "");
+            m_DataName = m_Timestamp.m_CurrentDate.Replace(":", "");
 
+            this.CheckForDuplicate();
 
-            checkForDuplicate();
-
-            System.IO.File.WriteAllBytes(snapshotPath + "/" + dataName + ".png", byteArray);
-            Debug.Log("Saved Snapshot");
+            System.IO.File.WriteAllBytes(m_SnapshotPath + "/" + m_DataName + ".png", byteArray);
+            Log.Info(this, "Saved Snapshot");
 
             //cleanup
             RenderTexture.ReleaseTemporary(renderTexture);
-            myCam.targetTexture = null;
-
+            m_Camera.targetTexture = null;
         }
     }
 
-    void checkForDuplicate()
+    void CheckForDuplicate()
     {
-        if (System.IO.File.Exists(snapshotPath + "/" + dataName + ".png"))
+        if (System.IO.File.Exists(m_SnapshotPath + "/" + m_DataName + ".png"))
         {
-            dataName += " Kopie";
-            checkForDuplicate();
+            m_DataName += " Kopie";
+            this.CheckForDuplicate();
         }
     }
 
     //triggered by snapshotButton in UI
     public void TakeSnapshot()
     {
-        myCam.targetTexture = RenderTexture.GetTemporary(picWidth, picHeight, 16);
+        m_Camera.targetTexture = RenderTexture.GetTemporary(m_PicWidth, m_PicHeight, 16);
 
-        takeSnapshotNextFrame = true;
+        m_IsTakeSnapshotNextFrame = true;
     }
 }
