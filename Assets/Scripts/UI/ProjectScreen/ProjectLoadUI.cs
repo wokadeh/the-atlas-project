@@ -20,6 +20,7 @@ public class ProjectLoadUI : MonoBehaviour
     [SerializeField] private TMP_Text m_LoadProgressBarText;
     [SerializeField] private Button m_LoadProjectButton;
     [SerializeField] private Button m_SaveProjectButton;
+    [SerializeField] private Button m_CancelButton;
     [SerializeField] private Button m_SaveProjectAsButton;
     [SerializeField] private GameObject m_ProjectScreen;
 
@@ -64,6 +65,7 @@ public class ProjectLoadUI : MonoBehaviour
             m_LoadScreen.SetActive(false);
             m_SaveProjectButton.interactable = true;
             m_VolumeRenderer.gameObject.SetActive(true);
-        }); ;
+            m_CancelButton.interactable = true;
+        } ); ;
     }
 }

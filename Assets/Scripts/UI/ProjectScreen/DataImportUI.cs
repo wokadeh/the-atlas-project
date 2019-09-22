@@ -20,6 +20,7 @@ public class DataImportUI : MonoBehaviour {
     [SerializeField] private TMP_Text m_ImportProgressBarText;
     [SerializeField] private GameObject m_ProjectScreen;
     [SerializeField] private Button m_SaveProjectButton;
+    [SerializeField] private Button m_CancelButton;
     [SerializeField] private Button m_SaveProjectAsButton;
 
     private void Start() {
@@ -57,6 +58,7 @@ public class DataImportUI : MonoBehaviour {
             m_SaveProjectButton.interactable = false;
             m_SaveProjectAsButton.interactable = true;
             m_VolumeRenderer.gameObject.SetActive(true);
-        });
+            m_CancelButton.interactable = true;
+        } );
     }
 }
