@@ -15,10 +15,6 @@ public class VolumeRenderer : MonoBehaviour
     [SerializeField] private GameObject m_CartesianLevelScalePlanePrefab;
     
     [SerializeField] private bool m_ShowAltitudeLevels;
-
-    private MeshRenderer m_Groundplane;
-    private MeshRenderer m_EarthSphere;
-    private DataManager m_DataManager;
     private GameObject m_CartesianLevelScalePlane;
 
     public VolumeRendererMode Mode { get; private set; }
@@ -32,9 +28,6 @@ public class VolumeRenderer : MonoBehaviour
     private void Start()
     {
         m_Renderer = this.GetComponent<MeshRenderer>();
-        m_Groundplane = GameObject.Find( "Groundplane" ).GetComponent <MeshRenderer>();
-        m_EarthSphere = GameObject.Find( "Earth_Octahedron_Sphere" ).GetComponent <MeshRenderer>();
-        m_DataManager = GameObject.Find( "SCRIPTS" ).GetComponent<DataManager>();
 
         // We always start of in cartesian mode
         this.SetMode( VolumeRendererMode.Cartesian );
@@ -62,8 +55,8 @@ public class VolumeRenderer : MonoBehaviour
 
     public void InitMode( bool _isGround, Material _material, Vector3 _scale, Quaternion _rot )
     {
-        m_Groundplane.enabled = _isGround;
-        m_EarthSphere.enabled = !_isGround;
+        Singleton.GetGroundPlane().enabled = _isGround;
+        Singleton.GetEarthSphere().enabled = !_isGround;
 
         m_Renderer.material = _material;
         this.transform.localScale = _scale;
@@ -95,8 +88,6 @@ public class VolumeRenderer : MonoBehaviour
     private void SetAltitudeLevelGridActive( bool _isActive )
     {
         m_IsScaleActive = _isActive;
-        //GameObject cartesianAltitudeLevel = Instantiate(m_CartesianAltitudeContainerPrefab, this.transform);
-        //cartesianAltitudeLevel.name = $"Cartesian_Altitude_Container";
 
         if(m_IsScaleActive)
         {

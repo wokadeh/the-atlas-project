@@ -5,14 +5,10 @@
 // ************************************************************************
 
 using UnityEngine;
-using TMPro;
 using System;
 
 public class TimestampUI : MonoBehaviour
 {
-    //private TextMeshProUGUI m_Text;
-    //[SerializeField] private TextMesh m_Timestamp3DLabel;
-    private DataManager m_DataManager;
     private TextMesh m_Timestamp3DLabel;
 
     private IMetaData m_CurrentData;
@@ -24,8 +20,6 @@ public class TimestampUI : MonoBehaviour
 
     void Start()
     {
-        m_DataManager = this.GetDataManager();
-        //m_Text = this.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
         m_Timestamp3DLabel = this.GetTimestampLabel();
 
         this.UpdateTimestamp( 0 );
@@ -35,21 +29,21 @@ public class TimestampUI : MonoBehaviour
     {
         Debug.Log( "Updating time index: " + _dateIndex );
 
-        m_CurrentData = this.GetDataManager().MetaData;
+        m_CurrentData = Singleton.GetDataManager().MetaData;
 
         if( this.GetTimestampLabel() != null)
         {
             if( m_CurrentData != null )
             {
-                if( this.GetDataManager().CurrentVariable != null )
+                if( Singleton.GetDataManager().CurrentVariable != null )
                 {
                     CurrentIndex = _dateIndex;
 
                     VarDate = m_CurrentData.Timestamps[ 0 ][ _dateIndex ].DateTime;
                     DateTime = DateTime.FromOADate( VarDate - Globals.DATE_FIX_NUMBER );
 
-                    CurrentDate = this.GetDataManager().CurrentVariable + "_" + DateTime.ToString();
-                    this.GetTimestampLabel().text = this.GetDataManager().CurrentVariable + "\n" + DateTime.ToString();
+                    CurrentDate = Singleton.GetDataManager().CurrentVariable + "_" + DateTime.ToString();
+                    this.GetTimestampLabel().text = Singleton.GetDataManager().CurrentVariable + "\n" + DateTime.ToString();
                 }
                 else
                 {
@@ -67,27 +61,10 @@ public class TimestampUI : MonoBehaviour
         }
     }
 
-    private DataManager GetDataManager()
-    {
-        if(m_DataManager == null)
-        {
-            return GameObject.Find( "SCRIPTS" ).GetComponent<DataManager>();
-        }
-        else
-        {
-            return m_DataManager;
-        }
-    }
-
     private TextMesh GetTimestampLabel()
     {
         if( m_Timestamp3DLabel == null )
         {
-            foreach(Component cp in transform)
-            {
-                Log.Info( this, cp.ToString() );
-            }
-
             return GetComponent<TextMesh>();
         }
         else
