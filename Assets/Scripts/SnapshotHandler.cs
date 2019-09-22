@@ -1,32 +1,35 @@
-﻿using System.Collections;
+﻿// ****************************** LOCATION ********************************
+//
+// [Camera] -> attached
+//
+// ************************************************************************
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class SnapshotHandler : MonoBehaviour
 {
-    private Camera m_Camera;
+    [SerializeField] private Camera m_Camera;
+    [SerializeField] private TimestampUI m_TimestampUI;
+
+    [SerializeField] private bool m_CaptureAlpha;
+
     private bool m_IsTakeSnapshotNextFrame;
 
-    public int m_PicWidth;
-    public int m_PicHeight;
+    private int m_PicWidth;
+    private int m_PicHeight;
 
-    public string m_DataName = "camerasnapshot";
-    public string m_SnapshotPath;
+    private DataManager m_DataManager;
 
-    public bool m_CaptureAlpha = true;
-
-    public DataManager m_DataManager;
-
-    public TimestampUI m_Timestamp;
+    private string m_DataName;
 
     private void Awake()
     {
-        m_Camera = gameObject.GetComponent<Camera>();
-
         m_PicWidth = Screen.width;
         m_PicHeight = Screen.height;
 
-        m_SnapshotPath = Application.dataPath + "/Snapshots";
+        m_DataName = Globals.SNAPSHOT_NAME;
     }
 
     private void OnPostRender()
@@ -54,11 +57,11 @@ public class SnapshotHandler : MonoBehaviour
             //store as PNG
             byte[] byteArray = renderResult.EncodeToPNG();
 
-            m_DataName = m_Timestamp.m_CurrentDate.Replace(":", "");
+            m_DataName = m_TimestampUI.CurrentDate.Replace(":", "");
 
             this.CheckForDuplicate();
 
-            System.IO.File.WriteAllBytes(m_SnapshotPath + "/" + m_DataName + ".png", byteArray);
+            System.IO.File.WriteAllBytes(Globals.SAVE_SNAPSHOTS_PATH + "/" + m_DataName + ".png", byteArray);
             Log.Info(this, "Saved Snapshot");
 
             //cleanup
@@ -69,9 +72,9 @@ public class SnapshotHandler : MonoBehaviour
 
     void CheckForDuplicate()
     {
-        if (System.IO.File.Exists(m_SnapshotPath + "/" + m_DataName + ".png"))
+        if (System.IO.File.Exists(Globals.SAVE_SNAPSHOTS_PATH + "/" + m_DataName + ".png"))
         {
-            m_DataName += " Kopie";
+            m_DataName += "_copy";
             this.CheckForDuplicate();
         }
     }

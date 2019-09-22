@@ -14,6 +14,9 @@ public struct Globals
     };
 
     public const string SAVE_PROJECTS_PATH = "Assets/Saved_Projects/";
+    public const string SAVE_SNAPSHOTS_PATH = "Assets/Snapshots/";
+    public const string SNAPSHOT_NAME = "camerasnapshot";
+
     public const string TEXTURE3D_FOLDER_NAME = "texture3D/";
     public const string TEXTURE3D_PREFEX = "tex3d_";
 

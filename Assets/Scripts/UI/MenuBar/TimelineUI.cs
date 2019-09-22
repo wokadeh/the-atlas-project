@@ -21,7 +21,7 @@ public class TimelineUI : MonoBehaviour
     [SerializeField] private Button m_LoopButton;
     [SerializeField] private TMP_Text m_LoopButtonText;
 
-    public TimestampUI timestampLable;
+    public TimestampUI m_TimestampUI;
 
     private float m_SpeedFactor;
     private float m_SpeedCounter;
@@ -169,7 +169,7 @@ public class TimelineUI : MonoBehaviour
         m_DataManager.SetCurrentAsset( asset );
         m_VolumeRenderer.SetData( asset );
 
-        timestampLable.UpdateTimestamp((int)value);
+        m_TimestampUI.UpdateTimestamp((int)value);
     }
 
     private IEnumerator PlayAnimation()
