@@ -5,6 +5,8 @@
 // ************************************************************************
 
 using System;
+using System.Xml;
+using System.Globalization;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -304,7 +306,7 @@ public class DataManager : MonoBehaviour
 
         for( int i = 0; i < currentVariableTimeStepList.Count; i++ )
         {
-            string dateTimeString = this.MetaData.Timestamps[ _varIndex ][ i ].DateTime.ToString().Replace( ',', '.' );
+            string dateTimeString = this.MetaData.Timestamps[ _varIndex ][ i ].DateTimeDouble.ToString().Replace( ',', '.' );
             string assetName = Globals.TEXTURE3D_PREFEX + this.MetaData.DataName + "_" + _variable.Name + "_" + dateTimeString;
             string assetPath = textureAssetPath + "/";
 

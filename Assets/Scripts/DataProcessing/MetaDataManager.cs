@@ -14,8 +14,8 @@ public class MetaDataManager : IMetaDataManager
         public int Width { get; set; }
         public int Height { get; set; }
         public int Levels { get; set; }
-        public float StartDateTimeNumber { get; set; }
-        public float EndDateTimeNumber { get; set; }
+        public double StartDateTimeNumber { get; set; }
+        public double EndDateTimeNumber { get; set; }
         public int TimeInterval { get; set; }
 
         public IList<IVariable> Variables { get; set; }
@@ -60,8 +60,6 @@ public class MetaDataManager : IMetaDataManager
             XmlDocument document = new XmlDocument();
             document.CreateXmlDeclaration( "1.0", "utf-8", "" );
 
-            
-
             //Create the root element and 
             //add it to the document.
             document.AppendChild( document.CreateElement( _metaData.DataName ) );
@@ -90,7 +88,7 @@ public class MetaDataManager : IMetaDataManager
                 {
                     XmlElement earthFrameDataNode = document.CreateElement( Globals.TIME_STAMP_DATA_ASSET_ELEMENT );
 
-                    string currentTimeStamp = _metaData.Timestamps[ j ][ i ].DateTime.ToString().Replace( ',', '.' );
+                    string currentTimeStamp = _metaData.Timestamps[ j ][ i ].DateTimeDouble.ToString().Replace( ',', '.' );
 
                     Debug.Log(currentTimeStamp);
 
@@ -134,8 +132,9 @@ public class MetaDataManager : IMetaDataManager
         _inputMetaData.Width = Utils.ReadIntegerAttribute( _root, Globals.WIDTH_ATTRIBUTE );
         _inputMetaData.Height = Utils.ReadIntegerAttribute( _root, Globals.HEIGHT_ATTRIBUTE );
         _inputMetaData.Levels = Utils.ReadIntegerAttribute( _root, Globals.LEVELS_ATTRIBUTE );
-        _inputMetaData.StartDateTimeNumber = Utils.ReadFloatAttribute( _root, Globals.START_DATETIME_ATTRIBUTE );
-        _inputMetaData.EndDateTimeNumber = Utils.ReadFloatAttribute( _root, Globals.END_DATETIME_ATTRIBUTE );
+        _inputMetaData.StartDateTimeNumber = Utils.ReadDoubleAttribute( _root, Globals.START_DATETIME_ATTRIBUTE );
+        _inputMetaData.EndDateTimeNumber = Utils.ReadDoubleAttribute( _root, Globals.END_DATETIME_ATTRIBUTE );
+
         _inputMetaData.TimeInterval = Utils.ReadIntegerAttribute( _root, Globals.TIME_INTERVAL_ATTRIBUTE );
 
         return _inputMetaData;
@@ -151,6 +150,11 @@ public class MetaDataManager : IMetaDataManager
         XmlDocument document = new XmlDocument();
         document.Load( _projectFilePath );
         XmlElement root = document.DocumentElement;
+
+        //Utils.ReadXml();
+        XmlDocument document2 = new XmlDocument();
+        document2.Load( _projectFilePath );
+        XmlElement root2 = document2.DocumentElement;
 
         MetaData outputMetaData = new MetaData();
 
@@ -214,33 +218,19 @@ public class MetaDataManager : IMetaDataManager
     {
         TimeStepDataAsset newTimestamp = new TimeStepDataAsset();
 
-        newTimestamp.DateTime = this.ReadAttribute( timestampNode, Globals.TIMESTAMP_DATETIME_ATTRIBUTE );
+        newTimestamp.DateTimeDouble = Utils.ReadAttribute( timestampNode, Globals.TIMESTAMP_DATETIME_ATTRIBUTE );
 
-        Debug.Log("loading timestamps: " + newTimestamp.DateTime);
+        Debug.Log("loading timestamps: " + newTimestamp.DateTimeDouble);
 
         Vector3 dim = new Vector3();
-        dim.x = this.ReadAttribute( timestampNode, Globals.TIME_STAMP_DATA_ASSET_DIM_X_ATTRIBUTE );
-        dim.y = this.ReadAttribute( timestampNode, Globals.TIME_STAMP_DATA_ASSET_DIM_Y_ATTRIBUTE );
-        dim.z = this.ReadAttribute( timestampNode, Globals.TIME_STAMP_DATA_ASSET_DIM_Z_ATTRIBUTE );
+        dim.x = Utils.ReadAttribute( timestampNode, Globals.TIME_STAMP_DATA_ASSET_DIM_X_ATTRIBUTE );
+        dim.y = Utils.ReadAttribute( timestampNode, Globals.TIME_STAMP_DATA_ASSET_DIM_Y_ATTRIBUTE );
+        dim.z = Utils.ReadAttribute( timestampNode, Globals.TIME_STAMP_DATA_ASSET_DIM_Z_ATTRIBUTE );
 
         return newTimestamp;
     }
 
-    private float ReadAttribute( XmlNode node, string attributeName )
-    {
-        float value = 0;
-        try
-        {
-            string valueString = node.Attributes[ attributeName ].Value;
-            value = ( float.Parse( valueString, CultureInfo.InvariantCulture.NumberFormat ) );
-        }
-        catch ( Exception )
-        {
-            // No problem!
-        }
 
-        return value;
-    }
 
 
 }

@@ -6,8 +6,8 @@ public interface IMetaData {
     int Width { get; }
     int Height { get; }
     int Levels { get; }
-    float StartDateTimeNumber { get; }
-    float EndDateTimeNumber { get; }
+    double StartDateTimeNumber { get; }
+    double EndDateTimeNumber { get; }
     int TimeInterval { get; }
 
     IList<IVariable> Variables { get; }
