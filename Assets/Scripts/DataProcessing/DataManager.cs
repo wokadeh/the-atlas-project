@@ -42,6 +42,7 @@ public class DataManager : MonoBehaviour
         this.Clear();
     }
 
+    // Call to clean up when a project is closed
     private void Clear()
     {
         m_MetaDataManager = new MetaDataManager();
@@ -54,29 +55,34 @@ public class DataManager : MonoBehaviour
         m_DataTypeUI.Show( false );
     }
 
+    // Start internal routines to import the data to a new project
     public void ImportData( string _projectFilePath, IProgress<float> _progress, Action _callback )
     {
         this.Clear();
         this.StartCoroutine( this.ImportDataCoroutine( _projectFilePath, _progress, _callback ) );
     }
 
+    // Start internal routines to save the settings of an open project
     public void SaveProject( string _projectFileName, string _projectFolderPath, bool _saveOnlyXml, IProgress<float> _progress, Action _callback )
     {
         this.StartCoroutine( this.SaveProjectCoroutine( _projectFileName, _projectFolderPath, _saveOnlyXml, _progress, _callback ) );
     }
 
+    // Start internal routines to load an existing project
     public void LoadProject( string _projectFilePath, IProgress<float> _progress, Action _callback )
     {
         this.Clear();
         this.StartCoroutine( this.LoadProjectCoroutine( _projectFilePath, _progress, _callback ) );
     }
 
+    // Hold on a specific timestep and display the corresponding data
     public void SetCurrentAsset( TimeStepDataAsset _timeStepDataAsset )
     {
         CurrentAsset = _timeStepDataAsset;
         OnDataAssetChanged?.Invoke( _timeStepDataAsset );
     }
 
+    // Set the selected variable
     public void SetCurrentVariable( string _variable )
     {
         Log.Info( this, "Current variable changed to " + _variable );
