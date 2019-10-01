@@ -94,7 +94,7 @@ public class MetaDataManager : IMetaDataManager
 
                     Log.Info( this, "Save timestamp to XML: " + currentTimeStamp );
 
-                    earthFrameDataNode.SetAttribute( Globals.TIMESTAMP_DATETIME_ATTRIBUTE, currentTimeStamp );
+                    earthFrameDataNode.SetAttribute( Globals.TIME_STAMP_DATETIME_ATTRIBUTE, currentTimeStamp );
 
                     earthFrameDataNode.SetAttribute( Globals.TIME_STAMP_DATA_ASSET_DIM_X_ATTRIBUTE, earthDataFrame.Dimensions.x.ToString() );
                     earthFrameDataNode.SetAttribute( Globals.TIME_STAMP_DATA_ASSET_DIM_Y_ATTRIBUTE, earthDataFrame.Dimensions.y.ToString() );
@@ -195,7 +195,7 @@ public class MetaDataManager : IMetaDataManager
                 }
                 foreach ( XmlNode timestampNode in varNode.ChildNodes )
                 {
-                    if ( timestampNode.Name == Globals.TIMESTAMP_LIST_ELEMENT )
+                    if ( timestampNode.Name == Globals.TIME_STAMP_LIST_ELEMENT )
                     {
                         TimeStepDataAsset newTimestamp = this.ReadTimeStamp( timestampNode );
 
@@ -218,7 +218,7 @@ public class MetaDataManager : IMetaDataManager
     {
         TimeStepDataAsset newTimestamp = new TimeStepDataAsset();
 
-        newTimestamp.DateTimeDouble = Utils.ReadAttribute( timestampNode, Globals.TIMESTAMP_DATETIME_ATTRIBUTE );
+        newTimestamp.DateTimeDouble = Utils.ReadAttribute( timestampNode, Globals.TIME_STAMP_DATETIME_ATTRIBUTE );
 
         Debug.Log("loading timestamps: " + newTimestamp.DateTimeDouble);
 
