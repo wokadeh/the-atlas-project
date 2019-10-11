@@ -6,6 +6,7 @@
 
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent( typeof( MeshRenderer ) )]
 public class VolumeRenderer : MonoBehaviour
@@ -13,7 +14,8 @@ public class VolumeRenderer : MonoBehaviour
     [SerializeField] private Material m_CartesianMaterial;
     [SerializeField] private Material m_SphericalMaterial;
     [SerializeField] private GameObject m_CartesianLevelScalePlanePrefab;
-    
+    [SerializeField] private Button m_LevelScaleButton;
+
     [SerializeField] private bool m_ShowAltitudeLevels;
     private GameObject m_CartesianLevelScalePlane;
 
@@ -31,6 +33,14 @@ public class VolumeRenderer : MonoBehaviour
 
         // We always start of in cartesian mode
         this.SetMode( VolumeRendererMode.Cartesian );
+
+        m_LevelScaleButton.onClick.AddListener( this.OnLevelScaleChanged );
+    }
+    private void OnLevelScaleChanged()
+    {
+        m_ShowAltitudeLevels = !m_ShowAltitudeLevels;
+
+        this.SetAltitudeLevelGridActive( m_ShowAltitudeLevels );
     }
 
     public void SetMode( VolumeRendererMode _mode )
@@ -89,9 +99,9 @@ public class VolumeRenderer : MonoBehaviour
     {
         m_IsScaleActive = _isActive;
 
-        if(m_IsScaleActive)
+        if( m_IsScaleActive )
         {
-            m_CartesianLevelScalePlane = Instantiate(m_CartesianLevelScalePlanePrefab, this.transform);
+            m_CartesianLevelScalePlane = Instantiate( m_CartesianLevelScalePlanePrefab, this.transform );
             m_CartesianLevelScalePlane.name = $"Cartesian_Altitude_Scale_X";
             m_CartesianLevelScalePlane.transform.rotation = Quaternion.Euler( 0, 0, 90 );
         }

@@ -47,6 +47,7 @@
 			float _LogMaxPressure;
 			float _LineThickness;
 
+			// VERTEX SHADER
             v2f vert (appdata v)
             {
                 v2f o;
@@ -55,6 +56,7 @@
                 return o;
             }
 
+			// FRAGMENT SHADER
             fixed4 frag (v2f input) : SV_Target
             {
                 // sample the texture

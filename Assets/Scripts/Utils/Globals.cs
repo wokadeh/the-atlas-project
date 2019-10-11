@@ -67,6 +67,9 @@ public struct Globals
     public static int DATE_FIX_NUMBER = 693960;
     public const float TIMELINE_SPEEDFACTOR = 100;
 
+    public const float MAX_PRESSURE = 1000;
+    public const float LOG_MAX_PRESSURE = 6.907755279F;
+
     // ---------------> CREATE LIST OF PRESSURE LEVELS
     public static int[] LEVEL_LIST_37()
     {
