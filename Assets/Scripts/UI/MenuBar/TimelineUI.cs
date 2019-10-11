@@ -1,4 +1,10 @@
-﻿using System.Collections;
+﻿// ****************************** LOCATION ********************************
+//
+// [UI] TimelinePanel -> attached
+//
+// ************************************************************************
+
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,6 +18,8 @@ public class TimelineUI : MonoBehaviour
     [SerializeField] private Color m_SelectedColor;
     [SerializeField] private Slider m_TimelineSlider;
     [SerializeField] private Button m_ToStartButton;
+    [SerializeField] private Button m_SlowerButton;
+    [SerializeField] private Button m_FasterButton;
     [SerializeField] private Button m_StepBackwardsButton;
     [SerializeField] private Button m_PlayButton;
     [SerializeField] private TMP_Text m_PlayButtonText;
@@ -39,15 +47,15 @@ public class TimelineUI : MonoBehaviour
         m_StepForwardButton.onClick.AddListener( this.OnForward );
         m_ToEndButton.onClick.AddListener( () => m_TimelineSlider.value = m_TimelineSlider.maxValue );
         m_LoopButton.onClick.AddListener( this.OnLoop );
-
-        
+        m_FasterButton.onClick.AddListener( this.OnFaster );
+        m_SlowerButton.onClick.AddListener( this.OnSlower );
     }
 
     private void OnEnable()
     {
         this.Reset();
 
-        if ( m_DataManager.CurrentAsset != null )
+        if( m_DataManager.CurrentAsset != null )
         {
             m_TimelineSlider.minValue = 0;
             m_TimelineSlider.maxValue = m_DataManager.CurrentDataAssets.Count - 1;
@@ -59,7 +67,7 @@ public class TimelineUI : MonoBehaviour
     {
         this.Reset();
 
-        if ( m_IsPlaying )
+        if( m_IsPlaying )
         {
             this.OnPlay();
         }
@@ -67,12 +75,22 @@ public class TimelineUI : MonoBehaviour
 
     private void OnForward()
     {
-        this.ChangeSpeed( -1 );
+        this.MoveInTimeline( 1 );
     }
 
     private void OnBackward()
     {
+        this.MoveInTimeline( -1 );
+    }
+
+    private void OnSlower()
+    {
         this.ChangeSpeed( 1 );
+    }
+
+    private void OnFaster()
+    {
+        this.ChangeSpeed( -1 );
     }
 
     private void Reset()
@@ -83,32 +101,30 @@ public class TimelineUI : MonoBehaviour
         m_ShouldLoop = false;
     }
 
-    private void ChangeSpeed( float change )
+    private void MoveInTimeline( int _change )
     {
-        Log.Info( this, "OnChange speed " + change );
-        if ( !m_IsPlaying )
+        m_TimelineSlider.value += _change;
+    }
+
+    private void ChangeSpeed( int _change )
+    {
+        Log.Info( this, "OnChange speed " + _change );
+        m_SpeedCounter += _change;
+
+        if( m_SpeedCounter < 0 ) // We are slow already
         {
-            m_TimelineSlider.value += change;
+            m_SpeedLabelText.text = Mathf.Abs( m_SpeedCounter - 1 ) + "x";
+            m_SpeedFactor = 1F / ( Globals.TIMELINE_SPEEDFACTOR * Mathf.Abs( m_SpeedCounter ) );
+        }
+        else if( m_SpeedCounter > 0 ) // We are fast already
+        {
+            m_SpeedLabelText.text = "1/" + Mathf.Abs( m_SpeedCounter + 1 ) + "x";
+            m_SpeedFactor = Globals.TIMELINE_SPEEDFACTOR * Mathf.Abs( m_SpeedCounter );
         }
         else
         {
-            m_SpeedCounter += change;
-
-            if ( m_SpeedCounter < 0 ) // We are slow already
-            {
-                m_SpeedLabelText.text = Mathf.Abs( m_SpeedCounter  - 1 ) + "x";
-                m_SpeedFactor = 1F / ( Globals.TIMELINE_SPEEDFACTOR * Mathf.Abs( m_SpeedCounter ) );
-            }
-            else if ( m_SpeedCounter > 0 ) // We are fast already
-            {
-                m_SpeedLabelText.text = "1/" + Mathf.Abs( m_SpeedCounter + 1 ) + "x";
-                m_SpeedFactor = Globals.TIMELINE_SPEEDFACTOR * Mathf.Abs( m_SpeedCounter );
-            }
-            else
-            {
-                m_SpeedLabelText.text = "";
-                m_SpeedFactor = 1;
-            }
+            m_SpeedLabelText.text = "";
+            m_SpeedFactor = 1;
         }
     }
 
@@ -121,14 +137,14 @@ public class TimelineUI : MonoBehaviour
     private void OnPlay()
     {
         // Bail out if we have no assets yet
-        if ( m_DataManager.CurrentDataAssets.Count <= 0 )
+        if( m_DataManager.CurrentDataAssets.Count <= 0 )
         {
             return;
         }
 
         m_IsPlaying = !m_IsPlaying;
 
-        if ( m_IsPlaying )
+        if( m_IsPlaying )
         {
             m_PlayButtonText.text = "\uf04c";
             m_TimelineSlider.interactable = false;
@@ -147,7 +163,7 @@ public class TimelineUI : MonoBehaviour
         m_ShouldLoop = !m_ShouldLoop;
 
         // Set text color
-        if ( m_ShouldLoop )
+        if( m_ShouldLoop )
         {
             m_LoopButtonText.color = m_SelectedColor;
         }
@@ -160,7 +176,7 @@ public class TimelineUI : MonoBehaviour
     private void OnTimelineChanged( float value )
     {
         // Bail out if we have no assets yet
-        if ( m_DataManager.CurrentDataAssets.Count <= 0 )
+        if( m_DataManager.CurrentDataAssets.Count <= 0 )
         {
             return;
         }
@@ -169,21 +185,21 @@ public class TimelineUI : MonoBehaviour
         m_DataManager.SetCurrentAsset( asset );
         m_VolumeRenderer.SetData( asset );
 
-        m_TimestampUI.UpdateTimestamp((int)value);
+        m_TimestampUI.UpdateTimestamp( ( int ) value );
     }
 
     private IEnumerator PlayAnimation()
     {
         int start = Mathf.Clamp( ( int ) m_TimelineSlider.value + 1, 0, ( int ) m_TimelineSlider.maxValue );
 
-        for ( int f = start; f <= m_TimelineSlider.maxValue; f++ )
+        for( int f = start; f <= m_TimelineSlider.maxValue; f++ )
         {
             yield return new WaitForSeconds( ( 1F / m_FPS ) * m_SpeedFactor * Time.deltaTime );
 
             m_TimelineSlider.value = f;
 
             // Reset timeline if we want to loop the animation
-            if ( f == m_TimelineSlider.maxValue && m_ShouldLoop )
+            if( f == m_TimelineSlider.maxValue && m_ShouldLoop )
             {
                 f = -1;
             }

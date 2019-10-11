@@ -34,6 +34,7 @@ public class TimestampUI : MonoBehaviour
         {
             if( Singleton.GetDataManager().CurrentVariable != null )
             {
+                
                 CurrentIndex = _dateIndex;
 
                 VarDateFloat = m_CurrentData.Timestamps[ 0 ][ _dateIndex ].DateTimeDouble;
