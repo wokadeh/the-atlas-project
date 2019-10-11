@@ -4936,13 +4936,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 612662845}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 2100000, guid: ea03d4cf1a86fb840a6a9f96f97551bb, type: 2}
-  m_Color: {r: 0.1254902, g: 0.1254902, b: 0.1254902, a: 0}
+  m_Color: {r: 0.10980393, g: 0.10980393, b: 0.10980393, a: 0}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
