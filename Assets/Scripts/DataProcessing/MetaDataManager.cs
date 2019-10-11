@@ -56,6 +56,8 @@ public class MetaDataManager : IMetaDataManager
     {
         try
         {
+
+
             // Create root
             XmlDocument document = new XmlDocument();
             document.CreateXmlDeclaration( "1.0", "utf-8", "" );
@@ -88,7 +90,7 @@ public class MetaDataManager : IMetaDataManager
                 {
                     XmlElement earthFrameDataNode = document.CreateElement( Globals.TIME_STAMP_DATA_ASSET_ELEMENT );
 
-                    string currentTimeStamp = _metaData.Timestamps[ j ][ i ].DateTimeDouble.ToString().Replace( ',', '.' );
+                    string currentTimeStamp = _metaData.Timestamps[ j ][ i ].DateTimeDouble.ToString();
 
                     Debug.Log(currentTimeStamp);
 
@@ -134,7 +136,6 @@ public class MetaDataManager : IMetaDataManager
         _inputMetaData.Levels = Utils.ReadIntegerAttribute( _root, Globals.LEVELS_ATTRIBUTE );
         _inputMetaData.StartDateTimeNumber = Utils.ReadDoubleAttribute( _root, Globals.START_DATETIME_ATTRIBUTE );
         _inputMetaData.EndDateTimeNumber = Utils.ReadDoubleAttribute( _root, Globals.END_DATETIME_ATTRIBUTE );
-
         _inputMetaData.TimeInterval = Utils.ReadIntegerAttribute( _root, Globals.TIME_INTERVAL_ATTRIBUTE );
 
         return _inputMetaData;

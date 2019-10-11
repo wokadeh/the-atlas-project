@@ -17,12 +17,13 @@ public class MetaDataUI : MonoBehaviour
 
         IMetaData metaData = Singleton.GetDataManager().MetaData;
 
+        Debug.Log( "End datetime: " + metaData.EndDateTimeNumber );
+
         m_Text.text = "";
         // Start time
         m_Text.text += "\nStart time:\t\t" + Utils.ConvertDoubleToDateTime( metaData.StartDateTimeNumber ).ToString();
         // End time
-        //m_Text.text += "\nEnd time:\t\t\t" + Utils.ConvertDoubleToDateTime( metaData.EndDateTimeNumber ).ToString();
-        m_Text.text += "\nEnd time:\t\t\t" +  metaData.EndDateTimeNumber.ToString();
+        m_Text.text += "\nEnd time:\t\t\t" + Utils.ConvertDoubleToDateTime( metaData.EndDateTimeNumber ).ToString();
         // List parameters
         m_Text.text += "\nVariables:\t\t\t";
         for(int i = 0; i < metaData.Variables.Count; i++)
@@ -35,6 +36,10 @@ public class MetaDataUI : MonoBehaviour
         m_Text.text += "\nAlt. pres. levels:\t\t" + metaData.Levels.ToString();
         // Hour intervals
         m_Text.text += "\nHourly interval:\t\t" + metaData.TimeInterval.ToString();
+        // Height
+        m_Text.text += "\nHeight:\t\t\t" + metaData.Height.ToString();
+        // Width
+        m_Text.text += "\nWidth:\t\t\t" + metaData.Width.ToString();
         // Bit depth
         m_Text.text += "\nBit depth:\t\t\t" + metaData.BitDepth.ToString();
     }

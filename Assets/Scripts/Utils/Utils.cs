@@ -83,13 +83,14 @@ public static class Utils
 
     public static double ReadDoubleAttribute(XmlElement _relement, string _name)
     {
-        float attribute;
+        double attribute;
         if (_relement.HasAttribute(_name))
         {
-            if (!float.TryParse(_relement.GetAttribute(_name), out attribute))
-            {
-                throw new Log.MetaDataException($"Failed to read '{_name}' attribute!");
-            }
+            attribute = Double.Parse( _relement.GetAttribute( _name ), CultureInfo.InvariantCulture );
+            //if (!float.TryParse(_relement.GetAttribute(_name), out attribute))
+            //{
+            //    throw new Log.MetaDataException($"Failed to read '{_name}' attribute!");
+            //}
         }
         else
         {

@@ -40,6 +40,8 @@ public class DataManager : MonoBehaviour
     private void Start()
     {
         this.Clear();
+
+        System.Threading.Thread.CurrentThread.CurrentCulture = new CultureInfo( "en-US" );
     }
 
     // Call to clean up when a project is closed
