@@ -57,7 +57,9 @@ public class SnapshotHandler : MonoBehaviour
             //store as PNG
             byte[] byteArray = renderResult.EncodeToPNG();
 
-            m_DataName = m_TimestampUI.CurrentDate.Replace(":", "");
+            m_DataName = m_TimestampUI.CurrentDate.Replace(":", "").Replace( "/", "_" );
+
+            Log.Info( this, "Saving " + m_DataName );
 
             this.CheckForDuplicate();
 
