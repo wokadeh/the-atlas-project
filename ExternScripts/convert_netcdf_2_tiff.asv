@@ -144,7 +144,7 @@ function createMetaData( filePath, metaDataFileName, metaDataName, variables, ti
     root.setAttribute( 'levels', int2str( levels ) );
     root.setAttribute( 'time_interval', int2str( timeInterval ) );
     root.setAttribute( 'start_datetime', num2str( makeTimeStamp( 1, timeDim ) ) );
-    root.setAttribute( 'end_datetime', num2str( makeTimeStamp( length( timeDim ), timeDim ) ) );
+    root.setAttribute( 'end_datetime', num2str( makeTimeStamp( length( timeDim ) - 1, timeDim ) ) );
 	
     for v = 1 : length( variables )
         % Create element for variable
