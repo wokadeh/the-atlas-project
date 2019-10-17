@@ -5,52 +5,54 @@
 % -------------- BEGIN Intro -----------------------------------------------------------------------------------------
 
 % INPUT: Set your wishes! 
-BIT_DEPTH = 8;
-DATA_DIR = 'C:\Users\wokad\Documents\Projects\Uniy_Clouds_n_Bones\Data\';
+BIT_DEPTH           = 8;
+DATA_DIR            = 'C:\Users\wokad\Documents\Projects\The-Atlas-Project\Data\';
 
-FILE_NAME = '2019-01-010203040506_00061218_1-1000_gp_pv_025._ERA5';
-TIFF_DIR = DATA_DIR; %'../Data/';
-FILE_SURFIX = '.nc';
-FILE = strcat( FILE_NAME, FILE_SURFIX );
-DATA_FILE_PATH = strcat( DATA_DIR, FILE );
-FOLDER_NAME = strcat(FILE_NAME, '_', int2str( BIT_DEPTH ), 'bit')
-BASE_FOLDER_NAME = strcat( TIFF_DIR, FOLDER_NAME);
+FILE_NAME           = '2018_02-00061218_1-1000_075_pv_tm_gp';
+TIFF_DIR            = DATA_DIR; %'../Data/';
+FILE_SURFIX         = '.nc';
+FILE                = strcat( FILE_NAME, FILE_SURFIX );
+DATA_FILE_PATH      = strcat( DATA_DIR, FILE );
+FOLDER_NAME         = strcat(FILE_NAME, '_', int2str( BIT_DEPTH ), 'bit')
+BASE_FOLDER_NAME    = strcat( TIFF_DIR, FOLDER_NAME);
 
-META_DATA_NAME = strcat( FOLDER_NAME, '___META_DATA___');
-META_DATA_FILE_NAME =  strcat( BASE_FOLDER_NAME, '/', META_DATA_NAME, '.xml' );
+META_DATA_NAME      = strcat( FOLDER_NAME, '___META_DATA___');
+META_DATA_FILE_NAME = strcat( BASE_FOLDER_NAME, '/', META_DATA_NAME, '.xml' );
 
 % --------------------------------------------------------------------------------------------------------------------
 
 % More misc constants
-UINT8_NUM = 256;
-UINT16_NUM = 65535;
-% UINT32_NUM = 4294967295; <- unnessessary, needs TIFF class
+UINT8_NUM       = 256;
+UINT16_NUM      = 65535;
+% UINT32_NUM    = 4294967295; <- unnessessary, needs TIFF class
 
-UINT_DIM = [UINT8_NUM, UINT16_NUM];
+UINT_DIM        = [ UINT8_NUM, UINT16_NUM ];
 
 % Get all possible variables
-VARIABLES = getNETCDFDataVariables( DATA_FILE_PATH );
+VARIABLES       = getNETCDFDataVariables( DATA_FILE_PATH );
 
 % Load dimensions from NetCDF file
-LATITUDE_DIM = ncread( DATA_FILE_PATH, 'latitude' );
-LONGITUDE_DIM = ncread( DATA_FILE_PATH, 'longitude' );
-LEVEL_DIM = ncread( DATA_FILE_PATH, 'level' );
-TIME_DIM = ncread( DATA_FILE_PATH, 'time' );
+LATITUDE_DIM    = ncread( DATA_FILE_PATH, 'latitude' );
+LONGITUDE_DIM   = ncread( DATA_FILE_PATH, 'longitude' );
+LEVEL_DIM       = ncread( DATA_FILE_PATH, 'level' );
+TIME_DIM        = ncread( DATA_FILE_PATH, 'time' );
 
-TIME_INTERVAL = 0;
+TIME_INTERVAL   = 0;
 
 if( length( TIME_DIM ) > 0 )
-    TIME_INTERVAL = TIME_DIM(2,1) - TIME_DIM(1,1);
+    TIME_INTERVAL = TIME_DIM( 2, 1 ) - TIME_DIM( 1, 1 );
 end
 
 ncdisp( DATA_FILE_PATH )
 createBaseDirectory( BASE_FOLDER_NAME );
-createMetaData( META_DATA_FILE_NAME, META_DATA_NAME, VARIABLES, TIME_DIM, BIT_DEPTH, length( LONGITUDE_DIM ), length( LATITUDE_DIM ), length( LEVEL_DIM ), TIME_INTERVAL );
-createData(VARIABLES, DATA_FILE_PATH, TIFF_DIR, FOLDER_NAME, TIME_DIM, LEVEL_DIM, BIT_DEPTH, UINT_DIM );
+createMetaData( DATA_FILE_PATH, META_DATA_FILE_NAME, META_DATA_NAME, VARIABLES, TIME_DIM, BIT_DEPTH, length( LONGITUDE_DIM ), length( LATITUDE_DIM ), length( LEVEL_DIM ), TIME_INTERVAL );
+createData( VARIABLES, DATA_FILE_PATH, TIFF_DIR, FOLDER_NAME, TIME_DIM, LEVEL_DIM, BIT_DEPTH, UINT_DIM );
+
+"<<<<<<< !!!! FINISHED !!!! >>>>>>>"
 
 % -------------- END Intro -----------------------------------------------------------------------------------------
 
-function createData(variables, dataFilePath, tiffDir, FolderName, timeDim, levelDim, bitDepth, uintDim)
+function createData( variables, dataFilePath, tiffDir, FolderName, timeDim, levelDim, bitDepth, uintDim )
 % Run for all variables
     for i = 1 : length( variables )
         variableName = variables( i );
@@ -58,7 +60,7 @@ function createData(variables, dataFilePath, tiffDir, FolderName, timeDim, level
     end
 end
 
-function [valuesNorm] = normalizeValues( valuesInFile )
+function [ valuesNorm ] = normalizeValues( valuesInFile )
     % Find the range values of the entire dataset!
     minValue = min( min( min( min ( valuesInFile ) ) ) );
 
@@ -131,7 +133,7 @@ function debugFileBithDeth( valuesImage, uintDim )
     end
 end
 
-function createMetaData( metaDataFileName, metaDataName, variables, timeDim, bitDepth, width, height, levels, timeInterval )
+function createMetaData( filePath, metaDataFileName, metaDataName, variables, timeDim, bitDepth, width, height, levels, timeInterval )
     document = com.mathworks.xml.XMLUtils.createDocument( strcat( 'root_', metaDataName ) );
     root = document.getDocumentElement;
     
@@ -150,6 +152,15 @@ function createMetaData( metaDataFileName, metaDataName, variables, timeDim, bit
         variable_element = document.createElement( 'variable' );
         variable_element.setAttribute( 'name', variable.name );
         
+        % We need to read the values already to see their global extrema
+        valuesInFile = ncread( filePath, variable.id );
+        
+        minValue = min( min ( min( min ( valuesInFile ) ) ) );
+        maxValue = max( max ( max( max ( valuesInFile ) ) ) ) ;
+        
+        variable_element.setAttribute( 'min', num2str( minValue ) );
+        variable_element.setAttribute( 'max', num2str( maxValue ) );
+        
         % Append element to root
         root.appendChild( variable_element );
         
@@ -160,14 +171,18 @@ function createMetaData( metaDataFileName, metaDataName, variables, timeDim, bit
             timestamp = makeTimeStamp( timeStep, timeDim );
 
             time_stamp_element = document.createElement( 'timestamp' );
-            time_stamp_element.setAttribute('datetime', num2str( timestamp ));
+            time_stamp_element.setAttribute( 'datetime', num2str( timestamp ) );
             
             variable_element.appendChild( time_stamp_element );
         end 
+        
+
     end
     
     % Write xml to disk
     xmlOutputFile = metaDataFileName
+    
+    "Wait for it...."
     xmlwrite( xmlOutputFile, document );
 end
 
@@ -175,20 +190,20 @@ end
 function variables = getNETCDFDataVariables( netcdfFileName )
     netcdfId = netcdf.open( netcdfFileName, 'NC_NOWRITE' );
     
-    [~, variable_count, ~, ~] = netcdf.inq( netcdfId );
+    [ ~, variable_count, ~, ~ ] = netcdf.inq( netcdfId );
     
     variables = [];
     for i = 0 : variable_count - 1
         % We are interested in the number of dimensions the variable takes as an "input"
-        [variable_name, ~, dimension_ids, ~] = netcdf.inqVar( netcdfId, i );
+        [ variable_name, ~, dimension_ids, ~ ] = netcdf.inqVar( netcdfId, i );
         dimension_count = length( dimension_ids );
        
         variable.id = variable_name;
         variable.name = netcdf.getAtt( netcdfId, i, 'long_name' );
         
         % We assume every variable with 4 dimensions is actual data we care about
-        if (dimension_count == 4)
-            variables = [variables, variable];
+        if( dimension_count == 4 )
+            variables = [ variables, variable ];
         end
     end
     
@@ -201,6 +216,8 @@ function createBaseDirectory( tiffDirectory )
     end
     tiffDirectory
     mkdir( tiffDirectory );
+    
+    "Wait for it...."
 end
 
 function timeStamp = makeTimeStamp( timeStep, timeDim )
