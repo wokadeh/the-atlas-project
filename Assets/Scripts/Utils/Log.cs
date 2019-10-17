@@ -14,14 +14,29 @@ public class Log
         Debug.Log("[" + locationClass.ToString() + "]:: " + message);
     }
 
+    public static void Info( string className, string message )
+    {
+        Debug.Log( "[" + className + "]:: " + message );
+    }
+
     public static void Warn(object locationClass, string message)
     {
         Debug.LogWarning("[" + locationClass.ToString() + "]:: " + message);
     }
 
+    public static void Warn( string className, string message )
+    {
+        Debug.LogWarning( "[" + className + "]:: " + message );
+    }
+
     public static void Error(object locationClass, string message)
     {
         Debug.LogError("[" + locationClass.ToString() + "]:: " + message);
+    }
+
+    public static void Error( string className, string message )
+    {
+        Debug.LogError( "[" + className + "]:: " + message );
     }
 
     public static void ThrowMetaDataException(object locationClass, string message)
@@ -37,6 +52,11 @@ public class Log
     public static void ThrowDataException(object locationClass, string value, Exception exception)
     {
         throw new Exception("[" + locationClass.ToString() + "]:: " + "Failed: " + value + " because of " + exception.Message);
+    }
+
+    public static void ThrowDataException( string className, string value, Exception exception )
+    {
+        throw new Exception( "[" + className + "]:: " + "Failed: " + value + " because of " + exception.Message );
     }
 
     public static void ThrowException(object locationClass, string message)

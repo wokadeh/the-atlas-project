@@ -16,7 +16,7 @@ public class TimestampUI : MonoBehaviour
     public string CurrentDate;
     public double VarDateFloat;
     public int CurrentIndex;
-    public DateTime DateTime;
+    public string DateTimeString;
 
     void Start()
     {
@@ -38,10 +38,10 @@ public class TimestampUI : MonoBehaviour
                 CurrentIndex = _dateIndex;
 
                 VarDateFloat = m_CurrentData.Timestamps[ 0 ][ _dateIndex ].DateTimeDouble;
-                DateTime = Utils.ConvertDoubleToDateTime( VarDateFloat );
+                DateTimeString = Utils.TryConvertDoubleToDateTime( VarDateFloat );
 
-                CurrentDate = Singleton.GetDataManager().CurrentVariable + "_" + DateTime.ToString();
-                this.GetTimestampLabel().text = Singleton.GetDataManager().CurrentVariable + "\n" + DateTime.ToString();
+                CurrentDate = Singleton.GetDataManager().CurrentVariable + "_" + DateTimeString;
+                this.GetTimestampLabel().text = Singleton.GetDataManager().CurrentVariable + "\n" + DateTimeString;
             }
             else
             {

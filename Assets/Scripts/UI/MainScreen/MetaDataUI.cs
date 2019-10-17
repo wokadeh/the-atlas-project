@@ -21,9 +21,9 @@ public class MetaDataUI : MonoBehaviour
 
         m_Text.text = "";
         // Start time
-        m_Text.text += "\nStart time:\t\t" + Utils.ConvertDoubleToDateTime( metaData.StartDateTimeNumber ).ToString();
+        m_Text.text += "\nStart time:\t\t" + Utils.TryConvertDoubleToDateTime( metaData.StartDateTimeNumber );
         // End time
-        m_Text.text += "\nEnd time:\t\t\t" + Utils.ConvertDoubleToDateTime( metaData.EndDateTimeNumber ).ToString();
+        m_Text.text += "\nEnd time:\t\t\t" + Utils.TryConvertDoubleToDateTime( metaData.EndDateTimeNumber );
         // List parameters
         m_Text.text += "\nVariables:\t\t\t";
         for(int i = 0; i < metaData.Variables.Count; i++)
@@ -43,6 +43,8 @@ public class MetaDataUI : MonoBehaviour
         // Bit depth
         m_Text.text += "\nBit depth:\t\t\t" + metaData.BitDepth.ToString();
     }
+
+
 
     private TextMeshProUGUI GetText()
     {

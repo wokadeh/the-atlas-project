@@ -36,6 +36,8 @@ public struct Globals
     // ---------------> VARIABLES
     public const string VARIABLE_ELEMENT = "variable";
     public const string VARIABLE_NAME_ATTRIBUTE = "name";
+    public const string VARIABLE_MIN_ATTRIBUTE = "min";
+    public const string VARIABLE_MAX_ATTRIBUTE = "max";
 
     // ---------------> TIMESTAMPS
     public const string TIME_STAMP_LIST_ELEMENT = "timestamp";

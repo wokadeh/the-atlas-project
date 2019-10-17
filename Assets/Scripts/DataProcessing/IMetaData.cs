@@ -16,6 +16,8 @@ public interface IMetaData {
 
 public interface IVariable {
     string Name { get; }
+    double Min { get; }
+    double Max { get; }
 }
 
 public interface ITimestamp

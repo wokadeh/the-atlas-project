@@ -29,7 +29,32 @@ public static class Utils
         }
     }
 
-    public static DateTime ConvertDoubleToDateTime( double varTime )
+    public static string TryConvertDoubleToDateTime( double dateTimeNumber )
+    {
+        try
+        {
+            DateTime dateTime = Utils.ConvertDoubleToDateTime( dateTimeNumber );
+
+            try
+            {
+                string dateTimeString = dateTime.ToString();
+                return dateTimeString;
+            }
+            catch(Exception e)
+            {
+                Debug.LogWarning( "ToString of dateTime " + dateTimeNumber + " failed: " + e );
+            }
+        }
+        catch(Exception e)
+        {
+            Debug.LogWarning( "Conversion of double " + dateTimeNumber + " failed: " + e);
+        }
+
+        return "NaN";
+    }
+
+
+    private static DateTime ConvertDoubleToDateTime( double varTime )
     {
         return DateTime.FromOADate( varTime - Globals.DATE_FIX_NUMBER );
     }
