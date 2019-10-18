@@ -8,7 +8,6 @@ using UnityEngine.UI.Extensions;
 using UnityEngine.UI.Extensions.ColorPicker;
 
 public class TransferFunctionUI : MonoBehaviour, IPointerDownHandler {
-    [SerializeField] private DataManager m_DataManager;
     [SerializeField] private VolumeRenderer m_VolumeRenderer;
     [SerializeField] private Color m_ControlPointStartColor;
     [SerializeField] private TransferFunctionControlPointUI m_ControlPointPrefab;
@@ -16,6 +15,7 @@ public class TransferFunctionUI : MonoBehaviour, IPointerDownHandler {
     [SerializeField] private UILineRenderer m_LineRenderer;
     [SerializeField] private RawImage m_HistogramTexture;
 
+    private DataManager m_DataManager;
     private RectTransform m_RectTransform;
     private Bounds m_BoxBounds;
     private Vector2 m_ControlPointSize;
@@ -25,6 +25,7 @@ public class TransferFunctionUI : MonoBehaviour, IPointerDownHandler {
     private TransferFunctionControlPointUI m_SelectedPoint;
 
     private void Start() {
+        m_DataManager = Singleton.GetDataManager();
         m_DataManager.OnDataAssetChanged += asset => RedrawHistogram();
     }
 
@@ -51,7 +52,9 @@ public class TransferFunctionUI : MonoBehaviour, IPointerDownHandler {
         this.Redraw();
     }
 
-    public void Redraw() {
+    public void Redraw() 
+    {
+        m_DataManager = Singleton.GetDataManager();
         if (!m_Initialized) {
             Initialize();
         }
@@ -85,7 +88,7 @@ public class TransferFunctionUI : MonoBehaviour, IPointerDownHandler {
     }
 
     public void OnPointerDown(PointerEventData _eventData) {
-        if (m_DataManager.CurrentAsset != null) {
+        if (m_DataManager.CurrentTimeStepDataAsset != null) {
             if (_eventData.button == PointerEventData.InputButton.Right) {
                 // Nasty workaround, since right click is not recognized
                 this.CreatePoint(LimitPositionToPointInBox(_eventData.position), m_ControlPointStartColor, true);
@@ -154,10 +157,10 @@ public class TransferFunctionUI : MonoBehaviour, IPointerDownHandler {
     }
 
     private void RedrawHistogram() {
-        if (m_DataManager.CurrentAsset != null) {
+        if (m_DataManager.CurrentTimeStepDataAsset != null) {
             var tex = this.GenerateTransferFunction().GetTexture();
 
-            m_HistogramTexture.material.SetTexture("_HistTex", m_DataManager.CurrentAsset.HistogramTexture);
+            m_HistogramTexture.material.SetTexture("_HistTex", m_DataManager.CurrentTimeStepDataAsset.HistogramTexture);
             m_HistogramTexture.material.SetTexture("_TFTex", tex);
 
             m_VolumeRenderer.SetTransferFunction(tex);

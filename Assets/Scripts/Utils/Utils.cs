@@ -29,7 +29,7 @@ public static class Utils
         }
     }
 
-    public static string TryConvertDoubleToDateTime( double dateTimeNumber )
+    public static string TryConvertDoubleToDateTimeString( double dateTimeNumber )
     {
         try
         {
@@ -112,10 +112,6 @@ public static class Utils
         if (_relement.HasAttribute(_name))
         {
             attribute = Double.Parse( _relement.GetAttribute( _name ), CultureInfo.InvariantCulture );
-            //if (!float.TryParse(_relement.GetAttribute(_name), out attribute))
-            //{
-            //    throw new Log.MetaDataException($"Failed to read '{_name}' attribute!");
-            //}
         }
         else
         {
@@ -138,16 +134,6 @@ public static class Utils
         }
 
         return value;
-    }
-
-    public static float convertTimeToFloat(string _time)
-    {
-        return 0;
-    }
-
-    public static string convertFloatToString(float _number)
-    {
-        return "";
     }
 
     public static Progress<float> CreateProgressBarProgress(Image _progressBar, TMP_Text _progressBarText, GameObject _screen)

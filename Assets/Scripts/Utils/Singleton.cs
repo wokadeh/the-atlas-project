@@ -7,6 +7,7 @@ public class Singleton
     private static DataManager m_DataManager;
     private static MeshRenderer m_Groundplane;
     private static MeshRenderer m_EarthSphere;
+    private static VolumeRenderer m_VolumeRenderer;
 
     public static DataManager GetDataManager()
     {
@@ -17,6 +18,16 @@ public class Singleton
 
         return m_DataManager;
     }
+
+    //public static VolumeRenderer GetVolumeRenderer()
+    //{
+    //    if( m_VolumeRenderer == null )
+    //    {
+    //        m_VolumeRenderer = GameObject.Find( "Volume_Renderer" ).GetComponent<VolumeRenderer>();
+    //    }
+
+    //    return m_VolumeRenderer;
+    //}
 
     public static MeshRenderer GetGroundPlane()
     {

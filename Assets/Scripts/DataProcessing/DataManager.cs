@@ -23,17 +23,17 @@ public class DataManager : MonoBehaviour
     [SerializeField] private TimelineUI m_TimelineUI;
 
     private Dictionary<string, List<TimeStepDataAsset>> m_DataAssets;
-    public IReadOnlyList<TimeStepDataAsset> CurrentDataAssets => m_DataAssets[ CurrentVariable ];
+    public IReadOnlyList<TimeStepDataAsset> CurrentDataAssets => m_DataAssets[ CurrentVariableName ];
 
     public event Action OnNewImport;
     public event Action<TimeStepDataAsset> OnDataAssetChanged;
 
     public IMetaData MetaData { get; private set; }
-    public string CurrentVariable { get; private set; }
-    public TimeStepDataAsset CurrentAsset { get; private set; }
+    public string CurrentVariableName { get; private set; }
+    public double CurrentVariableMin { get; private set; }
+    public double CurrentVariableMax { get; private set; }
+    public TimeStepDataAsset CurrentTimeStepDataAsset { get; private set; }
     private IMetaDataManager m_MetaDataManager;
-    private IDataLoader m_DataLoader;
-
 
     public TimestampUI m_TimestampUI;
 
@@ -49,7 +49,9 @@ public class DataManager : MonoBehaviour
     {
         m_MetaDataManager = new MetaDataManager();
         m_DataAssets = new Dictionary<string, List<TimeStepDataAsset>>();
-        CurrentVariable = "";
+        CurrentVariableName = "";
+        CurrentVariableMin = 0;
+        CurrentVariableMax = 0;
         MetaData = null;
 
         m_TimelineUI.Show( false );
@@ -80,20 +82,22 @@ public class DataManager : MonoBehaviour
     // Hold on a specific timestep and display the corresponding data
     public void SetCurrentAsset( TimeStepDataAsset _timeStepDataAsset )
     {
-        CurrentAsset = _timeStepDataAsset;
-        OnDataAssetChanged?.Invoke( _timeStepDataAsset );
+        this.CurrentTimeStepDataAsset = _timeStepDataAsset;
+        this.OnDataAssetChanged?.Invoke( _timeStepDataAsset );
     }
 
     // Set the selected variable
-    public void SetCurrentVariable( string _variable )
+    public void SetCurrentVariable( string _variable, double _min, double _max )
     {
         Log.Info( this, "Current variable changed to " + _variable );
-        this.CurrentVariable = _variable;
+        this.CurrentVariableName = _variable;
+        this.CurrentVariableMin = _min;
+        this.CurrentVariableMax = _max;
 
         this.SetCurrentAsset( this.CurrentDataAssets.First() );
 
         // Set new data
-        m_VolumeRenderer.SetData( this.CurrentAsset );
+        m_VolumeRenderer.SetData( this.CurrentTimeStepDataAsset );
 
         m_TimestampUI.UpdateTimestamp( m_TimestampUI.CurrentIndex );
     }
@@ -222,19 +226,17 @@ public class DataManager : MonoBehaviour
         Log.Info( this, "Loading and creating assets took " + ( stopwatch.ElapsedMilliseconds / 1000.0f ).ToString( "0.00" ) + "seconds." );
 
         this.MetaData = metaData;
-        this.CurrentVariable = m_DataAssets.First().Key;
-        this.CurrentAsset = this.CurrentDataAssets.First();
+        this.CurrentVariableName = m_DataAssets.First().Key;
+        this.CurrentTimeStepDataAsset = this.CurrentDataAssets.First();
 
         // Set new data
-        m_VolumeRenderer.SetData( this.CurrentAsset );
+        m_VolumeRenderer.SetData( this.CurrentTimeStepDataAsset );
         m_TransferFunctionUI.Redraw();
 
         OnNewImport?.Invoke();
 
         _callback?.Invoke();
     }
-
-
 
     private IEnumerator LoadProjectCoroutine( string _projectFilePath, IProgress<float> _progress, Action _callback )
     {
@@ -287,11 +289,11 @@ public class DataManager : MonoBehaviour
         Log.Info( this, "Loading and creating assets took " + ( stopwatch.ElapsedMilliseconds / 1000.0f ).ToString( "0.00" ) + "seconds." );
 
         this.MetaData = metaData;
-        this.CurrentVariable = m_DataAssets.First().Key;
-        this.CurrentAsset = this.CurrentDataAssets.First();
+        this.CurrentVariableName = m_DataAssets.First().Key;
+        this.CurrentTimeStepDataAsset = this.CurrentDataAssets.First();
 
         // Set new data
-        m_VolumeRenderer.SetData( this.CurrentAsset );
+        m_VolumeRenderer.SetData( this.CurrentTimeStepDataAsset );
         m_TransferFunctionUI.Redraw();
 
         OnNewImport?.Invoke();

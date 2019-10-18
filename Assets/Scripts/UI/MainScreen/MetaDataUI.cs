@@ -21,9 +21,9 @@ public class MetaDataUI : MonoBehaviour
 
         m_Text.text = "";
         // Start time
-        m_Text.text += "\nStart time:\t\t" + Utils.TryConvertDoubleToDateTime( metaData.StartDateTimeNumber );
+        m_Text.text += "\nStart time:\t\t" + Utils.TryConvertDoubleToDateTimeString( metaData.StartDateTimeNumber );
         // End time
-        m_Text.text += "\nEnd time:\t\t\t" + Utils.TryConvertDoubleToDateTime( metaData.EndDateTimeNumber );
+        m_Text.text += "\nEnd time:\t\t\t" + Utils.TryConvertDoubleToDateTimeString( metaData.EndDateTimeNumber );
         // List parameters
         m_Text.text += "\nVariables:\t\t\t";
         for(int i = 0; i < metaData.Variables.Count; i++)

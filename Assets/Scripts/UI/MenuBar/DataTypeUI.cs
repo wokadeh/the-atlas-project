@@ -4,15 +4,16 @@ using UnityEngine.UI;
 
 public class DataTypeUI : MonoBehaviour
 {
-    [SerializeField] private DataManager m_DataManager;
+    
     [SerializeField] private Toggle m_DataTypeTogglePrefab;
     [SerializeField] private GameObject m_DataTypeTogglePanel;
 
+    private DataManager m_DataManager;
     private bool m_Initialized;
 
     private void Start()
     {
-
+        m_DataManager = Singleton.GetDataManager();
         this.Initialize();
     }
 
@@ -35,8 +36,10 @@ public class DataTypeUI : MonoBehaviour
         foreach (IVariable variable in this.m_DataManager.MetaData.Variables)
         {
             string name = variable.Name;
+            double min = variable.Min;
+            double max = variable.Max;
             Toggle toggle = Instantiate( this.m_DataTypeTogglePrefab, this.transform );
-            toggle.isOn = name == this.m_DataManager.CurrentVariable;
+            toggle.isOn = name == this.m_DataManager.CurrentVariableName;
 
             TMP_Text label = toggle.transform.Find( "Label" ).GetComponent<TMP_Text>();
             label.text = name;
@@ -45,7 +48,7 @@ public class DataTypeUI : MonoBehaviour
             {
                 if ( isOn )
                 {
-                    this.m_DataManager.SetCurrentVariable( name );
+                    this.m_DataManager.SetCurrentVariable( name, min, max );
                     Toggle[] toggles = this.transform.GetComponentsInChildren<Toggle>();
 
                     if ( toggles.Length > 1 )
@@ -92,7 +95,7 @@ public class DataTypeUI : MonoBehaviour
 
         this.m_DataManager.OnNewImport += this.OnNewImport;
 
-        if (this.m_DataManager.CurrentAsset != null)
+        if (this.m_DataManager.CurrentTimeStepDataAsset != null)
         {
             this.OnNewImport();
         }

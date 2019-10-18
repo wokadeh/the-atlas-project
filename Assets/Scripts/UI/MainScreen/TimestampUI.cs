@@ -32,16 +32,16 @@ public class TimestampUI : MonoBehaviour
 
         if( m_CurrentData != null )
         {
-            if( Singleton.GetDataManager().CurrentVariable != null )
+            if( Singleton.GetDataManager().CurrentVariableName != null )
             {
                 
                 CurrentIndex = _dateIndex;
 
                 VarDateFloat = m_CurrentData.Timestamps[ 0 ][ _dateIndex ].DateTimeDouble;
-                DateTimeString = Utils.TryConvertDoubleToDateTime( VarDateFloat );
+                DateTimeString = Utils.TryConvertDoubleToDateTimeString( VarDateFloat );
 
-                CurrentDate = Singleton.GetDataManager().CurrentVariable + "_" + DateTimeString;
-                this.GetTimestampLabel().text = Singleton.GetDataManager().CurrentVariable + "\n" + DateTimeString;
+                CurrentDate = Singleton.GetDataManager().CurrentVariableName + "_" + DateTimeString;
+                this.GetTimestampLabel().text = Singleton.GetDataManager().CurrentVariableName + "\n" + DateTimeString;
             }
             else
             {
