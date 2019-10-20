@@ -185,7 +185,7 @@ public class TimelineUI : MonoBehaviour
         m_DataManager.SetCurrentAsset( asset );
         m_VolumeRenderer.SetData( asset );
 
-        m_TimestampUI.UpdateTimestamp( ( int ) value );
+        m_TimestampUI.UpdateTimestamp( (uint)value );
     }
 
     private IEnumerator PlayAnimation()

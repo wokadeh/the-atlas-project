@@ -51,6 +51,8 @@ public class MetaDataReader
                 double varNodeMin = Utils.ReadAttribute( varNode, Globals.VARIABLE_MIN_ATTRIBUTE );
                 double varNodeMax = Utils.ReadAttribute( varNode, Globals.VARIABLE_MAX_ATTRIBUTE );
 
+                Debug.Log( "Min and Max are " + varNodeMin + " and " + varNodeMax );
+
                 List<TimeStepDataAsset> varTimestampList = new List<TimeStepDataAsset>();
 
                 if( varNodeName != null )

@@ -225,15 +225,7 @@ public class DataManager : MonoBehaviour
 
         Log.Info( this, "Loading and creating assets took " + ( stopwatch.ElapsedMilliseconds / 1000.0f ).ToString( "0.00" ) + "seconds." );
 
-        this.MetaData = metaData;
-        this.CurrentVariableName = m_DataAssets.First().Key;
-        this.CurrentTimeStepDataAsset = this.CurrentDataAssets.First();
-
-        // Set new data
-        m_VolumeRenderer.SetData( this.CurrentTimeStepDataAsset );
-        m_TransferFunctionUI.Redraw();
-
-        OnNewImport?.Invoke();
+        this.FinishLoading( metaData, stopwatch );
 
         _callback?.Invoke();
     }
@@ -286,10 +278,21 @@ public class DataManager : MonoBehaviour
             }
         }
 
-        Log.Info( this, "Loading and creating assets took " + ( stopwatch.ElapsedMilliseconds / 1000.0f ).ToString( "0.00" ) + "seconds." );
+        
 
-        this.MetaData = metaData;
+        this.FinishLoading( metaData, stopwatch );
+
+        _callback?.Invoke();
+    }
+
+    private void FinishLoading(IMetaData _metaData, System.Diagnostics.Stopwatch _stopwatch )
+    {
+        Log.Info( this, "Loading and creating assets took " + ( _stopwatch.ElapsedMilliseconds / 1000.0f ).ToString( "0.00" ) + "seconds." );
+
+        this.MetaData = _metaData;
         this.CurrentVariableName = m_DataAssets.First().Key;
+        this.CurrentVariableMin = _metaData.Variables[ 0 ].Min;
+        this.CurrentVariableMax = _metaData.Variables[ 0 ].Max;
         this.CurrentTimeStepDataAsset = this.CurrentDataAssets.First();
 
         // Set new data
@@ -299,8 +302,6 @@ public class DataManager : MonoBehaviour
         OnNewImport?.Invoke();
 
         m_TimestampUI.UpdateTimestamp( m_TimestampUI.CurrentIndex );
-
-        _callback?.Invoke();
     }
 
     private IEnumerator SaveVariableRoutine( IVariable _variable, string _variablePath, int _varIndex, IProgress<float> _progress )

@@ -28,9 +28,9 @@ public class MetaDataUI : MonoBehaviour
         m_Text.text += "\nVariables:\t\t\t";
         for(int i = 0; i < metaData.Variables.Count; i++)
         {
-            m_Text.text += metaData.Variables[i].Name;
+            m_Text.text += metaData.Variables[i].Name + " ( Min: " + metaData.Variables[ i ].Min + ", Max: " + metaData.Variables[ i ].Max + " )";
 
-            if( i != metaData.Variables.Count - 1 ) m_Text.text += ", ";
+            if( i != metaData.Variables.Count - 1 ) m_Text.text += "\n\t\t\t\t";
         }
         // Number of levels
         m_Text.text += "\nAlt. pres. levels:\t\t" + metaData.Levels.ToString();

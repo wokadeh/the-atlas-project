@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class DataTypeUI : MonoBehaviour
 {
-    
+
     [SerializeField] private Toggle m_DataTypeTogglePrefab;
     [SerializeField] private GameObject m_DataTypeTogglePanel;
 
@@ -17,7 +17,7 @@ public class DataTypeUI : MonoBehaviour
         this.Initialize();
     }
 
-    public void Show(bool _isShown)
+    public void Show( bool _isShown )
     {
         m_DataTypeTogglePanel.SetActive( _isShown );
     }
@@ -25,15 +25,15 @@ public class DataTypeUI : MonoBehaviour
     private void OnNewImport()
     {
         // Clean up any old toggles
-        for (int i = 0; i < this.transform.childCount; i++)
+        for( int i = 0; i < this.transform.childCount; i++ )
         {
             Destroy( this.transform.GetChild( i ).gameObject );
         }
 
-        
+
 
         // Create toggles for all variables
-        foreach (IVariable variable in this.m_DataManager.MetaData.Variables)
+        foreach( IVariable variable in this.m_DataManager.MetaData.Variables )
         {
             string name = variable.Name;
             double min = variable.Min;
@@ -46,20 +46,20 @@ public class DataTypeUI : MonoBehaviour
 
             toggle.onValueChanged.AddListener( isOn =>
             {
-                if ( isOn )
+                if( isOn )
                 {
                     this.m_DataManager.SetCurrentVariable( name, min, max );
                     Toggle[] toggles = this.transform.GetComponentsInChildren<Toggle>();
 
-                    if ( toggles.Length > 1 )
+                    if( toggles.Length > 1 )
                     {
-                        foreach ( Toggle t in toggles )
+                        foreach( Toggle t in toggles )
                         {
-                            if ( t != toggle )
+                            if( t != toggle )
                             {
                                 t.isOn = false;
                             }
-                            
+
                         }
                     }
                 }
@@ -68,14 +68,14 @@ public class DataTypeUI : MonoBehaviour
                     Toggle[] toggles = this.transform.GetComponentsInChildren<Toggle>();
                     bool isOneToggleOn = false;
 
-                    foreach ( Toggle t in toggles )
+                    foreach( Toggle t in toggles )
                     {
-                        if ( t.isOn == true )
+                        if( t.isOn == true )
                         {
                             isOneToggleOn = true;
                         }
                     }
-                    if ( isOneToggleOn == false )
+                    if( isOneToggleOn == false )
                     {
                         m_DataManager.DisableVolumeRenderer();
                     }
@@ -88,14 +88,14 @@ public class DataTypeUI : MonoBehaviour
 
     private void Initialize()
     {
-        if (this.m_Initialized)
+        if( this.m_Initialized )
         {
             return;
         }
 
         this.m_DataManager.OnNewImport += this.OnNewImport;
 
-        if (this.m_DataManager.CurrentTimeStepDataAsset != null)
+        if( this.m_DataManager.CurrentTimeStepDataAsset != null )
         {
             this.OnNewImport();
         }

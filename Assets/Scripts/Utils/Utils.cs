@@ -19,13 +19,13 @@ public static class Utils
         Depth16
     }
 
-    public static BitDepth GetBitDepth(IMetaData _metaData)
+    public static BitDepth GetBitDepth( IMetaData _metaData )
     {
-        switch (_metaData.BitDepth)
+        switch( _metaData.BitDepth )
         {
             case 8: return BitDepth.Depth8;
             case 16: return BitDepth.Depth16;
-            default: throw new Exception("Failed to determine bit depth!");
+            default: throw new Exception( "Failed to determine bit depth!" );
         }
     }
 
@@ -40,14 +40,14 @@ public static class Utils
                 string dateTimeString = dateTime.ToString();
                 return dateTimeString;
             }
-            catch(Exception e)
+            catch( Exception e )
             {
                 Debug.LogWarning( "ToString of dateTime " + dateTimeNumber + " failed: " + e );
             }
         }
-        catch(Exception e)
+        catch( Exception e )
         {
-            Debug.LogWarning( "Conversion of double " + dateTimeNumber + " failed: " + e);
+            Debug.LogWarning( "Conversion of double " + dateTimeNumber + " failed: " + e );
         }
 
         return "NaN";
@@ -70,19 +70,19 @@ public static class Utils
         return _index / ( float ) _maximum;
     }
 
-    public static int ReadIntegerAttribute(XmlElement _relement, string _name)
+    public static int ReadIntegerAttribute( XmlElement _relement, string _name )
     {
         int attribute;
-        if (_relement.HasAttribute(_name))
+        if( _relement.HasAttribute( _name ) )
         {
-            if (!int.TryParse(_relement.GetAttribute(_name), out attribute))
+            if( !int.TryParse( _relement.GetAttribute( _name ), out attribute ) )
             {
-                throw new Log.MetaDataException($"Failed to read '{_name}' attribute!");
+                throw new Log.MetaDataException( $"Failed to read '{_name}' attribute!" );
             }
         }
         else
         {
-            throw new Log.MetaDataException($"Xml file has no '{_name}' attribute!");
+            throw new Log.MetaDataException( $"Xml file has no '{_name}' attribute!" );
         }
         return attribute;
     }
@@ -106,16 +106,16 @@ public static class Utils
         Debug.Log( "2nd::: Parse endTime number: " + endTimeValue );
     }
 
-    public static double ReadDoubleAttribute(XmlElement _relement, string _name)
+    public static double ReadDoubleAttribute( XmlElement _relement, string _name )
     {
         double attribute;
-        if (_relement.HasAttribute(_name))
+        if( _relement.HasAttribute( _name ) )
         {
             attribute = Double.Parse( _relement.GetAttribute( _name ), CultureInfo.InvariantCulture );
         }
         else
         {
-            throw new Log.MetaDataException($"Xml file has no '{_name}' attribute!");
+            throw new Log.MetaDataException( $"Xml file has no '{_name}' attribute!" );
         }
         return attribute;
     }
@@ -136,13 +136,12 @@ public static class Utils
         return value;
     }
 
-    public static Progress<float> CreateProgressBarProgress(Image _progressBar, TMP_Text _progressBarText, GameObject _screen)
+    public static Progress<float> CreateProgressBarProgress( Image _progressBar, TMP_Text _progressBarText, GameObject _screen )
     {
-        return new Progress<float>(progress =>
-        {
-            _progressBar.fillAmount = progress;
-            _progressBarText.text = $"{(progress * 100).ToString("0")} %";
-        });
-     }
+        return new Progress<float>( progress =>
+         {
+             _progressBar.fillAmount = progress;
+             _progressBarText.text = $"{( progress * 100 ).ToString( "0" )} %";
+         } );
+    }
 }
- 
