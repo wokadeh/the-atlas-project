@@ -28,7 +28,7 @@ public class ProjectLoadUI : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        m_LoadProjectButton.onClick.AddListener(LoadProject);
+        m_LoadProjectButton.onClick.AddListener( LoadProject );
     }
 
     private void LoadProject()
@@ -36,36 +36,39 @@ public class ProjectLoadUI : MonoBehaviour
         string[] files = StandaloneFileBrowser.OpenFilePanel("Load project file...", Directory.GetCurrentDirectory() + "\\" + Globals.SAVE_PROJECTS_PATH, FILE_FILTER, false);
 
         // Only continue, if at least one folder was selected
-        if(files.Length > 0)
+        if( files.Length > 0 )
         {
             string projectFolderPath = files[0];
 
-            Log.Info(this, "Load from project file " + projectFolderPath);
+            Log.Info( this, "Load from project file " + projectFolderPath );
 
             // This is a little hackey but works for now
-            m_TransferFunctionUIPanel.SetActive(false);
-            m_ProjectScreen.SetActive(false);
-            m_ApplicationToptoBottomLayout.SetActive( true );
+            m_TransferFunctionUIPanel.SetActive( false );
 
-            this.StartCoroutine(LoadProjectCoroutine(projectFolderPath));
+            this.StartCoroutine( LoadProjectCoroutine( projectFolderPath ) );
         }
     }
 
-    private IEnumerator LoadProjectCoroutine(string _projectFolderPath)
+    private IEnumerator LoadProjectCoroutine( string _projectFolderPath )
     {
         m_LoadProgressBar.fillAmount = 0;
         m_LoadProgressBarText.text = "0 %";
-        m_LoadScreen.SetActive(true);
+
+        m_ProjectScreen.SetActive( false );
+        m_LoadScreen.SetActive( true );
 
         // We are waiting for two frames so that unity has enough time to redraw the ui
         // which apparently it needs or otherwise the positions are off...
         yield return null;
         yield return null;
 
-        m_DataManager.LoadProject(_projectFolderPath, Utils.CreateProgressBarProgress(m_LoadProgressBar, m_LoadProgressBarText, m_LoadScreen), () => {
-            m_LoadScreen.SetActive(false);
+        m_DataManager.LoadProject( _projectFolderPath, Utils.CreateProgressBarProgress( m_LoadProgressBar, m_LoadProgressBarText, m_LoadScreen ), () =>
+        {
+            m_LoadScreen.SetActive( false );
+            m_ApplicationToptoBottomLayout.SetActive( true );
+
             m_SaveProjectButton.interactable = true;
-            m_VolumeRenderer.gameObject.SetActive(true);
+            m_VolumeRenderer.gameObject.SetActive( true );
             m_CancelButton.interactable = true;
         } ); ;
     }

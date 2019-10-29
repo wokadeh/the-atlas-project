@@ -37,8 +37,6 @@ public class DataImportUI : MonoBehaviour
         // This is a little hackey but works for now
         m_TransferFunctionUIPanel.SetActive( false );
         m_TimelineUIPanel.SetActive( false );
-        m_ProjectScreen.SetActive( false );
-        m_ApplicationToptoBottomLayout.SetActive( true );
 
         if( files.Length == 1 )
         {
@@ -50,6 +48,7 @@ public class DataImportUI : MonoBehaviour
     {
         m_ImportProgressBar.fillAmount = 0;
         m_ImportProgressBarText.text = "0 %";
+        m_ProjectScreen.SetActive( false );
         m_ImportScreen.SetActive( true );
 
         // We are waiting for two frames so that unity has enough time to redraw the ui
@@ -64,6 +63,9 @@ public class DataImportUI : MonoBehaviour
         } ), () =>
         {
             m_ImportScreen.SetActive( false );
+
+            m_ApplicationToptoBottomLayout.SetActive( true );
+
             m_SaveProjectButton.interactable = false;
             m_SaveProjectAsButton.interactable = true;
             m_VolumeRenderer.gameObject.SetActive( true );

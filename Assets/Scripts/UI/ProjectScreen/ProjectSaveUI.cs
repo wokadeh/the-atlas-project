@@ -38,10 +38,12 @@ public class ProjectSaveUI : MonoBehaviour
 
         // This is a little hackey but works for now
         m_TransferFunctionUIPanel.SetActive( false );
-        m_ProjectScreen.SetActive( false );
-        m_ApplicationToptoBottomLayout.SetActive( true );
+
+        
 
         this.StartCoroutine( this.SaveProjectCoroutine( _projectFileName, _projectFolderPath, _saveOnlyXml ) );
+
+        m_ProjectScreen.SetActive( false );
     }
 
     private void SaveAsProject()
@@ -52,6 +54,7 @@ public class ProjectSaveUI : MonoBehaviour
 
         // Only continue, if one folder was selected
         this.SaveProject( file, m_DefaultProjectDir, false );
+        m_ApplicationToptoBottomLayout.SetActive( true );
     }
 
     private IEnumerator SaveProjectCoroutine( string _projectFileName, string _projectFolderPath, bool _saveOnlyXml )
@@ -59,6 +62,7 @@ public class ProjectSaveUI : MonoBehaviour
         m_SaveProgressBar.fillAmount = 0;
         m_SaveProgressBarText.text = "0 %";
         m_SaveScreen.SetActive( true );
+
 
         // We are waiting for two frames so that unity has enough time to redraw the ui
         // which apparently it needs or otherwise the positions are off...
