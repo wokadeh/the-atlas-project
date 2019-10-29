@@ -21,8 +21,8 @@ public class ProjectLoadUI : MonoBehaviour
     [SerializeField] private Button m_LoadProjectButton;
     [SerializeField] private Button m_SaveProjectButton;
     [SerializeField] private Button m_CancelButton;
-    [SerializeField] private Button m_SaveProjectAsButton;
     [SerializeField] private GameObject m_ProjectScreen;
+    [SerializeField] private GameObject m_ApplicationToptoBottomLayout;
 
 
     // Start is called before the first frame update
@@ -45,6 +45,7 @@ public class ProjectLoadUI : MonoBehaviour
             // This is a little hackey but works for now
             m_TransferFunctionUIPanel.SetActive(false);
             m_ProjectScreen.SetActive(false);
+            m_ApplicationToptoBottomLayout.SetActive( true );
 
             this.StartCoroutine(LoadProjectCoroutine(projectFolderPath));
         }

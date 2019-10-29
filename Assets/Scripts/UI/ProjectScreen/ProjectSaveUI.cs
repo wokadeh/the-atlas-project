@@ -16,6 +16,7 @@ public class ProjectSaveUI : MonoBehaviour
     [SerializeField] private Button m_SaveProjectButton;
     [SerializeField] private Button m_SaveProjectAsButton;
     [SerializeField] private GameObject m_ProjectScreen;
+    [SerializeField] private GameObject m_ApplicationToptoBottomLayout;
 
     private string m_DefaultProjectDir = Directory.GetCurrentDirectory() + "/" + Globals.SAVE_PROJECTS_PATH;
 
@@ -38,6 +39,7 @@ public class ProjectSaveUI : MonoBehaviour
         // This is a little hackey but works for now
         m_TransferFunctionUIPanel.SetActive( false );
         m_ProjectScreen.SetActive( false );
+        m_ApplicationToptoBottomLayout.SetActive( true );
 
         this.StartCoroutine( this.SaveProjectCoroutine( _projectFileName, _projectFolderPath, _saveOnlyXml ) );
     }

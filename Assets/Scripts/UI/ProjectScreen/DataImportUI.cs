@@ -5,7 +5,8 @@ using UnityEngine.UI;
 using SFB;
 using TMPro;
 
-public class DataImportUI : MonoBehaviour {
+public class DataImportUI : MonoBehaviour
+{
     private static readonly ExtensionFilter[] FILE_FILTER = new ExtensionFilter[] {
         new ExtensionFilter("Xml File", "xml")
     };
@@ -22,42 +23,50 @@ public class DataImportUI : MonoBehaviour {
     [SerializeField] private Button m_SaveProjectButton;
     [SerializeField] private Button m_CancelButton;
     [SerializeField] private Button m_SaveProjectAsButton;
+    [SerializeField] private GameObject m_ApplicationToptoBottomLayout;
 
-    private void Start() {
-        m_ImportDataButton.onClick.AddListener(ImportData);
+    private void Start()
+    {
+        m_ImportDataButton.onClick.AddListener( ImportData );
     }
 
-    private void ImportData() {
+    private void ImportData()
+    {
         string[] files = StandaloneFileBrowser.OpenFilePanel("Open data xml", null, FILE_FILTER, false);
 
         // This is a little hackey but works for now
-        m_TransferFunctionUIPanel.SetActive(false);
-        m_TimelineUIPanel.SetActive(false);
-        m_ProjectScreen.SetActive(false);
+        m_TransferFunctionUIPanel.SetActive( false );
+        m_TimelineUIPanel.SetActive( false );
+        m_ProjectScreen.SetActive( false );
+        m_ApplicationToptoBottomLayout.SetActive( true );
 
-        if (files.Length == 1) {
-            StartCoroutine(ImportDataCoroutine(files[0]));
+        if( files.Length == 1 )
+        {
+            StartCoroutine( ImportDataCoroutine( files[ 0 ] ) );
         }
     }
 
-    private IEnumerator ImportDataCoroutine(string file) {
+    private IEnumerator ImportDataCoroutine( string file )
+    {
         m_ImportProgressBar.fillAmount = 0;
         m_ImportProgressBarText.text = "0 %";
-        m_ImportScreen.SetActive(true);
+        m_ImportScreen.SetActive( true );
 
         // We are waiting for two frames so that unity has enough time to redraw the ui
         // which apparently it needs or otherwise the positions are off...
         yield return null;
         yield return null;
 
-        m_DataManager.ImportData(file, new Progress<float>(progress => {
+        m_DataManager.ImportData( file, new Progress<float>( progress =>
+        {
             m_ImportProgressBar.fillAmount = progress;
-            m_ImportProgressBarText.text = $"{(progress * 100).ToString("0")} %";
-        }), () => {
-            m_ImportScreen.SetActive(false);
+            m_ImportProgressBarText.text = $"{( progress * 100 ).ToString( "0" )} %";
+        } ), () =>
+        {
+            m_ImportScreen.SetActive( false );
             m_SaveProjectButton.interactable = false;
             m_SaveProjectAsButton.interactable = true;
-            m_VolumeRenderer.gameObject.SetActive(true);
+            m_VolumeRenderer.gameObject.SetActive( true );
             m_CancelButton.interactable = true;
         } );
     }
