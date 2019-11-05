@@ -43,6 +43,11 @@ public class VolumeRenderer : MonoBehaviour
         this.SetAltitudeLevelGridActive( m_ShowAltitudeLevels );
     }
 
+    public void Show( bool _isShown )
+    {
+        this.gameObject.SetActive( _isShown );
+    }
+
     public void SetMode( VolumeRendererMode _mode )
     {
         this.Mode = _mode;
@@ -92,7 +97,10 @@ public class VolumeRenderer : MonoBehaviour
 
     public void Disable()
     {
-        m_Renderer.enabled = false;
+        if ( m_Renderer )
+        {
+            m_Renderer.enabled = false;
+        }
     }
 
     private void SetAltitudeLevelGridActive( bool _isActive )

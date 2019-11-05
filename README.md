@@ -1,11 +1,20 @@
-# Clouds & Bones
+# The Atlas Project (winter 2019)
+
+### Teammembers
+- Adriana von Blume
+- Katja Wallner
+- Lars Janson
+- Julia Shurawel
+
+
+## Previous project: Clouds & Bones (summer 2019)
 Volumtrisches Rendering von wissenschaftlichen Wetterdaten in Unity.
 Das Projekt wurde unter der Leitung von Alexander Wollert entwickelt.
 
-## Requirements
+### Requirements
 Das Projekt basiert auf Unity 2019.1.1f1.
 
-## References
+### References
 - Das Volume Rendering basiert auf: https://github.com/gillesferrand/Unity-RayTracing
 - Die Transferfunktion basiert auf: https://github.com/mlavik1/UnityVolumeRendering mit folgender Lizenz:
 
@@ -31,13 +40,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-## Plugins
+### Plugins
 Im Projekt werden unter anderem folgende Plugins eingesetzt:
 - StandaloneFileBrowser (https://github.com/gkngkc/UnityStandaloneFileBrowser)
 - unity-ui-extensions (https://bitbucket.org/UnityUIExtensions/unity-ui-extensions/src)
 - libtiff.net (https://github.com/BitMiracle/libtiff.net)
 
-## Teammembers
+### Teammembers
 - Marco Winter
-- Nangiale Shir
 - Jan Storm

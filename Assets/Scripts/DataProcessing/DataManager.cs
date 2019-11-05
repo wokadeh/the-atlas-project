@@ -57,6 +57,7 @@ public class DataManager : MonoBehaviour
         m_TimelineUI.Show( false );
         m_CameraModeUI.Show( false );
         m_DataTypeUI.Show( false );
+        m_VolumeRenderer.Show( false );
     }
 
     // Start internal routines to import the data to a new project
@@ -253,6 +254,8 @@ public class DataManager : MonoBehaviour
 
         ITimeStepDataAssetBuilder timeAssetBuilder = new TimeStepDataAssetBuilder( metaData.Width, metaData.Height, metaData.Levels );
 
+        bool isSuccess = true;
+
         for( int i = 0; i < metaData.Variables.Count; i++ )
         {
             IVariable variable = metaData.Variables[ i ];
@@ -273,14 +276,22 @@ public class DataManager : MonoBehaviour
             }
             else
             {
-                Log.ThrowValueNotFoundException( this, variable.Name );
+                isSuccess = false;
+                Log.Warn( this, "The directory " + projectAssetPath + " does not exist. The project cannot be loaded."  );
+
                 _callback?.Invoke();
             }
         }
 
-        
-
-        this.FinishLoading( metaData, stopwatch );
+        if(!isSuccess)
+        {
+            this.Clear();
+            yield break;
+        }
+        else
+        {
+            this.FinishLoading( metaData, stopwatch );
+        }
 
         _callback?.Invoke();
     }
@@ -402,6 +413,6 @@ public class DataManager : MonoBehaviour
 
     public void DisableVolumeRenderer()
     {
-        m_VolumeRenderer.Disable();
+        m_VolumeRenderer.Show( false );
     }
 }
