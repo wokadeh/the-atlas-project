@@ -56,10 +56,8 @@ crashlytics-build.properties
 
 
 *.tif
-
+*.asset
 *.nc
-
+*.meta
 *.xml
-Assets/Saved_Projects/
 *.png
-Assets/Snapshots/
