@@ -22487,8 +22487,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1901998939}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.23407, y: 1.6042, z: 3}
-  m_LocalScale: {x: 0.0014233894, y: 0.0014233894, z: 0.0014233894}
+  m_LocalPosition: {x: -0.126, y: 0.5, z: 3}
+  m_LocalScale: {x: 0.003188213, y: 0.003188213, z: 0.003188213}
   m_Children: []
   m_Father: {fileID: 1679480390}
   m_RootOrder: 0
@@ -22503,12 +22503,12 @@ TextMesh:
   m_GameObject: {fileID: 1901998939}
   m_Text: < Timestamp >
   m_OffsetZ: 0
-  m_CharacterSize: 1
+  m_CharacterSize: 3
   m_LineSpacing: 1
   m_Anchor: 0
   m_Alignment: 0
   m_TabSize: 4
-  m_FontSize: 500
+  m_FontSize: 40
   m_FontStyle: 0
   m_RichText: 1
   m_Font: {fileID: 12800000, guid: e1f1a7f31ed94954ca02fcbb872b6954, type: 3}
