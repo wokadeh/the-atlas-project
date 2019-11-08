@@ -135,7 +135,7 @@ public static class Utils
         return value;
     }
 
-    public static Progress<float> CreateProgressBarProgress( Image _progressBar, TMP_Text _progressBarText, GameObject _screen )
+    public static Progress<float> CreateProgressBarProgress( Image _progressBar, TMP_Text _progressBarText )
     {
         return new Progress<float>( progress =>
          {
@@ -156,5 +156,23 @@ public static class Utils
         // which apparently it needs or otherwise the positions are off...
         yield return null;
         yield return null;
+    }
+
+    public static void SetupScreenWhileProgress( GameObject _projectStateScreen, GameObject _mainSystemScreen, Button _saveProjectButton, Button _cancelButton )
+    {
+        _projectStateScreen.SetActive( false );
+        _mainSystemScreen.SetActive( true );
+
+        _saveProjectButton.interactable = true;
+        Singleton.GetVolumeRenderer().gameObject.SetActive( true );
+        _cancelButton.interactable = true;
+    }
+
+    public static void SetupScreenWhileProgress( GameObject _projectStateScreen, GameObject _mainSystemScreen, Button _saveProjectButton, Button _saveProjectAsButton, Button _cancelButton )
+    {
+        SetupScreenWhileProgress( _projectStateScreen , _mainSystemScreen, _saveProjectButton, _cancelButton );
+
+        _saveProjectButton.interactable = false;
+        _saveProjectAsButton.interactable = true;
     }
 }

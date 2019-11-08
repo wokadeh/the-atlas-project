@@ -10848,10 +10848,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85eec112b56e87c4699f0601c94c2d46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_CartesianMaterial: {fileID: 2100000, guid: 83ab474cbb242b744825db2d0bc653d1, type: 2}
-  m_SphericalMaterial: {fileID: 2100000, guid: dbf9b90ed5ae8cf48ae99cefa557a654, type: 2}
-  m_CartesianLevelScalePlanePrefab: {fileID: 6113171767946308786, guid: f428f2461efc0224aadbab7b08535988,
-    type: 3}
   m_LevelScaleButton: {fileID: 1505572674}
   m_ShowAltitudeLevels: 0
 --- !u!23 &1023572783
@@ -25667,7 +25663,7 @@ MonoBehaviour:
   m_SaveProjectButton: {fileID: 1673976744}
   m_CancelButton: {fileID: 1582659567}
   m_SaveProjectAsButton: {fileID: 356344818}
-  m_ApplicationToptoBottomLayout: {fileID: 1795054418}
+  m_MainScreenSystem: {fileID: 1795054418}
 --- !u!114 &2106828609
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25725,7 +25721,7 @@ MonoBehaviour:
   m_SaveProjectButton: {fileID: 1673976744}
   m_CancelButton: {fileID: 1582659567}
   m_ProjectScreen: {fileID: 1713268252}
-  m_ApplicationToptoBottomLayout: {fileID: 1795054418}
+  m_MainScreenSystem: {fileID: 1795054418}
 --- !u!114 &2106828613
 MonoBehaviour:
   m_ObjectHideFlags: 0

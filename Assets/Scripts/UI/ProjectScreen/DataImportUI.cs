@@ -22,7 +22,7 @@ public class DataImportUI : MonoBehaviour
     [SerializeField] private Button m_SaveProjectButton;
     [SerializeField] private Button m_CancelButton;
     [SerializeField] private Button m_SaveProjectAsButton;
-    [SerializeField] private GameObject m_ApplicationToptoBottomLayout;
+    [SerializeField] private GameObject m_MainScreenSystem;
 
     private void Start()
     {
@@ -47,20 +47,9 @@ public class DataImportUI : MonoBehaviour
     {
         yield return Utils.SetupProjectCoroutine( m_ImportScreen, m_ProjectScreen, m_ImportProgressBar, m_ImportProgressBarText );
 
-        Singleton.GetDataManager().ImportData( file, new Progress<float>( progress =>
+        Singleton.GetDataManager().ImportData( file, Utils.CreateProgressBarProgress( m_ImportProgressBar, m_ImportProgressBarText ), () =>
         {
-            m_ImportProgressBar.fillAmount = progress;
-            m_ImportProgressBarText.text = $"{( progress * 100 ).ToString( "0" )} %";
-        } ), () =>
-        {
-            m_ImportScreen.SetActive( false );
-
-            m_ApplicationToptoBottomLayout.SetActive( true );
-
-            m_SaveProjectButton.interactable = false;
-            m_SaveProjectAsButton.interactable = true;
-            Singleton.GetVolumeRenderer().gameObject.SetActive( true );
-            m_CancelButton.interactable = true;
+            Utils.SetupScreenWhileProgress( m_ImportScreen, m_MainScreenSystem, m_SaveProjectButton, m_SaveProjectAsButton, m_CancelButton );
         } );
     }
 }

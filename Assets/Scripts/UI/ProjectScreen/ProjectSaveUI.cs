@@ -60,11 +60,7 @@ public class ProjectSaveUI : MonoBehaviour
     {
         yield return Utils.SetupProjectCoroutine( m_SaveScreen, m_ProjectScreen, m_SaveProgressBar, m_SaveProgressBarText );
 
-        Singleton.GetDataManager().SaveProject( _projectFileName, _projectFolderPath, _saveOnlyXml, new Progress<float>( progress =>
-        {
-            m_SaveProgressBar.fillAmount = progress;
-            m_SaveProgressBarText.text = $"{( progress * 100 ).ToString( "0" )} %";
-        } ), () =>
+        Singleton.GetDataManager().SaveProject( _projectFileName, _projectFolderPath, _saveOnlyXml, Utils.CreateProgressBarProgress( m_SaveProgressBar, m_SaveProgressBarText ), () =>
         {
             m_SaveProjectButton.interactable = true;
             m_SaveProjectAsButton.interactable = false;
