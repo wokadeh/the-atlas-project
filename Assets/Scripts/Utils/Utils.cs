@@ -10,6 +10,7 @@ using System.Globalization;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine;
+using System.Collections;
 
 public static class Utils
 {
@@ -18,7 +19,6 @@ public static class Utils
         Depth8,
         Depth16
     }
-
     public static BitDepth GetBitDepth( IMetaData _metaData )
     {
         switch( _metaData.BitDepth )
@@ -52,7 +52,6 @@ public static class Utils
 
         return "NaN";
     }
-
 
     private static DateTime ConvertDoubleToDateTime( double varTime )
     {
@@ -143,5 +142,19 @@ public static class Utils
              _progressBar.fillAmount = progress;
              _progressBarText.text = $"{( progress * 100 ).ToString( "0" )} %";
          } );
+    }
+
+    public static IEnumerator SetupProjectCoroutine( GameObject _projectStateScreen, GameObject _projectScreen, Image _progressBar, TMP_Text _progressBarText )
+    {
+        _progressBar.fillAmount = 0;
+        _progressBarText.text = "0 %";
+
+        _projectScreen.SetActive( false );
+        _projectStateScreen.SetActive( true );
+
+        // We are waiting for two frames so that unity has enough time to redraw the ui
+        // which apparently it needs or otherwise the positions are off...
+        yield return null;
+        yield return null;
     }
 }

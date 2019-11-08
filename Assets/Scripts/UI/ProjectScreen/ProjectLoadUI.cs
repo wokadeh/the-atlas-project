@@ -48,16 +48,7 @@ public class ProjectLoadUI : MonoBehaviour
 
     private IEnumerator LoadProjectCoroutine( string _projectFolderPath )
     {
-        m_LoadProgressBar.fillAmount = 0;
-        m_LoadProgressBarText.text = "0 %";
-
-        m_ProjectScreen.SetActive( false );
-        m_LoadScreen.SetActive( true );
-
-        // We are waiting for two frames so that unity has enough time to redraw the ui
-        // which apparently it needs or otherwise the positions are off...
-        yield return null;
-        yield return null;
+        yield return Utils.SetupProjectCoroutine( m_LoadScreen, m_ProjectScreen, m_LoadProgressBar , m_LoadProgressBarText );
 
         Singleton.GetDataManager().LoadProject( _projectFolderPath, Utils.CreateProgressBarProgress( m_LoadProgressBar, m_LoadProgressBarText, m_LoadScreen ), () =>
         {
@@ -69,4 +60,6 @@ public class ProjectLoadUI : MonoBehaviour
             m_CancelButton.interactable = true;
         } ); ;
     }
+
+
 }

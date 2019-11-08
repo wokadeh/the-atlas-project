@@ -58,15 +58,7 @@ public class ProjectSaveUI : MonoBehaviour
 
     private IEnumerator SaveProjectCoroutine( string _projectFileName, string _projectFolderPath, bool _saveOnlyXml )
     {
-        m_SaveProgressBar.fillAmount = 0;
-        m_SaveProgressBarText.text = "0 %";
-        m_SaveScreen.SetActive( true );
-
-
-        // We are waiting for two frames so that unity has enough time to redraw the ui
-        // which apparently it needs or otherwise the positions are off...
-        yield return null;
-        yield return null;
+        yield return Utils.SetupProjectCoroutine( m_SaveScreen, m_ProjectScreen, m_SaveProgressBar, m_SaveProgressBarText );
 
         Singleton.GetDataManager().SaveProject( _projectFileName, _projectFolderPath, _saveOnlyXml, new Progress<float>( progress =>
         {

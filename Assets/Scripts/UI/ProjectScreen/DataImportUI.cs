@@ -45,15 +45,7 @@ public class DataImportUI : MonoBehaviour
 
     private IEnumerator ImportDataCoroutine( string file )
     {
-        m_ImportProgressBar.fillAmount = 0;
-        m_ImportProgressBarText.text = "0 %";
-        m_ProjectScreen.SetActive( false );
-        m_ImportScreen.SetActive( true );
-
-        // We are waiting for two frames so that unity has enough time to redraw the ui
-        // which apparently it needs or otherwise the positions are off...
-        yield return null;
-        yield return null;
+        yield return Utils.SetupProjectCoroutine( m_ImportScreen, m_ProjectScreen, m_ImportProgressBar, m_ImportProgressBarText );
 
         Singleton.GetDataManager().ImportData( file, new Progress<float>( progress =>
         {
