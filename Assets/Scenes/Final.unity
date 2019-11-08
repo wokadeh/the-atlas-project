@@ -20911,7 +20911,7 @@ GameObject:
   - component: {fileID: 1795054421}
   - component: {fileID: 1795054420}
   m_Layer: 5
-  m_Name: Application_Top_to_Bottom_Layout
+  m_Name: Main_Screen_System
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
