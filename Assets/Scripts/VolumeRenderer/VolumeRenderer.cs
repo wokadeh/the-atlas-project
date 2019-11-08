@@ -11,8 +11,6 @@ using UnityEngine.UI;
 [RequireComponent( typeof( MeshRenderer ) )]
 public class VolumeRenderer : MonoBehaviour
 {
-    [SerializeField] private Material m_CartesianMaterial;
-    [SerializeField] private Material m_SphericalMaterial;
     [SerializeField] private GameObject m_CartesianLevelScalePlanePrefab;
     [SerializeField] private Button m_LevelScaleButton;
 
@@ -52,13 +50,13 @@ public class VolumeRenderer : MonoBehaviour
 
         if( _mode == VolumeRendererMode.Cartesian )
         {
-            this.InitMode( true, m_CartesianMaterial, Globals.CARTESIAN_SCALE, Globals.CARTESIAN_ROTATION );
+            this.InitMode( true, Singleton.GetCartesianMaterial(), Globals.CARTESIAN_SCALE, Globals.CARTESIAN_ROTATION );
 
             this.SetAltitudeLevelGridActive( m_ShowAltitudeLevels );
         }
         else if( _mode == VolumeRendererMode.Spherical )
         {
-            this.InitMode( false, m_SphericalMaterial, Globals.SPHERICAL_SCALE, Globals.SPHERIAL_ROTATION );
+            this.InitMode( false, Singleton.GetSphericalMaterial(), Globals.SPHERICAL_SCALE, Globals.SPHERIAL_ROTATION );
 
             this.ClearCartesianLevels();
 
@@ -84,14 +82,14 @@ public class VolumeRenderer : MonoBehaviour
             this.Show( true );
         }
 
-        m_CartesianMaterial.SetTexture( "_Data", _data.DataTexture );
-        m_SphericalMaterial.SetTexture( "_Data", _data.DataTexture );
+        Singleton.GetCartesianMaterial().SetTexture( "_Data", _data.DataTexture );
+        Singleton.GetSphericalMaterial().SetTexture( "_Data", _data.DataTexture );
     }
 
     public void SetTransferFunction( Texture2D _transferFunction )
     {
-        m_CartesianMaterial.SetTexture( "_TFTex", _transferFunction );
-        m_SphericalMaterial.SetTexture( "_TFTex", _transferFunction );
+        Singleton.GetCartesianMaterial().SetTexture( "_TFTex", _transferFunction );
+        Singleton.GetSphericalMaterial().SetTexture( "_TFTex", _transferFunction );
     }
 
     public void Disable()

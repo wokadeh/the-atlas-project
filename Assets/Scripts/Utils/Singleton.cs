@@ -6,7 +6,9 @@ public class Singleton
     private static MeshRenderer m_Groundplane;
     private static MeshRenderer m_EarthSphere;
     private static VolumeRenderer m_VolumeRenderer;
-    
+    private static Material m_CartesianMaterial;
+    private static Material m_SphericalMaterial;
+
     public static DataManager GetDataManager()
     {
         if( m_DataManager == null )
@@ -45,5 +47,27 @@ public class Singleton
         }
 
         return m_EarthSphere;
+    }
+
+    public static Material GetCartesianMaterial()
+    {
+        if( m_CartesianMaterial == null )
+        {
+            m_CartesianMaterial = ( Material )Resources.Load( Globals.MATERIALS_PATH + "VolumetricCartesianRendering", typeof( Material ) );
+            
+        }
+
+        return m_CartesianMaterial;
+    }
+
+    public static Material GetSphericalMaterial()
+    {
+        if( m_SphericalMaterial == null )
+        {
+            m_SphericalMaterial = ( Material )Resources.Load( Globals.MATERIALS_PATH + "VolumetricSphericalRendering", typeof( Material ) );
+
+        }
+
+        return m_SphericalMaterial;
     }
 }
