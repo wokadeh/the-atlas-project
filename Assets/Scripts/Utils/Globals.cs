@@ -17,6 +17,7 @@ public struct Globals
 
     // ---------------> PROJECT
     public const string MATERIALS_PATH = "Materials\\";
+    public const string PREFABS_PATH = "Prefabs\\";
     public const string IMPORT_DATA_PATH = "Data\\";
     public const string SAVE_PROJECTS_PATH = "Assets\\Saved_Projects\\";
     public const string SAVE_SNAPSHOTS_PATH = "Assets\\Snapshots\\";

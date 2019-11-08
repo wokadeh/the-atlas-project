@@ -8,6 +8,7 @@ public class Singleton
     private static VolumeRenderer m_VolumeRenderer;
     private static Material m_CartesianMaterial;
     private static Material m_SphericalMaterial;
+    private static GameObject m_CartesianLevelScalePlanePrefab;
 
     public static DataManager GetDataManager()
     {
@@ -69,5 +70,15 @@ public class Singleton
         }
 
         return m_SphericalMaterial;
+    }
+
+    public static GameObject GetCartesianLevelScalePlanePrefab()
+    {
+        if( m_CartesianLevelScalePlanePrefab == null )
+        {
+            m_CartesianLevelScalePlanePrefab = ( GameObject )Resources.Load( Globals.PREFABS_PATH + "CartesianLevelScalePlane", typeof( GameObject ) );
+        }
+
+        return m_CartesianLevelScalePlanePrefab;
     }
 }
