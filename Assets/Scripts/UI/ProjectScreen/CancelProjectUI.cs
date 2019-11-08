@@ -4,7 +4,6 @@ using UnityEngine;
 public class CancelProjectUI : MonoBehaviour
 {
     [SerializeField] private GameObject m_ProjectScreen;
-    [SerializeField] private GameObject m_ApplicationToptoBottomLayout;
     [SerializeField] private Button m_CancelButton;
 
     // Start is called before the first frame update
@@ -17,6 +16,6 @@ public class CancelProjectUI : MonoBehaviour
     private void CencelProjectScreen()
     {
         m_ProjectScreen.SetActive( false );
-        m_ApplicationToptoBottomLayout.SetActive( true );
+        Singleton.GetMainScreenSystem().SetActive( true );
     }
 }

@@ -13,24 +13,27 @@ public class ProjectScreenUI : MonoBehaviour
     [SerializeField] private Button m_ProjectButton;
     [SerializeField] private GameObject m_ProjectScreen;
     [SerializeField] private GameObject m_LeftBarUI;
-    [SerializeField] private GameObject m_ApplicationToptoBottomLayout;
 
     private List<Button> m_LeftBarButtonList;
 
     // Start is called before the first frame update
     private void Start()
     {
+        this.ShowProjectScreen();
+
         m_ProjectButton.onClick.AddListener( ShowProjectScreen );
     }
 
     private void ShowProjectScreen()
     {
         m_ProjectScreen.SetActive( true );
-        m_ApplicationToptoBottomLayout.SetActive( false );
+        Singleton.GetMainScreenSystem().SetActive( false );
     }
 
     private void OnEnable()
     {
+        this.ShowProjectScreen();
+
         foreach( Button buttonInBar in this.GetButtonList() )
         {
             buttonInBar.interactable = false;

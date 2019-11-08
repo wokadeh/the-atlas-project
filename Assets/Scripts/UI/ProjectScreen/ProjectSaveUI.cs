@@ -15,7 +15,6 @@ public class ProjectSaveUI : MonoBehaviour
     [SerializeField] private Button m_SaveProjectButton;
     [SerializeField] private Button m_SaveProjectAsButton;
     [SerializeField] private GameObject m_ProjectScreen;
-    [SerializeField] private GameObject m_ApplicationToptoBottomLayout;
 
     private string m_DefaultProjectDir = Directory.GetCurrentDirectory() + "/" + Globals.SAVE_PROJECTS_PATH;
 
@@ -53,7 +52,7 @@ public class ProjectSaveUI : MonoBehaviour
 
         // Only continue, if one folder was selected
         this.SaveProject( file, m_DefaultProjectDir, false );
-        m_ApplicationToptoBottomLayout.SetActive( true );
+        Singleton.GetMainScreenSystem().SetActive( true );
     }
 
     private IEnumerator SaveProjectCoroutine( string _projectFileName, string _projectFolderPath, bool _saveOnlyXml )

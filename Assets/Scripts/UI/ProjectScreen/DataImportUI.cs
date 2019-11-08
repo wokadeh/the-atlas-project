@@ -22,7 +22,6 @@ public class DataImportUI : MonoBehaviour
     [SerializeField] private Button m_SaveProjectButton;
     [SerializeField] private Button m_CancelButton;
     [SerializeField] private Button m_SaveProjectAsButton;
-    [SerializeField] private GameObject m_MainScreenSystem;
 
     private void Start()
     {
@@ -49,7 +48,7 @@ public class DataImportUI : MonoBehaviour
 
         Singleton.GetDataManager().ImportData( file, Utils.CreateProgressBarProgress( m_ImportProgressBar, m_ImportProgressBarText ), () =>
         {
-            Utils.SetupScreenWhileProgress( m_ImportScreen, m_MainScreenSystem, m_SaveProjectButton, m_SaveProjectAsButton, m_CancelButton );
+            Utils.SetupScreenWhileProgress( m_ImportScreen, Singleton.GetMainScreenSystem(), m_SaveProjectButton, m_SaveProjectAsButton, m_CancelButton );
         } );
     }
 }

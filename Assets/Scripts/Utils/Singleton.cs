@@ -9,6 +9,7 @@ public class Singleton
     private static Material m_CartesianMaterial;
     private static Material m_SphericalMaterial;
     private static GameObject m_CartesianLevelScalePlanePrefab;
+    private static GameObject m_MainScreenSystem;
 
     public static DataManager GetDataManager()
     {
@@ -80,5 +81,14 @@ public class Singleton
         }
 
         return m_CartesianLevelScalePlanePrefab;
+    }
+    public static GameObject GetMainScreenSystem()
+    {
+        if( m_MainScreenSystem == null )
+        {
+            m_MainScreenSystem = GameObject.Find( "Main_Screen_System" );
+        }
+
+        return m_MainScreenSystem;
     }
 }
