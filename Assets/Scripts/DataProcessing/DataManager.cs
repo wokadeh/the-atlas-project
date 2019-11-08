@@ -22,7 +22,7 @@ public class DataManager : MonoBehaviour
     [SerializeField] private TimelineUI m_TimelineUI;
 
     private Dictionary<string, List<TimeStepDataAsset>> m_DataAssets;
-    public IReadOnlyList<TimeStepDataAsset> CurrentDataAssets => m_DataAssets[ CurrentVariableName ];
+    public IReadOnlyList<TimeStepDataAsset> CurrentDataAssets => m_DataAssets[CurrentVariableName];
 
     public event Action OnNewImport;
     public event Action<TimeStepDataAsset> OnDataAssetChanged;
@@ -203,18 +203,18 @@ public class DataManager : MonoBehaviour
             IVariable variable = metaData.Variables[ i ];
 
             // For each variable there is a list of all textures that are used
-            m_DataAssets[ variable.Name ] = new List<TimeStepDataAsset>();
+            m_DataAssets[variable.Name] = new List<TimeStepDataAsset>();
 
             string folder = Path.Combine( Path.GetDirectoryName( _projectFilePath ), variable.Name.ToLower() );
             Log.Info( this, "Create folders and files for variable " + variable.Name );
 
             if( Directory.Exists( folder ) )
             {
-                yield return this.StartCoroutine( this.ImportVariableRoutine( tiffLoader, timeAssetBuilder, folder, m_DataAssets[ variable.Name ], bitDepth, new Progress<float>( value =>
-                {
-                    // Do overall progress report
-                    _progress.Report( Utils.CalculateProgress( i, numberOfVariables, value ) );
-                } ) ) );
+                yield return this.StartCoroutine( this.ImportVariableRoutine( tiffLoader, timeAssetBuilder, folder, m_DataAssets[variable.Name], bitDepth, new Progress<float>( value =>
+              {
+                  // Do overall progress report
+                  _progress.Report( Utils.CalculateProgress( i, numberOfVariables, value ) );
+              } ) ) );
             }
             else
             {
@@ -260,29 +260,29 @@ public class DataManager : MonoBehaviour
             IVariable variable = metaData.Variables[ i ];
 
             // For each variable there is a list of all textures that are used
-            m_DataAssets[ variable.Name ] = new List<TimeStepDataAsset>();
+            m_DataAssets[variable.Name] = new List<TimeStepDataAsset>();
 
             string projectAssetPath = Globals.SAVE_PROJECTS_PATH + metaData.DataName;
 
             string variableFolderPath = Path.Combine( projectAssetPath, variable.Name.ToLower() );
             if( Directory.Exists( projectAssetPath ) )
             {
-                yield return this.StartCoroutine( this.LoadVariableRoutine( variableFolderPath, timeAssetBuilder, m_DataAssets[ variable.Name ], variable, bitDepth, new Progress<float>( value =>
-                {
-                    // Do overall progress report
-                    _progress.Report( Utils.CalculateProgress( i, metaData.Variables.Count, value ) );
-                } ) ) );
+                yield return this.StartCoroutine( this.LoadVariableRoutine( variableFolderPath, timeAssetBuilder, m_DataAssets[variable.Name], variable, bitDepth, new Progress<float>( value =>
+              {
+                  // Do overall progress report
+                  _progress.Report( Utils.CalculateProgress( i, metaData.Variables.Count, value ) );
+              } ) ) );
             }
             else
             {
                 isSuccess = false;
-                Log.Warn( this, "The directory " + projectAssetPath + " does not exist. The project cannot be loaded."  );
+                Log.Warn( this, "The directory " + projectAssetPath + " does not exist. The project cannot be loaded." );
 
                 _callback?.Invoke();
             }
         }
 
-        if(!isSuccess)
+        if( !isSuccess )
         {
             this.Clear();
             yield break;
@@ -295,14 +295,14 @@ public class DataManager : MonoBehaviour
         _callback?.Invoke();
     }
 
-    private void FinishLoading(IMetaData _metaData, System.Diagnostics.Stopwatch _stopwatch )
+    private void FinishLoading( IMetaData _metaData, System.Diagnostics.Stopwatch _stopwatch )
     {
         Log.Info( this, "Loading and creating assets took " + ( _stopwatch.ElapsedMilliseconds / 1000.0f ).ToString( "0.00" ) + "seconds." );
 
         this.MetaData = _metaData;
         this.CurrentVariableName = m_DataAssets.First().Key;
-        this.CurrentVariableMin = _metaData.Variables[ 0 ].Min;
-        this.CurrentVariableMax = _metaData.Variables[ 0 ].Max;
+        this.CurrentVariableMin = _metaData.Variables[0].Min;
+        this.CurrentVariableMax = _metaData.Variables[0].Max;
         this.CurrentTimeStepDataAsset = this.CurrentDataAssets.First();
 
         // Set new data
@@ -413,5 +413,10 @@ public class DataManager : MonoBehaviour
     public void DisableVolumeRenderer()
     {
         Singleton.GetVolumeRenderer().Show( false );
+    }
+
+    public void EnableVolumeRenderer()
+    {
+        Singleton.GetVolumeRenderer().Show( true );
     }
 }

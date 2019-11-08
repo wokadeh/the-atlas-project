@@ -1,6 +1,6 @@
 ﻿// ****************************** LOCATION ********************************
 //
-// [UI] SCRIPTS -> attached
+// [UI] Volume_Renderer -> attached
 //
 // ************************************************************************
 
@@ -81,6 +81,7 @@ public class VolumeRenderer : MonoBehaviour
         if( m_Renderer )
         {
             m_Renderer.enabled = true;
+            this.Show( true );
         }
 
         m_CartesianMaterial.SetTexture( "_Data", _data.DataTexture );
