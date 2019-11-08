@@ -18,7 +18,6 @@ public class ProjectLoadUI : MonoBehaviour
     [SerializeField] private Button m_LoadProjectButton;
     [SerializeField] private Button m_SaveProjectButton;
     [SerializeField] private Button m_CancelButton;
-    [SerializeField] private GameObject m_ProjectScreen;
 
     // Start is called before the first frame update
     void Start()
@@ -46,11 +45,11 @@ public class ProjectLoadUI : MonoBehaviour
 
     private IEnumerator LoadProjectCoroutine( string _projectFolderPath )
     {
-        yield return Utils.SetupProjectCoroutine( m_LoadScreen, m_ProjectScreen, m_LoadProgressBar , m_LoadProgressBarText );
+        yield return Utils.SetupProjectCoroutine( m_LoadScreen, Singleton.GetProjectScreen(), m_LoadProgressBar , m_LoadProgressBarText );
 
         Singleton.GetDataManager().LoadProject( _projectFolderPath, Utils.CreateProgressBarProgress( m_LoadProgressBar, m_LoadProgressBarText ), () =>
         {
-            Utils.SetupScreenWhileProgress( m_LoadScreen, Singleton.GetMainScreenSystem(), m_SaveProjectButton, m_CancelButton );
+            Utils.SetupScreenWhileProgress( m_LoadScreen, Singleton.GetMainScreen(), m_SaveProjectButton, m_CancelButton );
         } ); ;
     }
 

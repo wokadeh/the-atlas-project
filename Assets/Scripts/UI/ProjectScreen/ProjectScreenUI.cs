@@ -11,7 +11,6 @@ using System.Collections.Generic;
 public class ProjectScreenUI : MonoBehaviour
 {
     [SerializeField] private Button m_ProjectButton;
-    [SerializeField] private GameObject m_ProjectScreen;
     [SerializeField] private GameObject m_LeftBarUI;
 
     private List<Button> m_LeftBarButtonList;
@@ -26,8 +25,8 @@ public class ProjectScreenUI : MonoBehaviour
 
     private void ShowProjectScreen()
     {
-        m_ProjectScreen.SetActive( true );
-        Singleton.GetMainScreenSystem().SetActive( false );
+        Singleton.GetProjectScreen().SetActive( true );
+        Singleton.GetMainScreen().SetActive( false );
     }
 
     private void OnEnable()

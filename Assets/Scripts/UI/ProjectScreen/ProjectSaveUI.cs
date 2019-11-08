@@ -14,8 +14,7 @@ public class ProjectSaveUI : MonoBehaviour
     [SerializeField] private TMP_Text m_SaveProgressBarText;
     [SerializeField] private Button m_SaveProjectButton;
     [SerializeField] private Button m_SaveProjectAsButton;
-    [SerializeField] private GameObject m_ProjectScreen;
-
+ 
     private string m_DefaultProjectDir = Directory.GetCurrentDirectory() + "/" + Globals.SAVE_PROJECTS_PATH;
 
     // Start is called before the first frame update
@@ -41,7 +40,7 @@ public class ProjectSaveUI : MonoBehaviour
 
         this.StartCoroutine( this.SaveProjectCoroutine( _projectFileName, _projectFolderPath, _saveOnlyXml ) );
 
-        m_ProjectScreen.SetActive( false );
+        Singleton.GetProjectScreen().SetActive( false );
     }
 
     private void SaveAsProject()
@@ -52,12 +51,12 @@ public class ProjectSaveUI : MonoBehaviour
 
         // Only continue, if one folder was selected
         this.SaveProject( file, m_DefaultProjectDir, false );
-        Singleton.GetMainScreenSystem().SetActive( true );
+        Singleton.GetMainScreen().SetActive( true );
     }
 
     private IEnumerator SaveProjectCoroutine( string _projectFileName, string _projectFolderPath, bool _saveOnlyXml )
     {
-        yield return Utils.SetupProjectCoroutine( m_SaveScreen, m_ProjectScreen, m_SaveProgressBar, m_SaveProgressBarText );
+        yield return Utils.SetupProjectCoroutine( m_SaveScreen, Singleton.GetProjectScreen(), m_SaveProgressBar, m_SaveProgressBarText );
 
         Singleton.GetDataManager().SaveProject( _projectFileName, _projectFolderPath, _saveOnlyXml, Utils.CreateProgressBarProgress( m_SaveProgressBar, m_SaveProgressBarText ), () =>
         {

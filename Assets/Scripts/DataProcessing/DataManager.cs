@@ -5,7 +5,6 @@
 // ************************************************************************
 
 using System;
-using System.Xml;
 using System.Globalization;
 using System.Collections;
 using System.Collections.Generic;

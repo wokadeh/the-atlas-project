@@ -18,7 +18,6 @@ public class DataImportUI : MonoBehaviour
     [SerializeField] private GameObject m_ImportScreen;
     [SerializeField] private Image m_ImportProgressBar;
     [SerializeField] private TMP_Text m_ImportProgressBarText;
-    [SerializeField] private GameObject m_ProjectScreen;
     [SerializeField] private Button m_SaveProjectButton;
     [SerializeField] private Button m_CancelButton;
     [SerializeField] private Button m_SaveProjectAsButton;
@@ -44,11 +43,11 @@ public class DataImportUI : MonoBehaviour
 
     private IEnumerator ImportDataCoroutine( string file )
     {
-        yield return Utils.SetupProjectCoroutine( m_ImportScreen, m_ProjectScreen, m_ImportProgressBar, m_ImportProgressBarText );
+        yield return Utils.SetupProjectCoroutine( m_ImportScreen, Singleton.GetProjectScreen(), m_ImportProgressBar, m_ImportProgressBarText );
 
         Singleton.GetDataManager().ImportData( file, Utils.CreateProgressBarProgress( m_ImportProgressBar, m_ImportProgressBarText ), () =>
         {
-            Utils.SetupScreenWhileProgress( m_ImportScreen, Singleton.GetMainScreenSystem(), m_SaveProjectButton, m_SaveProjectAsButton, m_CancelButton );
+            Utils.SetupScreenWhileProgress( m_ImportScreen, Singleton.GetMainScreen(), m_SaveProjectButton, m_SaveProjectAsButton, m_CancelButton );
         } );
     }
 }
