@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using SFB;
 using TMPro;
+using System.IO;
 
 public class DataImportUI : MonoBehaviour
 {
@@ -30,7 +31,7 @@ public class DataImportUI : MonoBehaviour
 
     private void ImportData()
     {
-        string[] files = StandaloneFileBrowser.OpenFilePanel("Open data xml", null, FILE_FILTER, false);
+        string[] files = StandaloneFileBrowser.OpenFilePanel("Open data xml", Directory.GetCurrentDirectory() + "\\" + Globals.IMPORT_DATA_PATH, FILE_FILTER, false);
 
         // This is a little hackey but works for now
         m_TransferFunctionUIPanel.SetActive( false );
