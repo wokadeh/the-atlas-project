@@ -4890,7 +4890,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44201e76ed4264c41a728e352465b964, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_VolumeRenderer: {fileID: 1023572782}
   m_ControlPointStartColor: {r: 1, g: 1, b: 1, a: 1}
   m_ControlPointPrefab: {fileID: -8589558874434770781, guid: cad9fa292248c904ca10eda1f83d234f,
     type: 3}
@@ -5895,7 +5894,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_CameraModeUI: {fileID: 1521054919}
   m_DataTypeUI: {fileID: 816077033}
-  m_VolumeRenderer: {fileID: 1023572782}
   m_TransferFunctionUI: {fileID: 541401439}
   m_TimelineUI: {fileID: 1373890074}
   m_TimestampUI: {fileID: 1901998943}
@@ -10701,7 +10699,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1023572782
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15525,8 +15523,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_TimelinePanel: {fileID: 1373890070}
-  m_DataManager: {fileID: 631215805}
-  m_VolumeRenderer: {fileID: 1023572782}
   m_FPS: 30
   m_SelectedColor: {r: 0.4862745, g: 0.81960785, b: 1, a: 1}
   m_TimelineSlider: {fileID: 1370569036}
@@ -25547,8 +25543,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0754c981cb67ab441a6ef258ecc5e283, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_VolumeRenderer: {fileID: 1023572782}
-  m_DataManager: {fileID: 631215805}
   m_TransferFunctionUIPanel: {fileID: 1472509994}
   m_TimelineUIPanel: {fileID: 1373890070}
   m_ImportDataButton: {fileID: 1618140476}
@@ -25572,7 +25566,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9eb6b55ae845b5a42b559991d31057eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_VolumeRenderer: {fileID: 1023572782}
   m_CartesianModeButton: {fileID: 1222694813}
   m_CartesianModeButtonImage: {fileID: 1222694814}
   m_SphericalModeButton: {fileID: 1893975017}
@@ -25590,7 +25583,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a66f531bde3c1346aa2930fad454521, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_DataManager: {fileID: 631215805}
   m_TransferFunctionUIPanel: {fileID: 1472509994}
   m_SaveScreen: {fileID: 1881308787}
   m_SaveProgressBar: {fileID: 640115987}
@@ -25611,8 +25603,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2b606d7fc63f5e4d9a1d0ce9cb9c6d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_VolumeRenderer: {fileID: 1023572782}
-  m_DataManager: {fileID: 631215805}
   m_TransferFunctionUIPanel: {fileID: 1472509994}
   m_LoadScreen: {fileID: 1397197482}
   m_LoadProgressBar: {fileID: 891224299}

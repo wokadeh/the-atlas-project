@@ -12,8 +12,6 @@ public class ProjectLoadUI : MonoBehaviour
         new ExtensionFilter("Xml File", "xml")
     };
 
-    [SerializeField] private VolumeRenderer m_VolumeRenderer;
-    [SerializeField] private DataManager m_DataManager;
     [SerializeField] private GameObject m_TransferFunctionUIPanel;
     [SerializeField] private GameObject m_LoadScreen;
     [SerializeField] private Image m_LoadProgressBar;
@@ -62,13 +60,13 @@ public class ProjectLoadUI : MonoBehaviour
         yield return null;
         yield return null;
 
-        m_DataManager.LoadProject( _projectFolderPath, Utils.CreateProgressBarProgress( m_LoadProgressBar, m_LoadProgressBarText, m_LoadScreen ), () =>
+        Singleton.GetDataManager().LoadProject( _projectFolderPath, Utils.CreateProgressBarProgress( m_LoadProgressBar, m_LoadProgressBarText, m_LoadScreen ), () =>
         {
             m_LoadScreen.SetActive( false );
             m_ApplicationToptoBottomLayout.SetActive( true );
 
             m_SaveProjectButton.interactable = true;
-            m_VolumeRenderer.gameObject.SetActive( true );
+            Singleton.GetVolumeRenderer().gameObject.SetActive( true );
             m_CancelButton.interactable = true;
         } ); ;
     }

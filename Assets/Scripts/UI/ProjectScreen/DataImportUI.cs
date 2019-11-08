@@ -11,8 +11,6 @@ public class DataImportUI : MonoBehaviour
         new ExtensionFilter("Xml File", "xml")
     };
 
-    [SerializeField] private VolumeRenderer m_VolumeRenderer;
-    [SerializeField] private DataManager m_DataManager;
     [SerializeField] private GameObject m_TransferFunctionUIPanel;
     [SerializeField] private GameObject m_TimelineUIPanel;
     [SerializeField] private Button m_ImportDataButton;
@@ -56,7 +54,7 @@ public class DataImportUI : MonoBehaviour
         yield return null;
         yield return null;
 
-        m_DataManager.ImportData( file, new Progress<float>( progress =>
+        Singleton.GetDataManager().ImportData( file, new Progress<float>( progress =>
         {
             m_ImportProgressBar.fillAmount = progress;
             m_ImportProgressBarText.text = $"{( progress * 100 ).ToString( "0" )} %";
@@ -68,7 +66,7 @@ public class DataImportUI : MonoBehaviour
 
             m_SaveProjectButton.interactable = false;
             m_SaveProjectAsButton.interactable = true;
-            m_VolumeRenderer.gameObject.SetActive( true );
+            Singleton.GetVolumeRenderer().gameObject.SetActive( true );
             m_CancelButton.interactable = true;
         } );
     }

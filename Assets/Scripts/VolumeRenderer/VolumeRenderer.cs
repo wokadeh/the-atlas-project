@@ -22,10 +22,8 @@ public class VolumeRenderer : MonoBehaviour
     public VolumeRendererMode Mode { get; private set; }
 
     private MeshRenderer m_Renderer;
-    private GameObject m_CartesianAltitudeLevelContainer;
     private List<GameObject> m_Levels;
     private bool m_IsScaleActive = false;
-    private bool m_IsScaleManual = false;
 
     private void Start()
     {

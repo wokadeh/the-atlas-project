@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
-using UnityEngine.UI;
 
 public class Singleton
 {
@@ -8,7 +6,7 @@ public class Singleton
     private static MeshRenderer m_Groundplane;
     private static MeshRenderer m_EarthSphere;
     private static VolumeRenderer m_VolumeRenderer;
-
+    
     public static DataManager GetDataManager()
     {
         if( m_DataManager == null )
@@ -19,15 +17,15 @@ public class Singleton
         return m_DataManager;
     }
 
-    //public static VolumeRenderer GetVolumeRenderer()
-    //{
-    //    if( m_VolumeRenderer == null )
-    //    {
-    //        m_VolumeRenderer = GameObject.Find( "Volume_Renderer" ).GetComponent<VolumeRenderer>();
-    //    }
+    public static VolumeRenderer GetVolumeRenderer()
+    {
+        if( m_VolumeRenderer == null )
+        {
+            m_VolumeRenderer = GameObject.Find( "Volume_Renderer" ).GetComponent<VolumeRenderer>();
+        }
 
-    //    return m_VolumeRenderer;
-    //}
+        return m_VolumeRenderer;
+    }
 
     public static MeshRenderer GetGroundPlane()
     {

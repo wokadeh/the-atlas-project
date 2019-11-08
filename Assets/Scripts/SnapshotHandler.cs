@@ -4,8 +4,6 @@
 //
 // ************************************************************************
 
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SnapshotHandler : MonoBehaviour
@@ -19,8 +17,6 @@ public class SnapshotHandler : MonoBehaviour
 
     private int m_PicWidth;
     private int m_PicHeight;
-
-    private DataManager m_DataManager;
 
     private string m_DataName;
 

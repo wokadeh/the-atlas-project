@@ -18,7 +18,6 @@ public class DataManager : MonoBehaviour
 {
     [SerializeField] private CameraModeUI m_CameraModeUI;
     [SerializeField] private DataTypeUI m_DataTypeUI;
-    [SerializeField] private VolumeRenderer m_VolumeRenderer;
     [SerializeField] private TransferFunctionUI m_TransferFunctionUI;
     [SerializeField] private TimelineUI m_TimelineUI;
 
@@ -57,7 +56,7 @@ public class DataManager : MonoBehaviour
         m_TimelineUI.Show( false );
         m_CameraModeUI.Show( false );
         m_DataTypeUI.Show( false );
-        m_VolumeRenderer.Show( false );
+        Singleton.GetVolumeRenderer().Show( false );
     }
 
     // Start internal routines to import the data to a new project
@@ -98,7 +97,7 @@ public class DataManager : MonoBehaviour
         this.SetCurrentAsset( this.CurrentDataAssets.First() );
 
         // Set new data
-        m_VolumeRenderer.SetData( this.CurrentTimeStepDataAsset );
+        Singleton.GetVolumeRenderer().SetData( this.CurrentTimeStepDataAsset );
 
         m_TimestampUI.UpdateTimestamp( m_TimestampUI.CurrentIndex );
     }
@@ -307,7 +306,7 @@ public class DataManager : MonoBehaviour
         this.CurrentTimeStepDataAsset = this.CurrentDataAssets.First();
 
         // Set new data
-        m_VolumeRenderer.SetData( this.CurrentTimeStepDataAsset );
+        Singleton.GetVolumeRenderer().SetData( this.CurrentTimeStepDataAsset );
         m_TransferFunctionUI.Redraw();
 
         OnNewImport?.Invoke();
@@ -413,6 +412,6 @@ public class DataManager : MonoBehaviour
 
     public void DisableVolumeRenderer()
     {
-        m_VolumeRenderer.Show( false );
+        Singleton.GetVolumeRenderer().Show( false );
     }
 }

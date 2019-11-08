@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿
+using UnityEngine;
 
 /// <summary>
 /// A simple free camera to be added to a Unity game object.

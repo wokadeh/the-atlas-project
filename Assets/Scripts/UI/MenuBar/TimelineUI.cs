@@ -12,8 +12,6 @@ using UnityEngine.UI;
 public class TimelineUI : MonoBehaviour
 {
     [SerializeField] private GameObject m_TimelinePanel;
-    [SerializeField] private DataManager m_DataManager;
-    [SerializeField] private VolumeRenderer m_VolumeRenderer;
     [SerializeField] private int m_FPS;
     [SerializeField] private Color m_SelectedColor;
     [SerializeField] private Slider m_TimelineSlider;
@@ -55,10 +53,10 @@ public class TimelineUI : MonoBehaviour
     {
         this.Reset();
 
-        if( m_DataManager.CurrentTimeStepDataAsset != null )
+        if( Singleton.GetDataManager().CurrentTimeStepDataAsset != null )
         {
             m_TimelineSlider.minValue = 0;
-            m_TimelineSlider.maxValue = m_DataManager.CurrentDataAssets.Count - 1;
+            m_TimelineSlider.maxValue = Singleton.GetDataManager().CurrentDataAssets.Count - 1;
             m_TimelineSlider.wholeNumbers = true;
         }
     }
@@ -137,7 +135,7 @@ public class TimelineUI : MonoBehaviour
     private void OnPlay()
     {
         // Bail out if we have no assets yet
-        if( m_DataManager.CurrentDataAssets.Count <= 0 )
+        if( Singleton.GetDataManager().CurrentDataAssets.Count <= 0 )
         {
             return;
         }
@@ -176,14 +174,14 @@ public class TimelineUI : MonoBehaviour
     private void OnTimelineChanged( float value )
     {
         // Bail out if we have no assets yet
-        if( m_DataManager.CurrentDataAssets.Count <= 0 )
+        if( Singleton.GetDataManager().CurrentDataAssets.Count <= 0 )
         {
             return;
         }
 
-        TimeStepDataAsset asset = m_DataManager.CurrentDataAssets[ ( int ) value ];
-        m_DataManager.SetCurrentAsset( asset );
-        m_VolumeRenderer.SetData( asset );
+        TimeStepDataAsset asset = Singleton.GetDataManager().CurrentDataAssets[ ( int ) value ];
+        Singleton.GetDataManager().SetCurrentAsset( asset );
+        Singleton.GetVolumeRenderer().SetData( asset );
 
         m_TimestampUI.UpdateTimestamp( (uint)value );
     }

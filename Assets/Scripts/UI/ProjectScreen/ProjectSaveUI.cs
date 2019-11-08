@@ -8,7 +8,6 @@ using UnityEngine.UI;
 
 public class ProjectSaveUI : MonoBehaviour
 {
-    [SerializeField] private DataManager m_DataManager;
     [SerializeField] private GameObject m_TransferFunctionUIPanel;
     [SerializeField] private GameObject m_SaveScreen;
     [SerializeField] private Image m_SaveProgressBar;
@@ -29,7 +28,7 @@ public class ProjectSaveUI : MonoBehaviour
 
     private void SaveProject()
     {
-        this.SaveProject( m_DataManager.MetaData.DataName, m_DefaultProjectDir, true );
+        this.SaveProject( Singleton.GetDataManager().MetaData.DataName, m_DefaultProjectDir, true );
     }
 
     private void SaveProject( string _projectFileName, string _projectFolderPath, bool _saveOnlyXml )
@@ -48,7 +47,7 @@ public class ProjectSaveUI : MonoBehaviour
 
     private void SaveAsProject()
     {
-        string file = StandaloneFileBrowser.SaveFilePanel( "Save project as...", m_DefaultProjectDir, m_DataManager.MetaData.DataName, Globals.XML_FILE_FILTER );
+        string file = StandaloneFileBrowser.SaveFilePanel( "Save project as...", m_DefaultProjectDir, Singleton.GetDataManager().MetaData.DataName, Globals.XML_FILE_FILTER );
 
         file = Path.GetFileNameWithoutExtension( file );
 
@@ -69,7 +68,7 @@ public class ProjectSaveUI : MonoBehaviour
         yield return null;
         yield return null;
 
-        m_DataManager.SaveProject( _projectFileName, _projectFolderPath, _saveOnlyXml, new Progress<float>( progress =>
+        Singleton.GetDataManager().SaveProject( _projectFileName, _projectFolderPath, _saveOnlyXml, new Progress<float>( progress =>
         {
             m_SaveProgressBar.fillAmount = progress;
             m_SaveProgressBarText.text = $"{( progress * 100 ).ToString( "0" )} %";

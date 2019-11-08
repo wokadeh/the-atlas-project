@@ -5,7 +5,6 @@ using UnityEngine.UI;
 using TMPro;
 
 public class ModeUI : MonoBehaviour {
-    [SerializeField] private VolumeRenderer m_VolumeRenderer;
     [SerializeField] private Button m_CartesianModeButton;
     [SerializeField] private Image m_CartesianModeButtonImage;
     [SerializeField] private Button m_SphericalModeButton;
@@ -14,20 +13,20 @@ public class ModeUI : MonoBehaviour {
 
     private void Start() {
         m_CartesianModeButton.onClick.AddListener(() => {
-            if (m_VolumeRenderer.Mode != VolumeRendererMode.Cartesian) {
+            if ( Singleton.GetVolumeRenderer().Mode != VolumeRendererMode.Cartesian) {
                 m_CartesianModeButtonImage.color = m_EnabledColor;
                 m_SphericalModeButtonImage.color = Color.white;
 
-                m_VolumeRenderer.SetMode(VolumeRendererMode.Cartesian);
+                Singleton.GetVolumeRenderer().SetMode(VolumeRendererMode.Cartesian);
             }
         });
 
         m_SphericalModeButton.onClick.AddListener(() => {
-            if (m_VolumeRenderer.Mode != VolumeRendererMode.Spherical) {
+            if ( Singleton.GetVolumeRenderer().Mode != VolumeRendererMode.Spherical) {
                 m_SphericalModeButtonImage.color = m_EnabledColor;
                 m_CartesianModeButtonImage.color = Color.white;
 
-                m_VolumeRenderer.SetMode(VolumeRendererMode.Spherical);
+                Singleton.GetVolumeRenderer().SetMode(VolumeRendererMode.Spherical);
             }
         });
     }
