@@ -47,7 +47,7 @@ public class DataImportUI : MonoBehaviour
 
         Singleton.GetDataManager().ImportData( file, Utils.CreateProgressBarProgress( m_ImportProgressBar, m_ImportProgressBarText ), () =>
         {
-            Utils.SetupScreenWhileProgress( m_ImportScreen, Singleton.GetMainScreen(), m_SaveProjectButton, m_SaveProjectAsButton, m_CancelButton );
+            Utils.SetupScreenWhileProgress( m_ImportScreen, Singleton.GetMainScreenSystem(), Singleton.GetBottomScreen(), m_SaveProjectButton, m_SaveProjectAsButton, m_CancelButton );
         } );
     }
 }

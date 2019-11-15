@@ -158,19 +158,20 @@ public static class Utils
         yield return null;
     }
 
-    public static void SetupScreenWhileProgress( GameObject _projectStateScreen, GameObject _mainSystemScreen, Button _saveProjectButton, Button _cancelButton )
+    public static void SetupScreenWhileProgress( GameObject _projectStateScreen, GameObject _mainSystemScreen, GameObject _bottomScreen, Button _saveProjectButton, Button _cancelButton )
     {
         _projectStateScreen.SetActive( false );
         _mainSystemScreen.SetActive( true );
+        _bottomScreen.SetActive( true );
 
         _saveProjectButton.interactable = true;
         Singleton.GetVolumeRenderer().gameObject.SetActive( true );
         _cancelButton.interactable = true;
     }
 
-    public static void SetupScreenWhileProgress( GameObject _projectStateScreen, GameObject _mainSystemScreen, Button _saveProjectButton, Button _saveProjectAsButton, Button _cancelButton )
+    public static void SetupScreenWhileProgress( GameObject _projectStateScreen, GameObject _mainSystemScreen, GameObject _bottomScreen, Button _saveProjectButton, Button _saveProjectAsButton, Button _cancelButton )
     {
-        SetupScreenWhileProgress( _projectStateScreen , _mainSystemScreen, _saveProjectButton, _cancelButton );
+        SetupScreenWhileProgress( _projectStateScreen , _mainSystemScreen, _bottomScreen, _saveProjectButton, _cancelButton );
 
         _saveProjectButton.interactable = false;
         _saveProjectAsButton.interactable = true;

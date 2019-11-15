@@ -15,6 +15,6 @@ public class CancelProjectUI : MonoBehaviour
     private void CancelProjectScreen()
     {
         Singleton.GetProjectScreen().SetActive( false );
-        Singleton.GetMainScreen().SetActive( true );
+        Singleton.GetMainScreenSystem().SetActive( true );
     }
 }

@@ -51,7 +51,7 @@ public class ProjectSaveUI : MonoBehaviour
 
         // Only continue, if one folder was selected
         this.SaveProject( file, m_DefaultProjectDir, false );
-        Singleton.GetMainScreen().SetActive( true );
+        Singleton.GetMainScreenSystem().SetActive( true );
     }
 
     private IEnumerator SaveProjectCoroutine( string _projectFileName, string _projectFolderPath, bool _saveOnlyXml )
