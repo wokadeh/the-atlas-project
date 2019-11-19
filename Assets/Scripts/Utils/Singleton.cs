@@ -1,24 +1,43 @@
-﻿using UnityEngine;
+﻿// ********************************* USE **********************************
+//
+// This class contains global instances that are initiallized only once!
+//
+// ************************************************************************
+
+using UnityEngine;
 
 public class Singleton
 {
     private static DataManager m_DataManager;
+    private static VolumeRenderer m_VolumeRenderer;
+
     private static MeshRenderer m_Groundplane;
     private static MeshRenderer m_EarthSphere;
-    private static VolumeRenderer m_VolumeRenderer;
+
     private static Material m_CartesianMaterial;
     private static Material m_SphericalMaterial;
+
     private static GameObject m_CartesianLevelScalePlanePrefab;
     private static GameObject m_MainScreenSystem;
     private static GameObject m_MainScreen;
     private static GameObject m_BottomScreen;
     private static GameObject m_ProjectScreen;
+    private static GameObject m_TransferfunctionHistogramScreen;
+    private static GameObject m_DataTypeTogglePanel;
+    private static GameObject m_LevelModeTogglePanel;
+    private static GameObject m_CameraModeTogglePanel;
 
     public static DataManager GetDataManager()
     {
         if( m_DataManager == null )
         {
-            m_DataManager = GameObject.Find( "SCRIPTS" ).GetComponent<DataManager>();
+
+            Log.Info( "Singleton", "Anothing happens?" );
+            foreach( DataManager c in GameObject.Find( "Volume_Renderer" ).GetComponents<DataManager>())
+            {
+                Log.Info( "Singleton", c.name );
+            }
+            m_DataManager = GameObject.Find( "Volume_Renderer" ).GetComponent<DataManager>();
         }
 
         return m_DataManager;
@@ -120,5 +139,42 @@ public class Singleton
         }
 
         return m_ProjectScreen;
+    }
+    public static GameObject GetTransferfunctionHistogramScreen()
+    {
+        if( m_TransferfunctionHistogramScreen == null )
+        {
+            m_TransferfunctionHistogramScreen = GameObject.Find( "Transfer_Function_Histogram_Panel" );
+        }
+
+        return m_TransferfunctionHistogramScreen;
+    }
+
+    public static GameObject GetDataTypeTogglePanel()
+    {
+        if( m_DataTypeTogglePanel == null )
+        {
+            m_DataTypeTogglePanel = GameObject.Find( "Data_Type_Toggle_Panel" );
+        }
+
+        return m_DataTypeTogglePanel;
+    }
+    public static GameObject GetLevelModeTogglePanel()
+    {
+        if( m_LevelModeTogglePanel == null )
+        {
+            m_LevelModeTogglePanel = GameObject.Find( "Level_Mode_Toggle_Panel" );
+        }
+
+        return m_LevelModeTogglePanel;
+    }
+    public static GameObject GetCameraModeTogglePanel()
+    {
+        if( m_CameraModeTogglePanel == null )
+        {
+            m_CameraModeTogglePanel = GameObject.Find( "Camera_Mode_Toggle_Panel" );
+        }
+
+        return m_CameraModeTogglePanel;
     }
 }

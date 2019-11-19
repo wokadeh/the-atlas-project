@@ -4,9 +4,6 @@
 
 public class CameraOrbit : MonoBehaviour
 {
-    [SerializeField] private GameObject m_DataTypeTogglePanel;
-    [SerializeField] private GameObject m_CameraModeTogglePanel;
-
     public Transform m_VolumeRenderer;
     public float m_Distance = 2.5f;
     public float m_XSpeed = 120.0f;
@@ -42,7 +39,6 @@ public class CameraOrbit : MonoBehaviour
 
     void LateUpdate()
     {
-
         Quaternion rotation = Quaternion.Euler( m_YPos, m_XPos, 0 );
         m_Distance = Mathf.Clamp( m_Distance - Input.GetAxis( "Mouse ScrollWheel" ) * 1, m_DistanceMin, m_DistanceMax );
         RaycastHit hit;
@@ -60,8 +56,8 @@ public class CameraOrbit : MonoBehaviour
         {
             orbit = true;
 
-            m_DataTypeTogglePanel.SetActive( false );
-            m_CameraModeTogglePanel.SetActive( false );
+            Singleton.GetDataTypeTogglePanel().SetActive( false );
+            Singleton.GetCameraModeTogglePanel().SetActive( false );
         }
 
         if ( m_VolumeRenderer && orbit )
@@ -74,8 +70,8 @@ public class CameraOrbit : MonoBehaviour
         {
             orbit = false;
 
-            m_DataTypeTogglePanel.SetActive( false );
-            m_CameraModeTogglePanel.SetActive( false );
+            Singleton.GetDataTypeTogglePanel().SetActive( false );
+            Singleton.GetCameraModeTogglePanel().SetActive( false );
         }
 
     }

@@ -1,6 +1,6 @@
 ﻿// ****************************** LOCATION ********************************
 //
-// [UI] CartesianLevelScalePlane (Prefeb Asset) -> attached
+// [Volume_Renderer] Volume_Renderer -> attached
 //
 // ************************************************************************
 
@@ -15,12 +15,6 @@ using UnityEngine;
 
 public class DataManager : MonoBehaviour
 {
-    [SerializeField] private CameraModeUI m_CameraModeUI;
-    [SerializeField] private DataTypeUI m_DataTypeUI;
-    [SerializeField] private TransferFunctionUI m_TransferFunctionUI;
-    [SerializeField] private TimelineUI m_TimelineUI;
-    [SerializeField] private LevelModeUI m_LevelModeUI;
-
     private Dictionary<string, List<TimeStepDataAsset>> m_DataAssets;
     public IReadOnlyList<TimeStepDataAsset> CurrentDataAssets => m_DataAssets[CurrentVariableName];
 
@@ -34,8 +28,6 @@ public class DataManager : MonoBehaviour
     public TimeStepDataAsset CurrentTimeStepDataAsset { get; private set; }
     private IMetaDataManager m_MetaDataManager;
 
-    public TimestampUI m_TimestampUI;
-
     private void Start()
     {
         this.Clear();
@@ -48,15 +40,11 @@ public class DataManager : MonoBehaviour
     {
         m_MetaDataManager = new MetaDataManager();
         m_DataAssets = new Dictionary<string, List<TimeStepDataAsset>>();
-        CurrentVariableName = "";
-        CurrentVariableMin = 0;
-        CurrentVariableMax = 0;
-        MetaData = null;
+        this.CurrentVariableName = "";
+        this.CurrentVariableMin = 0;
+        this.CurrentVariableMax = 0;
+        this.MetaData = null;
 
-        m_TimelineUI.Show( false );
-        m_CameraModeUI.Show( false );
-        m_DataTypeUI.Show( false );
-        m_LevelModeUI.Show( false );
         Singleton.GetVolumeRenderer().Show( false );
     }
 
@@ -99,8 +87,6 @@ public class DataManager : MonoBehaviour
 
         // Set new data
         Singleton.GetVolumeRenderer().SetData( this.CurrentTimeStepDataAsset );
-
-        m_TimestampUI.UpdateTimestamp( m_TimestampUI.CurrentIndex );
     }
 
     private IEnumerator SaveProjectCoroutine( string _projectFileName, string _projectFolderPath, bool _saveOnlyXml, IProgress<float> _progress, Action _callback )
@@ -308,11 +294,8 @@ public class DataManager : MonoBehaviour
 
         // Set new data
         Singleton.GetVolumeRenderer().SetData( this.CurrentTimeStepDataAsset );
-        m_TransferFunctionUI.Redraw();
 
         OnNewImport?.Invoke();
-
-        m_TimestampUI.UpdateTimestamp( m_TimestampUI.CurrentIndex );
     }
 
     private IEnumerator SaveVariableRoutine( IVariable _variable, string _variablePath, int _varIndex, IProgress<float> _progress )

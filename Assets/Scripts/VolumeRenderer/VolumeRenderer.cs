@@ -11,10 +11,9 @@ using UnityEngine.UI;
 [RequireComponent( typeof( MeshRenderer ) )]
 public class VolumeRenderer : MonoBehaviour
 {
-    //[SerializeField] private GameObject m_CartesianLevelScalePlanePrefab;
     [SerializeField] private Button m_LevelScaleButton;
-
     [SerializeField] private bool m_ShowAltitudeLevels;
+
     private GameObject m_CartesianLevelScalePlane;
 
     public VolumeRendererMode Mode { get; private set; }
@@ -43,7 +42,6 @@ public class VolumeRenderer : MonoBehaviour
     {
         this.gameObject.SetActive( _isShown );
     }
-
     public void SetMode( VolumeRendererMode _mode )
     {
         this.Mode = _mode;

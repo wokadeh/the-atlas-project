@@ -16,9 +16,6 @@ using UnityEngine;
 /// </summary>
 public class CameraFree : MonoBehaviour
 {
-    [SerializeField] private GameObject m_DataTypeTogglePanel;
-    [SerializeField] private GameObject m_CameraModeTogglePanel;
-
     public float movementSpeed = 0.5f;
     public float fastMovementSpeed = 1f;
     public float freeLookSensitivity = 0.5f;
@@ -35,48 +32,48 @@ public class CameraFree : MonoBehaviour
         {
             transform.position = transform.position + (-transform.right * movementSpeed * Time.deltaTime);
 
-            m_DataTypeTogglePanel.SetActive( false );
-            m_CameraModeTogglePanel.SetActive( false );
+            Singleton.GetDataTypeTogglePanel().SetActive( false );
+            Singleton.GetCameraModeTogglePanel().SetActive( false );
         }
 
         if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
         {
             transform.position = transform.position + (transform.right * movementSpeed * Time.deltaTime);
 
-            m_DataTypeTogglePanel.SetActive( false );
-            m_CameraModeTogglePanel.SetActive( false );
+            Singleton.GetDataTypeTogglePanel().SetActive( false );
+            Singleton.GetCameraModeTogglePanel().SetActive( false );
         }
 
         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
         {
             transform.position = transform.position + (transform.forward * movementSpeed * Time.deltaTime);
 
-            m_DataTypeTogglePanel.SetActive( false );
-            m_CameraModeTogglePanel.SetActive( false );
+            Singleton.GetDataTypeTogglePanel().SetActive( false );
+            Singleton.GetCameraModeTogglePanel().SetActive( false );
         }
 
         if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
         {
             transform.position = transform.position + (-transform.forward * movementSpeed * Time.deltaTime);
 
-            m_DataTypeTogglePanel.SetActive( false );
-            m_CameraModeTogglePanel.SetActive( false );
+            Singleton.GetDataTypeTogglePanel().SetActive( false );
+            Singleton.GetCameraModeTogglePanel().SetActive( false );
         }
 
         if (Input.GetKey(KeyCode.Q))
         {
             transform.position = transform.position + (transform.up * movementSpeed * Time.deltaTime);
 
-            m_DataTypeTogglePanel.SetActive( false );
-            m_CameraModeTogglePanel.SetActive( false );
+            Singleton.GetDataTypeTogglePanel().SetActive( false );
+            Singleton.GetCameraModeTogglePanel().SetActive( false );
         }
 
         if (Input.GetKey(KeyCode.E))
         {
             transform.position = transform.position + (-transform.up * movementSpeed * Time.deltaTime);
 
-            m_DataTypeTogglePanel.SetActive( false );
-            m_CameraModeTogglePanel.SetActive( false );
+            Singleton.GetDataTypeTogglePanel().SetActive( false );
+            Singleton.GetCameraModeTogglePanel().SetActive( false );
 
         }
 
@@ -99,15 +96,15 @@ public class CameraFree : MonoBehaviour
         {
             StartLooking();
 
-            m_DataTypeTogglePanel.SetActive( false );
-            m_CameraModeTogglePanel.SetActive( false );
+            Singleton.GetDataTypeTogglePanel().SetActive( false );
+            Singleton.GetCameraModeTogglePanel().SetActive( false );
         }
         else if (Input.GetKeyUp(KeyCode.Mouse1))
         {
             StopLooking();
 
-            m_DataTypeTogglePanel.SetActive( false );
-            m_CameraModeTogglePanel.SetActive( false );
+            Singleton.GetDataTypeTogglePanel().SetActive( false );
+            Singleton.GetCameraModeTogglePanel().SetActive( false );
         }
     }
 

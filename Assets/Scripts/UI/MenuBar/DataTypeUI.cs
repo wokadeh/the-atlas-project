@@ -6,9 +6,7 @@ public class DataTypeUI : MonoBehaviour
 {
 
     [SerializeField] private Toggle m_DataTypeTogglePrefab;
-    [SerializeField] private GameObject m_DataTypeTogglePanel;
-    [SerializeField] private GameObject m_CameraModeTogglePanel;
-    [SerializeField] private GameObject m_LevelModeTogglePanel;
+    [SerializeField] private TimestampUI m_TimestampUI;
 
     private bool m_Initialized;
 
@@ -19,9 +17,9 @@ public class DataTypeUI : MonoBehaviour
 
     public void Show( bool _isShown )
     {
-        m_DataTypeTogglePanel.SetActive( _isShown );
-        m_CameraModeTogglePanel.SetActive( false );
-        m_LevelModeTogglePanel.SetActive( false );
+        Singleton.GetDataTypeTogglePanel().SetActive( _isShown );
+        Singleton.GetCameraModeTogglePanel().SetActive( false );
+        Singleton.GetLevelModeTogglePanel().SetActive( false );
     }
 
     private void OnNewImport()
@@ -49,6 +47,9 @@ public class DataTypeUI : MonoBehaviour
                 if( isOn )
                 {
                     Singleton.GetDataManager().SetCurrentVariable( name, min, max );
+
+                    m_TimestampUI.UpdateTimestamp( m_TimestampUI.CurrentIndex );
+
                     Toggle[] toggles = this.transform.GetComponentsInChildren<Toggle>();
 
                     if( toggles.Length > 1 )

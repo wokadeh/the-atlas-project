@@ -1,4 +1,10 @@
-﻿using System;
+﻿// ****************************** LOCATION ********************************
+//
+// [UI]  -> attached
+//
+// ************************************************************************
+
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,10 +27,24 @@ public class DataImportUI : MonoBehaviour
     [SerializeField] private Button m_SaveProjectButton;
     [SerializeField] private Button m_CancelButton;
     [SerializeField] private Button m_SaveProjectAsButton;
+    [SerializeField] private CameraModeUI m_CameraModeUI;
+    [SerializeField] private DataTypeUI m_DataTypeUI;
+    [SerializeField] private TransferFunctionUI m_TransferFunctionUI;
+    [SerializeField] private TimelineUI m_TimelineUI;
+    [SerializeField] private LevelModeUI m_LevelModeUI;
 
     private void Start()
     {
+        this.Clear();
+
         m_ImportDataButton.onClick.AddListener( ImportData );
+    }
+    private void Clear()
+    {
+        m_TimelineUI.Show( false );
+        m_CameraModeUI.Show( false );
+        m_DataTypeUI.Show( false );
+        m_LevelModeUI.Show( false );
     }
 
     private void ImportData()
@@ -48,6 +68,8 @@ public class DataImportUI : MonoBehaviour
         Singleton.GetDataManager().ImportData( file, Utils.CreateProgressBarProgress( m_ImportProgressBar, m_ImportProgressBarText ), () =>
         {
             Utils.SetupScreenWhileProgress( m_ImportScreen, Singleton.GetMainScreenSystem(), Singleton.GetBottomScreen(), m_SaveProjectButton, m_SaveProjectAsButton, m_CancelButton );
+
+            m_TransferFunctionUI.Redraw();
         } );
     }
 }

@@ -1,5 +1,10 @@
-﻿using SFB;
-using System;
+﻿// ****************************** LOCATION ********************************
+//
+// [UI]  -> attached
+//
+// ************************************************************************
+
+using SFB;
 using System.Collections;
 using System.IO;
 using TMPro;
@@ -14,7 +19,8 @@ public class ProjectSaveUI : MonoBehaviour
     [SerializeField] private TMP_Text m_SaveProgressBarText;
     [SerializeField] private Button m_SaveProjectButton;
     [SerializeField] private Button m_SaveProjectAsButton;
- 
+
+
     private string m_DefaultProjectDir = Directory.GetCurrentDirectory() + "/" + Globals.SAVE_PROJECTS_PATH;
 
     // Start is called before the first frame update
@@ -23,6 +29,8 @@ public class ProjectSaveUI : MonoBehaviour
         m_SaveProjectAsButton.onClick.AddListener( this.SaveAsProject );
         m_SaveProjectButton.onClick.AddListener( this.SaveProject );
     }
+
+
 
     private void SaveProject()
     {

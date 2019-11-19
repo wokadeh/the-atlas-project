@@ -1,4 +1,10 @@
-﻿using System.Collections;
+﻿// ****************************** LOCATION ********************************
+//
+// [UI]  -> attached
+//
+// ************************************************************************
+
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using SFB;
@@ -18,11 +24,26 @@ public class ProjectLoadUI : MonoBehaviour
     [SerializeField] private Button m_LoadProjectButton;
     [SerializeField] private Button m_SaveProjectButton;
     [SerializeField] private Button m_CancelButton;
+    [SerializeField] private CameraModeUI m_CameraModeUI;
+    [SerializeField] private DataTypeUI m_DataTypeUI;
+    [SerializeField] private TransferFunctionUI m_TransferFunctionUI;
+    [SerializeField] private TimelineUI m_TimelineUI;
+    [SerializeField] private LevelModeUI m_LevelModeUI;
+    [SerializeField] private TimestampUI m_TimestampUI;
 
     // Start is called before the first frame update
     void Start()
     {
+        this.Clear();
+
         m_LoadProjectButton.onClick.AddListener( LoadProject );
+    }
+    private void Clear()
+    {
+        m_TimelineUI.Show( false );
+        m_CameraModeUI.Show( false );
+        m_DataTypeUI.Show( false );
+        m_LevelModeUI.Show( false );
     }
 
     private void LoadProject()
@@ -50,6 +71,10 @@ public class ProjectLoadUI : MonoBehaviour
         Singleton.GetDataManager().LoadProject( _projectFolderPath, Utils.CreateProgressBarProgress( m_LoadProgressBar, m_LoadProgressBarText ), () =>
         {
             Utils.SetupScreenWhileProgress( m_LoadScreen, Singleton.GetMainScreenSystem(), Singleton.GetBottomScreen(), m_SaveProjectButton, m_CancelButton );
+
+            m_TransferFunctionUI.Redraw();
+
+            m_TimestampUI.UpdateTimestamp( m_TimestampUI.CurrentIndex );
         } ); ;
     }
 

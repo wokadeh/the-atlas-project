@@ -1,4 +1,10 @@
-﻿using UnityEngine.UI;
+﻿// ****************************** LOCATION ********************************
+//
+// [UI]  -> attached
+//
+// ************************************************************************
+
+using UnityEngine.UI;
 using UnityEngine;
 
 public class CancelProjectUI : MonoBehaviour

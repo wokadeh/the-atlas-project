@@ -6,17 +6,14 @@ using UnityEngine.UI;
 public class LevelModeUI : MonoBehaviour
 {
     [SerializeField] private Toggle m_LevelModeTogglePrefab;
-    [SerializeField] private GameObject m_LevelModeTogglePanel;
-    [SerializeField] private GameObject m_CameraModeTogglePanel;
-    [SerializeField] private GameObject m_DataTypeTogglePanel;
 
     private List<string> m_LevelModeList;
 
     public void Show(bool _isShown)
     {
-        m_LevelModeTogglePanel.SetActive( _isShown );
-        m_CameraModeTogglePanel.SetActive( false );
-        m_DataTypeTogglePanel.SetActive( false );
+        Singleton.GetDataTypeTogglePanel().SetActive( false );
+        Singleton.GetCameraModeTogglePanel().SetActive( false );
+        Singleton.GetLevelModeTogglePanel().SetActive( _isShown );
     }
 
     private void Start()

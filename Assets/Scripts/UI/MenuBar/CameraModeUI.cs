@@ -6,23 +6,20 @@ using UnityEngine.UI;
 public class CameraModeUI : MonoBehaviour
 {
     [SerializeField] private Toggle m_CameraModeTogglePrefab;
-    [SerializeField] private GameObject m_CameraModeTogglePanel;
-    [SerializeField] private GameObject m_DataTypeTogglePanel;
-    [SerializeField] private GameObject m_LevelModeTogglePanel;
     [SerializeField] private CameraMode m_CameraMode;
 
     private List<string> m_CameraModeList;
 
-    public void Show(bool _isShown)
+    public void Show( bool _isShown )
     {
-        m_CameraModeTogglePanel.SetActive( _isShown );
-        m_DataTypeTogglePanel.SetActive( false );
-        m_LevelModeTogglePanel.SetActive( false );
+        Singleton.GetCameraModeTogglePanel().SetActive( _isShown );
+        Singleton.GetDataTypeTogglePanel().SetActive( false );
+        Singleton.GetLevelModeTogglePanel().SetActive( false );
     }
 
     private void Start()
     {
-        for (int i = 0; i < this.transform.childCount; i++)
+        for( int i = 0; i < this.transform.childCount; i++ )
         {
             Destroy( this.transform.GetChild( i ).gameObject );
         }
@@ -32,14 +29,13 @@ public class CameraModeUI : MonoBehaviour
         this.m_CameraModeList.Add( Globals.CAMERA_FIRSTP_TITLE );
         this.m_CameraModeList.Add( Globals.CAMERA_ORBIT_TITLE );
 
-
         int index = 0;
 
-        foreach (string cameraModeName in this.m_CameraModeList)
+        foreach( string cameraModeName in this.m_CameraModeList )
         {
 
             Toggle toggle = Instantiate( this.m_CameraModeTogglePrefab, this.transform );
-            if (index == 0)
+            if( index == 0 )
             {
                 toggle.isOn = this.name == cameraModeName;
             }
@@ -50,16 +46,16 @@ public class CameraModeUI : MonoBehaviour
             Log.Info( this, "Add " + cameraModeName + " to List" );
             toggle.onValueChanged.AddListener( isOn =>
              {
-                 if (isOn)
+                 if( isOn )
                  {
                      Log.Info( this, "Toggle is on: " + cameraModeName );
                      this.m_CameraMode.SetCameraMode( cameraModeName );
                      Toggle[] toggles = this.transform.GetComponentsInChildren<Toggle>();
-                     if (toggles.Length > 1)
+                     if( toggles.Length > 1 )
                      {
-                         foreach (Toggle t in toggles)
+                         foreach( Toggle t in toggles )
                          {
-                             if (t != toggle)
+                             if( t != toggle )
                              {
                                  t.isOn = false;
                              }
