@@ -7,6 +7,8 @@ public class DataTypeUI : MonoBehaviour
 
     [SerializeField] private Toggle m_DataTypeTogglePrefab;
     [SerializeField] private GameObject m_DataTypeTogglePanel;
+    [SerializeField] private GameObject m_CameraModeTogglePanel;
+    [SerializeField] private GameObject m_LevelModeTogglePanel;
 
     private bool m_Initialized;
 
@@ -18,6 +20,8 @@ public class DataTypeUI : MonoBehaviour
     public void Show( bool _isShown )
     {
         m_DataTypeTogglePanel.SetActive( _isShown );
+        m_CameraModeTogglePanel.SetActive( false );
+        m_LevelModeTogglePanel.SetActive( false );
     }
 
     private void OnNewImport()

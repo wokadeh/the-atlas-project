@@ -1,4 +1,5 @@
 ﻿public enum VolumeRendererMode {
     Cartesian,
-    Spherical
+    Spherical,
+    Plane
 }

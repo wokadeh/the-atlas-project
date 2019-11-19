@@ -19,6 +19,7 @@ public class DataManager : MonoBehaviour
     [SerializeField] private DataTypeUI m_DataTypeUI;
     [SerializeField] private TransferFunctionUI m_TransferFunctionUI;
     [SerializeField] private TimelineUI m_TimelineUI;
+    [SerializeField] private LevelModeUI m_LevelModeUI;
 
     private Dictionary<string, List<TimeStepDataAsset>> m_DataAssets;
     public IReadOnlyList<TimeStepDataAsset> CurrentDataAssets => m_DataAssets[CurrentVariableName];
@@ -55,6 +56,7 @@ public class DataManager : MonoBehaviour
         m_TimelineUI.Show( false );
         m_CameraModeUI.Show( false );
         m_DataTypeUI.Show( false );
+        m_LevelModeUI.Show( false );
         Singleton.GetVolumeRenderer().Show( false );
     }
 

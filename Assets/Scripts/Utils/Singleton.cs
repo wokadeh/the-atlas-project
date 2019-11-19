@@ -48,7 +48,7 @@ public class Singleton
     {
         if( m_EarthSphere == null )
         {
-            m_EarthSphere = GameObject.Find( "Earth_Octahedron_Sphere" ).GetComponent<MeshRenderer>();
+            m_EarthSphere = GameObject.Find( "Earth_Octahedron" ).GetComponent<MeshRenderer>();
         }
 
         return m_EarthSphere;

@@ -3,21 +3,20 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CameraModeUI : MonoBehaviour
+public class LevelModeUI : MonoBehaviour
 {
-    [SerializeField] private Toggle m_CameraModeTogglePrefab;
+    [SerializeField] private Toggle m_LevelModeTogglePrefab;
+    [SerializeField] private GameObject m_LevelModeTogglePanel;
     [SerializeField] private GameObject m_CameraModeTogglePanel;
     [SerializeField] private GameObject m_DataTypeTogglePanel;
-    [SerializeField] private GameObject m_LevelModeTogglePanel;
-    [SerializeField] private CameraMode m_CameraMode;
 
-    private List<string> m_CameraModeList;
+    private List<string> m_LevelModeList;
 
     public void Show(bool _isShown)
     {
-        m_CameraModeTogglePanel.SetActive( _isShown );
+        m_LevelModeTogglePanel.SetActive( _isShown );
+        m_CameraModeTogglePanel.SetActive( false );
         m_DataTypeTogglePanel.SetActive( false );
-        m_LevelModeTogglePanel.SetActive( false );
     }
 
     private void Start()
@@ -27,33 +26,42 @@ public class CameraModeUI : MonoBehaviour
             Destroy( this.transform.GetChild( i ).gameObject );
         }
 
-        this.m_CameraModeList = new List<string>();
+        m_LevelModeList = new List<string>();
 
-        this.m_CameraModeList.Add( Globals.CAMERA_FIRSTP_TITLE );
-        this.m_CameraModeList.Add( Globals.CAMERA_ORBIT_TITLE );
+        int[] levelList37 = Globals.LEVEL_LIST_37();
 
+        m_LevelModeList.Add( "All" );
+
+        foreach(int i in levelList37)
+        {
+            m_LevelModeList.Add( i.ToString() );
+        }
+
+        m_LevelModeList.Add( Globals.CAMERA_FIRSTP_TITLE );
+        m_LevelModeList.Add( Globals.CAMERA_ORBIT_TITLE );
 
         int index = 0;
 
-        foreach (string cameraModeName in this.m_CameraModeList)
+        foreach (string levelName in this.m_LevelModeList )
         {
 
-            Toggle toggle = Instantiate( this.m_CameraModeTogglePrefab, this.transform );
+            Toggle toggle = Instantiate( m_LevelModeTogglePrefab, this.transform );
             if (index == 0)
             {
-                toggle.isOn = this.name == cameraModeName;
+                toggle.isOn = this.name == levelName;
             }
 
             TMP_Text label = toggle.transform.Find( "Label" ).GetComponent<TMP_Text>();
-            label.text = cameraModeName;
+            label.text = levelName;
 
-            Log.Info( this, "Add " + cameraModeName + " to List" );
+            Log.Info( this, "Add " + levelName + " to List" );
             toggle.onValueChanged.AddListener( isOn =>
              {
                  if (isOn)
                  {
-                     Log.Info( this, "Toggle is on: " + cameraModeName );
-                     this.m_CameraMode.SetCameraMode( cameraModeName );
+                     Log.Info( this, "Toggle is on: " + levelName );
+
+                     //this.m_CameraMode.SetCameraMode( levelName );
                      Toggle[] toggles = this.transform.GetComponentsInChildren<Toggle>();
                      if (toggles.Length > 1)
                      {
