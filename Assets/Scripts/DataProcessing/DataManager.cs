@@ -45,7 +45,7 @@ public class DataManager : MonoBehaviour
         this.CurrentVariableMax = 0;
         this.MetaData = null;
 
-        Singleton.GetVolumeRenderer().Show( false );
+        //Singleton.GetVolumeRenderer().Show( false );
     }
 
     // Start internal routines to import the data to a new project
@@ -392,15 +392,5 @@ public class DataManager : MonoBehaviour
         }
 
         yield return null;
-    }
-
-    public void DisableVolumeRenderer()
-    {
-        Singleton.GetVolumeRenderer().Show( false );
-    }
-
-    public void EnableVolumeRenderer()
-    {
-        Singleton.GetVolumeRenderer().Show( true );
     }
 }

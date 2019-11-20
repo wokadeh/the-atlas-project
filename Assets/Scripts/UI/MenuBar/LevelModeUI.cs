@@ -34,16 +34,13 @@ public class LevelModeUI : MonoBehaviour
             m_LevelModeList.Add( i.ToString() );
         }
 
-        m_LevelModeList.Add( Globals.CAMERA_FIRSTP_TITLE );
-        m_LevelModeList.Add( Globals.CAMERA_ORBIT_TITLE );
-
         int index = 0;
 
-        foreach (string levelName in this.m_LevelModeList )
+        foreach( string levelName in this.m_LevelModeList )
         {
 
             Toggle toggle = Instantiate( m_LevelModeTogglePrefab, this.transform );
-            if (index == 0)
+            if( index == 0 )
             {
                 toggle.isOn = this.name == levelName;
             }
@@ -54,17 +51,17 @@ public class LevelModeUI : MonoBehaviour
             Log.Info( this, "Add " + levelName + " to List" );
             toggle.onValueChanged.AddListener( isOn =>
              {
-                 if (isOn)
+                 if( isOn )
                  {
                      Log.Info( this, "Toggle is on: " + levelName );
 
                      //this.m_CameraMode.SetCameraMode( levelName );
                      Toggle[] toggles = this.transform.GetComponentsInChildren<Toggle>();
-                     if (toggles.Length > 1)
+                     if( toggles.Length > 1 )
                      {
-                         foreach (Toggle t in toggles)
+                         foreach( Toggle t in toggles )
                          {
-                             if (t != toggle)
+                             if( t != toggle )
                              {
                                  t.isOn = false;
                              }

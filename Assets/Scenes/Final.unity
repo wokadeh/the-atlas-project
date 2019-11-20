@@ -15785,9 +15785,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1521240612}
   - component: {fileID: 1521240615}
-  - component: {fileID: 1521240616}
-  - component: {fileID: 1521240614}
-  - component: {fileID: 1521240613}
   m_Layer: 5
   m_Name: Menu_Bar
   m_TagString: Untagged
@@ -15815,35 +15812,6 @@ RectTransform:
   m_AnchoredPosition: {x: 745, y: -507.78174}
   m_SizeDelta: {x: 0, y: 507.78174}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &1521240613
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1521240611}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3be7ccd812a7fbe488a57cfcb0acd54f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_LevelModeTogglePrefab: {fileID: 7051726273880053243, guid: 6007e3edd87195746930a45c83476d28,
-    type: 3}
---- !u!114 &1521240614
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1521240611}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da19285441a652b43a8406fe1dc7e1e6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_DataTypeTogglePrefab: {fileID: 7051726273880053243, guid: d4e5cb8c5a171014581182ade828df91,
-    type: 3}
-  m_TimestampUI: {fileID: 1901998943}
 --- !u!222 &1521240615
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -15852,21 +15820,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1521240611}
   m_CullTransparentMesh: 0
---- !u!114 &1521240616
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1521240611}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3751eae02c17d004f9fb70f15c02c6dc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_CameraModeTogglePrefab: {fileID: 7051726273880053243, guid: 0be27dadc4b43564f9708627b82d0685,
-    type: 3}
-  m_CameraMode: {fileID: 0}
 --- !u!1 &1528013682
 GameObject:
   m_ObjectHideFlags: 0
@@ -19272,7 +19225,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1862492009
 RectTransform:
   m_ObjectHideFlags: 0
@@ -19287,9 +19240,9 @@ RectTransform:
   m_Father: {fileID: 1507723220}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 190, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1862492010
@@ -20029,8 +19982,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1901998939}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.126, y: 0.5, z: 3}
-  m_LocalScale: {x: 0.003188213, y: 0.003188213, z: 0.003188213}
+  m_LocalPosition: {x: -0.071, y: 0.278, z: 1.631}
+  m_LocalScale: {x: 0.0009863056, y: 0.0009863056, z: 0.0009863056}
   m_Children: []
   m_Father: {fileID: 1679480390}
   m_RootOrder: 0
@@ -22831,11 +22784,11 @@ MonoBehaviour:
   m_SaveProjectButton: {fileID: 1673976744}
   m_CancelButton: {fileID: 1582659567}
   m_SaveProjectAsButton: {fileID: 356344818}
-  m_CameraModeUI: {fileID: 1521240616}
-  m_DataTypeUI: {fileID: 1521240614}
+  m_CameraModeUI: {fileID: 1521054919}
+  m_DataTypeUI: {fileID: 816077033}
   m_TransferFunctionUI: {fileID: 541401439}
   m_TimelineUI: {fileID: 1373890074}
-  m_LevelModeUI: {fileID: 1521240613}
+  m_LevelModeUI: {fileID: 1862492010}
 --- !u!114 &2106828610
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22873,11 +22826,11 @@ MonoBehaviour:
   m_LoadProjectButton: {fileID: 1746890050}
   m_SaveProjectButton: {fileID: 1673976744}
   m_CancelButton: {fileID: 1582659567}
-  m_CameraModeUI: {fileID: 1521240616}
-  m_DataTypeUI: {fileID: 1521240614}
+  m_CameraModeUI: {fileID: 1521054919}
+  m_DataTypeUI: {fileID: 816077033}
   m_TransferFunctionUI: {fileID: 541401439}
   m_TimelineUI: {fileID: 1373890074}
-  m_LevelModeUI: {fileID: 1521240613}
+  m_LevelModeUI: {fileID: 1862492010}
   m_TimestampUI: {fileID: 1901998943}
 --- !u!114 &2106828613
 MonoBehaviour:

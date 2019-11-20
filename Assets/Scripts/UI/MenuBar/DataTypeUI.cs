@@ -78,7 +78,7 @@ public class DataTypeUI : MonoBehaviour
                     }
                     if( isOneToggleOn == false )
                     {
-                        Singleton.GetDataManager().DisableVolumeRenderer();
+                        Singleton.GetVolumeRenderer().Show( false );
                     }
                 }
 

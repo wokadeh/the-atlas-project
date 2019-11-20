@@ -4,6 +4,7 @@
 //
 // ************************************************************************
 
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Singleton
@@ -31,12 +32,6 @@ public class Singleton
     {
         if( m_DataManager == null )
         {
-
-            Log.Info( "Singleton", "Anothing happens?" );
-            foreach( DataManager c in GameObject.Find( "Volume_Renderer" ).GetComponents<DataManager>())
-            {
-                Log.Info( "Singleton", c.name );
-            }
             m_DataManager = GameObject.Find( "Volume_Renderer" ).GetComponent<DataManager>();
         }
 
@@ -154,7 +149,7 @@ public class Singleton
     {
         if( m_DataTypeTogglePanel == null )
         {
-            m_DataTypeTogglePanel = GameObject.Find( "Data_Type_Toggle_Panel" );
+            m_DataTypeTogglePanel = FindInActiveObjectByName( "Data_Type_Toggle_Panel" );
         }
 
         return m_DataTypeTogglePanel;
@@ -163,7 +158,7 @@ public class Singleton
     {
         if( m_LevelModeTogglePanel == null )
         {
-            m_LevelModeTogglePanel = GameObject.Find( "Level_Mode_Toggle_Panel" );
+            m_LevelModeTogglePanel = FindInActiveObjectByName( "Level_Mode_Toggle_Panel" );
         }
 
         return m_LevelModeTogglePanel;
@@ -172,9 +167,24 @@ public class Singleton
     {
         if( m_CameraModeTogglePanel == null )
         {
-            m_CameraModeTogglePanel = GameObject.Find( "Camera_Mode_Toggle_Panel" );
+            m_CameraModeTogglePanel = FindInActiveObjectByName( "Camera_Mode_Toggle_Panel" );
         }
 
         return m_CameraModeTogglePanel;
+    }
+    private static GameObject FindInActiveObjectByName( string name )
+    {
+        Transform[] objs = Resources.FindObjectsOfTypeAll<Transform>() as Transform[];
+        for( int i = 0; i < objs.Length; i++ )
+        {
+            if( objs[i].hideFlags == HideFlags.None )
+            {
+                if( objs[i].name == name )
+                {
+                    return objs[i].gameObject;
+                }
+            }
+        }
+        return null;
     }
 }
