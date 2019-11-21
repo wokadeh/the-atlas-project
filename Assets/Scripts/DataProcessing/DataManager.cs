@@ -142,7 +142,7 @@ public class DataManager : MonoBehaviour
 
             IVariable variable = this.MetaData.Variables[ varIndex ];
 
-            string variablePath = Path.Combine( Globals.SAVE_PROJECTS_PATH, this.MetaData.DataName, variable.Name );
+            string variablePath = Path.Combine( Globals.RESOURCES, Globals.SAVE_PROJECTS_PATH, this.MetaData.DataName, variable.Name );
 
             Log.Warn( this, "Save assets to: " + variablePath );
 
@@ -249,7 +249,7 @@ public class DataManager : MonoBehaviour
             // For each variable there is a list of all textures that are used
             m_DataAssets[variable.Name] = new List<TimeStepDataAsset>();
 
-            string projectAssetPath = Globals.SAVE_PROJECTS_PATH + metaData.DataName;
+            string projectAssetPath = Path.Combine( Globals.RESOURCES, Globals.SAVE_PROJECTS_PATH, metaData.DataName );
 
             string variableFolderPath = Path.Combine( projectAssetPath, variable.Name.ToLower() );
             if( Directory.Exists( projectAssetPath ) )
@@ -349,8 +349,8 @@ public class DataManager : MonoBehaviour
             if( file.EndsWith( ".asset" ) )
             {
                 Log.Info( this, "Found " + file );
-
-                asset = AssetDatabase.LoadAssetAtPath<Texture3D>( file );
+                string trimmedFile = file.TrimEnd( ".asset".ToCharArray() ).TrimStart(Globals.RESOURCES.ToCharArray());
+                asset = Resources.Load<Texture3D>( trimmedFile );
 
                 TimeStepDataAsset timestepAsset = _timestepDataAssetBuilder.BuildTimestepDataAssetFromTexture( asset );
 
