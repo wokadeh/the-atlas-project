@@ -17,13 +17,13 @@ public class TimeStepDataAssetBuilder : ITimeStepDataAssetBuilder
 
     private int m_HistogramSampleSize = 1;
 
-    public TimeStepDataAssetBuilder( int width, int height, int depth )
+    public TimeStepDataAssetBuilder( int _width, int _height, int _depth )
     {
-        m_Width = width;
-        m_Height = height;
-        m_Depth = depth;
+        m_Width = _width;
+        m_Height = _height;
+        m_Depth = _depth;
 
-        m_HistogramSampleSize = 2 ^ depth;
+        m_HistogramSampleSize = 2 ^ _depth;
 
         m_ColorBuffer3D = new Color[ m_Width * m_Height * m_Depth ];
         m_ColorBuffer2D = new Color[ m_Width * m_Height ];
@@ -32,11 +32,17 @@ public class TimeStepDataAssetBuilder : ITimeStepDataAssetBuilder
         m_HistogramColorBuffer = new Color[ m_HistogramSampleSize ];
     }
 
-    public TimeStepDataAsset BuildTimestepDataAssetFromData( byte[][] data )
+    public TimeStepDataAsset BuildTimestepDataAssetFromData( byte[][] _data )
     {
-        int depth = data.Length;
+        if(_data == null)
+        {
+            Log.ShowDialogBox( "No image files could be found, so unfortunately the project cannot be imported! " );
+            return null;
+        }
 
-        return new TimeStepDataAsset() { Dimensions = new Vector3( m_Width, m_Height, depth ), DataTexture = this.BuildDataTexture( data ), HistogramTexture = this.BuildHistogramTexture() };
+        int depth = _data.Length;
+
+        return new TimeStepDataAsset() { Dimensions = new Vector3( m_Width, m_Height, depth ), DataTexture = this.BuildDataTexture( _data ), HistogramTexture = this.BuildHistogramTexture() };
     }
 
     public TimeStepDataAsset BuildTimestepDataAssetFromTexture( Texture3D _assetTex )
@@ -49,17 +55,17 @@ public class TimeStepDataAssetBuilder : ITimeStepDataAssetBuilder
         return new TimeStepDataAsset() { Dimensions = new Vector3( m_Width, m_Height, depth ), DataTexture = _assetTex, HistogramTexture = this.BuildHistogramTexture() };
     }
 
-    public TimeStepDataAsset Build16Bit( short[][] data )
+    public TimeStepDataAsset Build16Bit( short[][] _data )
     {
         throw new NotImplementedException();
     }
 
-    private Texture3D BuildDataTexture( byte[][] data )
+    private Texture3D BuildDataTexture( byte[][] _data )
     {
         int size2d = m_Width * m_Height;
 
         // Get color data from all textures
-        for ( int i = 0; i < data.Length; i++ )
+        for ( int i = 0; i < _data.Length; i++ )
         {
             // Fill 2d color buffer with data
             for ( int x = 0; x < m_Width; x++ )
@@ -67,7 +73,7 @@ public class TimeStepDataAssetBuilder : ITimeStepDataAssetBuilder
                 for ( int y = 0; y < m_Height; y++ )
                 {
                     int index = y * m_Width + x;
-                    byte value = data[ i ][ index ];
+                    byte value = _data[ i ][ index ];
                     m_ColorBuffer2D[ index ] = new Color32( value, 0, 0, 0 );
                 }
             }

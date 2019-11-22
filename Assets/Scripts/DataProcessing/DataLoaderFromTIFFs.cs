@@ -48,6 +48,13 @@ public class DataLoaderFromTIFFs : IDataLoader
         // Get all tiffs in the directory and sort them appropriately
         string[] files = Directory.GetFiles( path, "*.*" ).Where( p => p.EndsWith( ".tif" ) || p.EndsWith( ".tiff" ) ).OrderBy( s => PadNumbers( s ) ).ToArray();
 
+        Log.Info( this, "Found " + files.Length + " TIFF files." );
+
+        if( files.Length == 0)
+        {
+            Log.Warn( this, "Could not find any TIFF files!!" );
+        }
+
         // Check the amount of files matches the expected levels
         if ( files.Length != m_Levels )
         {

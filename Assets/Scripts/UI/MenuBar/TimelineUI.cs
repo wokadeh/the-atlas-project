@@ -56,7 +56,7 @@ public class TimelineUI : MonoBehaviour
         if( Singleton.GetDataManager().CurrentTimeStepDataAsset != null )
         {
             m_TimelineSlider.minValue = 0;
-            m_TimelineSlider.maxValue = Singleton.GetDataManager().CurrentDataAssets.Count - 1;
+            m_TimelineSlider.maxValue = Singleton.GetDataManager().CurrentDataAssetList.Count - 1;
             m_TimelineSlider.wholeNumbers = true;
         }
     }
@@ -135,7 +135,7 @@ public class TimelineUI : MonoBehaviour
     private void OnPlay()
     {
         // Bail out if we have no assets yet
-        if( Singleton.GetDataManager().CurrentDataAssets.Count <= 0 )
+        if( Singleton.GetDataManager().CurrentDataAssetList.Count <= 0 )
         {
             return;
         }
@@ -174,12 +174,12 @@ public class TimelineUI : MonoBehaviour
     private void OnTimelineChanged( float value )
     {
         // Bail out if we have no assets yet
-        if( Singleton.GetDataManager().CurrentDataAssets.Count <= 0 )
+        if( Singleton.GetDataManager().CurrentDataAssetList.Count <= 0 )
         {
             return;
         }
 
-        TimeStepDataAsset asset = Singleton.GetDataManager().CurrentDataAssets[ ( int ) value ];
+        TimeStepDataAsset asset = Singleton.GetDataManager().CurrentDataAssetList[ ( int ) value ];
         Singleton.GetDataManager().SetCurrentAsset( asset );
         Singleton.GetVolumeRenderer().SetData( asset );
 

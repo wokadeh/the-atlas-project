@@ -4,7 +4,7 @@
 //
 // ************************************************************************
 
-using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Singleton
@@ -27,6 +27,8 @@ public class Singleton
     private static GameObject m_DataTypeTogglePanel;
     private static GameObject m_LevelModeTogglePanel;
     private static GameObject m_CameraModeTogglePanel;
+    private static GameObject m_DialogBox;
+    private static TextMeshPro m_DialogBoxText;
 
     public static DataManager GetDataManager()
     {
@@ -52,7 +54,7 @@ public class Singleton
     {
         if( m_Groundplane == null )
         {
-            m_Groundplane = GameObject.Find( "Groundplane" ).GetComponent<MeshRenderer>();
+            m_Groundplane = Singleton.FindInActiveObjectByName( "Groundplane" ).GetComponent<MeshRenderer>();
         }
 
         return m_Groundplane;
@@ -62,7 +64,7 @@ public class Singleton
     {
         if( m_EarthSphere == null )
         {
-            m_EarthSphere = GameObject.Find( "Earth_Octahedron" ).GetComponent<MeshRenderer>();
+            m_EarthSphere = Singleton.FindInActiveObjectByName( "Earth_Octahedron" ).GetComponent<MeshRenderer>();
         }
 
         return m_EarthSphere;
@@ -103,7 +105,7 @@ public class Singleton
     {
         if( m_MainScreenSystem == null )
         {
-            m_MainScreenSystem = GameObject.Find( "Main_Screen_System" );
+            m_MainScreenSystem = Singleton.FindInActiveObjectByName( "Main_Screen_System" );
         }
 
         return m_MainScreenSystem;
@@ -112,7 +114,7 @@ public class Singleton
     {
         if( m_MainScreen == null )
         {
-            m_MainScreen = GameObject.Find( "Main_Screen" );
+            m_MainScreen = Singleton.FindInActiveObjectByName( "Main_Screen" );
         }
 
         return m_MainScreen;
@@ -121,7 +123,7 @@ public class Singleton
     {
         if( m_BottomScreen == null )
         {
-            m_BottomScreen = GameObject.Find( "Bottom_Screen" );
+            m_BottomScreen = Singleton.FindInActiveObjectByName( "Bottom_Screen" );
         }
 
         return m_BottomScreen;
@@ -130,7 +132,7 @@ public class Singleton
     {
         if( m_ProjectScreen == null )
         {
-            m_ProjectScreen = GameObject.Find( "Project_Screen" );
+            m_ProjectScreen = Singleton.FindInActiveObjectByName( "Project_Screen" );
         }
 
         return m_ProjectScreen;
@@ -139,7 +141,7 @@ public class Singleton
     {
         if( m_TransferfunctionHistogramScreen == null )
         {
-            m_TransferfunctionHistogramScreen = GameObject.Find( "Transfer_Function_Histogram_Panel" );
+            m_TransferfunctionHistogramScreen = Singleton.FindInActiveObjectByName( "Transfer_Function_Histogram_Panel" );
         }
 
         return m_TransferfunctionHistogramScreen;
@@ -149,7 +151,7 @@ public class Singleton
     {
         if( m_DataTypeTogglePanel == null )
         {
-            m_DataTypeTogglePanel = FindInActiveObjectByName( "Data_Type_Toggle_Panel" );
+            m_DataTypeTogglePanel = Singleton.FindInActiveObjectByName( "Data_Type_Toggle_Panel" );
         }
 
         return m_DataTypeTogglePanel;
@@ -158,20 +160,31 @@ public class Singleton
     {
         if( m_LevelModeTogglePanel == null )
         {
-            m_LevelModeTogglePanel = FindInActiveObjectByName( "Level_Mode_Toggle_Panel" );
+            m_LevelModeTogglePanel = Singleton.FindInActiveObjectByName( "Level_Mode_Toggle_Panel" );
         }
 
         return m_LevelModeTogglePanel;
     }
+
     public static GameObject GetCameraModeTogglePanel()
     {
         if( m_CameraModeTogglePanel == null )
         {
-            m_CameraModeTogglePanel = FindInActiveObjectByName( "Camera_Mode_Toggle_Panel" );
+            m_CameraModeTogglePanel = Singleton.FindInActiveObjectByName( "Camera_Mode_Toggle_Panel" );
         }
 
         return m_CameraModeTogglePanel;
     }
+    public static GameObject GetDialogBox()
+    {
+        if( m_DialogBox == null )
+        {
+            m_DialogBox = Singleton.FindInActiveObjectByName( "Dialog_Box" );
+        }
+
+        return m_DialogBox;
+    }
+
     private static GameObject FindInActiveObjectByName( string name )
     {
         Transform[] objs = Resources.FindObjectsOfTypeAll<Transform>() as Transform[];

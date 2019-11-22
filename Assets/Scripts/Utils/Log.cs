@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using TMPro;
 using System;
 using UnityEngine;
 
@@ -62,5 +62,11 @@ public class Log
     public static void ThrowException(object locationClass, string message)
     {
         throw new Exception("[" + locationClass.ToString() + "]:: " + message);
+    }
+
+    public static void ShowDialogBox( string message )
+    {
+        Singleton.GetDialogBox().SetActive( true );
+        Singleton.GetDialogBox().GetComponentInChildren<TextMeshProUGUI>().text = message;
     }
 }

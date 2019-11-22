@@ -29,65 +29,72 @@ public class DataTypeUI : MonoBehaviour
         {
             Destroy( this.transform.GetChild( i ).gameObject );
         }
-        
-        // Create toggles for all variables
-        foreach( IVariable variable in Singleton.GetDataManager().MetaData.Variables )
+
+        if( Singleton.GetDataManager().MetaData != null )
         {
-            string name = variable.Name;
-            double min = variable.Min;
-            double max = variable.Max;
-            Toggle toggle = Instantiate( this.m_DataTypeTogglePrefab, this.transform );
-            toggle.isOn = name == Singleton.GetDataManager().CurrentVariableName;
-
-            TMP_Text label = toggle.transform.Find( "Label" ).GetComponent<TMP_Text>();
-            label.text = name;
-
-            toggle.onValueChanged.AddListener( isOn =>
+            // Create toggles for all variables
+            foreach( IVariable variable in Singleton.GetDataManager().MetaData.Variables )
             {
-                if( isOn )
+                string name = variable.Name;
+                double min = variable.Min;
+                double max = variable.Max;
+                Toggle toggle = Instantiate( this.m_DataTypeTogglePrefab, this.transform );
+                toggle.isOn = name == Singleton.GetDataManager().CurrentVariableName;
+
+                TMP_Text label = toggle.transform.Find( "Label" ).GetComponent<TMP_Text>();
+                label.text = name;
+
+                toggle.onValueChanged.AddListener( isOn =>
                 {
-                    Singleton.GetDataManager().SetCurrentVariable( name, min, max );
-
-                    m_TimestampUI.UpdateTimestamp( m_TimestampUI.CurrentIndex );
-
-                    Toggle[] toggles = this.transform.GetComponentsInChildren<Toggle>();
-
-                    if( toggles.Length > 1 )
+                    if( isOn )
                     {
+                        Singleton.GetDataManager().SetCurrentVariable( name, min, max );
+
+                        m_TimestampUI.UpdateTimestamp( m_TimestampUI.CurrentIndex );
+
+                        Toggle[] toggles = this.transform.GetComponentsInChildren<Toggle>();
+
+                        if( toggles.Length > 1 )
+                        {
+                            foreach( Toggle t in toggles )
+                            {
+                                if( t != toggle )
+                                {
+                                    t.isOn = false;
+                                }
+
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Toggle[] toggles = this.transform.GetComponentsInChildren<Toggle>();
+                        bool isOneToggleOn = false;
+
                         foreach( Toggle t in toggles )
                         {
-                            if( t != toggle )
+                            if( t.isOn == true )
                             {
-                                t.isOn = false;
+                                isOneToggleOn = true;
                             }
-
                         }
-                    }
-                }
-                else
-                {
-                    Toggle[] toggles = this.transform.GetComponentsInChildren<Toggle>();
-                    bool isOneToggleOn = false;
-
-                    foreach( Toggle t in toggles )
-                    {
-                        if( t.isOn == true )
+                        if( isOneToggleOn == false )
                         {
-                            isOneToggleOn = true;
+                            Singleton.GetVolumeRenderer().Show( false );
                         }
                     }
-                    if( isOneToggleOn == false )
-                    {
-                        Singleton.GetVolumeRenderer().Show( false );
-                    }
-                }
 
 
-            } );
+                } );
+            }
+        }
+        else
+        {
+            Log.Warn( this, "There are no Metadata in the given project" );
         }
     }
 
-    private void Initialize()
+        private void Initialize()
     {
         if( this.m_Initialized )
         {
