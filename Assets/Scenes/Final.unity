@@ -12155,9 +12155,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1163679452}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9eb6b55ae845b5a42b559991d31057eb, type: 3}
+  m_Script: {fileID: 11500000, guid: e618b1002df14254e93070b84673b912, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_SphericalActivateButton: {fileID: 1163679454}
 --- !u!1 &1184801605
 GameObject:
   m_ObjectHideFlags: 0
