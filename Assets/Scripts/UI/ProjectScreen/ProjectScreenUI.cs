@@ -26,7 +26,7 @@ public class ProjectScreenUI : MonoBehaviour
     private void ShowProjectScreen()
     {
         Singleton.GetProjectScreen().SetActive( true );
-        //Singleton.GetMainScreenSystem().SetActive( false );
+        Singleton.GetMainScreenSystem().SetActive( false );
         Singleton.GetBottomScreen().SetActive( false );
     }
 

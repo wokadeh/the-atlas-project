@@ -290,30 +290,23 @@ public class DataManager : MonoBehaviour
     {
         Log.Info( this, "Loading and creating assets took " + ( _stopwatch.ElapsedMilliseconds / 1000.0f ).ToString( "0.00" ) + "seconds." );
 
-        if( m_DataDictionary.Count() > 0 )
+
+        if( m_DataDictionary[m_DataDictionary.First().Key].Count > 0 )
         {
-            Log.Info( this, "Data dictionary contains " + m_DataDictionary.Count + " pairs " );
+            this.MetaData = _metaData;
+            this.CurrentVariableName = m_DataDictionary.First().Key;
+            this.CurrentVariableMin = _metaData.Variables[0].Min;
+            this.CurrentVariableMax = _metaData.Variables[0].Max;
 
-            if( m_DataDictionary[m_DataDictionary.First().Key].Count > 0 )
-            {
-                this.MetaData = _metaData;
-                this.CurrentVariableName = m_DataDictionary.First().Key;
-                this.CurrentVariableMin = _metaData.Variables[0].Min;
-                this.CurrentVariableMax = _metaData.Variables[0].Max;
+            this.CurrentTimeStepDataAsset = this.CurrentDataAssetList.First();
 
-                this.CurrentTimeStepDataAsset = this.CurrentDataAssetList.First();
+            // Set new data
+            Singleton.GetVolumeRenderer().SetData( this.CurrentTimeStepDataAsset );
 
-                // Set new data
-                Singleton.GetVolumeRenderer().SetData( this.CurrentTimeStepDataAsset );
-            }
-            else
-            {
-                Log.Info( this, "There is no current data asset loaded" );
-            }
         }
         else
         {
-            Log.Info( this, "The Data Dictionary is empty" );
+            Log.Info( this, "There is no current data asset loaded" );
         }
 
         OnNewImport?.Invoke();
@@ -359,38 +352,38 @@ public class DataManager : MonoBehaviour
 
     private IEnumerator LoadVariableRoutine( string _variableFolder, ITimeStepDataAssetBuilder _timestepDataAssetBuilder, List<TimeStepDataAsset> _timestepDataAssetList, IVariable variable, Utils.BitDepth _bitDepth, IProgress<float> _progress )
     {
-        //string assetPath = Path.Combine( _variableFolder, Globals.TEXTURE3D_FOLDER_NAME );
+        string assetPath = Path.Combine( _variableFolder, Globals.TEXTURE3D_FOLDER_NAME );
 
-        //Log.Info( this, "Look for assets at " + assetPath );
+        Log.Info( this, "Look for assets at " + assetPath );
 
-        //string[] assets = Directory.GetFiles( assetPath );
+        string[] assets = Directory.GetFiles( assetPath );
 
-        //Log.Info( this, "Found " + assets.Length + " assets" );
+        Log.Info( this, "Found " + assets.Length + " assets" );
 
-        //Texture3D timestepTexture3D = null;
-        //int assetFileIndex = 0;
-        //foreach( string file in assets )
-        //{
-        //    if( file.EndsWith( ".asset" ) )
-        //    {
-        //        Log.Info( this, "Found " + file );
-        //        string trimmedFile = file.TrimEnd( ".asset".ToCharArray() ).TrimStart(Globals.RESOURCES.ToCharArray());
+        Texture3D timestepTexture3D = null;
+        int assetFileIndex = 0;
+        foreach( string file in assets )
+        {
+            if( file.EndsWith( ".asset" ) )
+            {
+                Log.Info( this, "Found " + file );
+                string trimmedFile = file.TrimEnd( ".asset".ToCharArray() ).TrimStart(Globals.RESOURCES.ToCharArray());
 
-        //        // Load asset from Resources folder directly as a Texture3D
-        //        timestepTexture3D = Resources.Load<Texture3D>( trimmedFile );
+                // Load asset from Resources folder directly as a Texture3D
+                timestepTexture3D = Resources.Load<Texture3D>( trimmedFile );
 
-        //        TimeStepDataAsset timestepAsset = _timestepDataAssetBuilder.BuildTimestepDataAssetFromTexture( timestepTexture3D );
+                TimeStepDataAsset timestepAsset = _timestepDataAssetBuilder.BuildTimestepDataAssetFromTexture( timestepTexture3D );
 
-        //        _timestepDataAssetList.Add( timestepAsset );
+                _timestepDataAssetList.Add( timestepAsset );
 
-        //        assetFileIndex++;
+                assetFileIndex++;
 
-        //        // Report progress
-        //        _progress.Report( Utils.CalculateProgress( assetFileIndex, assets.Length ) );
-        //        yield return null;
-        //    }
-        //}
-        //Log.Info( this, "Found " + assetFileIndex + " assets" );
+                // Report progress
+                _progress.Report( Utils.CalculateProgress( assetFileIndex, assets.Length ) );
+                yield return null;
+            }
+        }
+        Log.Info( this, "Found " + assetFileIndex + " assets" );
 
         yield return null;
     }

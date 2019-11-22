@@ -32,6 +32,7 @@ public class DataImportUI : MonoBehaviour
     [SerializeField] private TransferFunctionUI m_TransferFunctionUI;
     [SerializeField] private TimelineUI m_TimelineUI;
     [SerializeField] private LevelModeUI m_LevelModeUI;
+    [SerializeField] private TimestampUI m_TimestampUI;
 
     private void Start()
     {
@@ -70,6 +71,9 @@ public class DataImportUI : MonoBehaviour
             Utils.SetupScreenWhileProgress( m_ImportScreen, Singleton.GetMainScreenSystem(), Singleton.GetBottomScreen(), m_SaveProjectButton, m_SaveProjectAsButton, m_CancelButton );
 
             m_TransferFunctionUI.Redraw();
+
+            m_TimestampUI.UpdateTimestamp( m_TimestampUI.CurrentIndex );
+
         } );
     }
 }

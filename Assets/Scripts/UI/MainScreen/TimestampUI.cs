@@ -23,7 +23,7 @@ public class TimestampUI : MonoBehaviour
         m_Timestamp3DLabel = this.GetTimestampLabel();
 
 
-        this.UpdateTimestamp( 0 );
+        //this.UpdateTimestamp( 0 );
     }
 
     public void UpdateTimestamp( uint _dateIndex )
@@ -44,7 +44,7 @@ public class TimestampUI : MonoBehaviour
                 }
                 catch( Exception e )
                 {
-                    Log.Warn( this, "the timestamp " + _dateIndex.ToString() + " could not be updated: " + e );
+                    Log.Warn( this, "The timestamp " + _dateIndex.ToString() + " could not be updated: " + e );
                 }
 
                 DateTimeString = Utils.TryConvertDoubleToDateTimeString( VarDateFloat );
@@ -55,12 +55,12 @@ public class TimestampUI : MonoBehaviour
             }
             else
             {
-                Log.Info( this, "No data to show in label, current variable is null." );
+                Log.Info( this, "No current variable selected, label is empty." );
             }
         }
         else
         {
-            Log.Info( this, "No data to show in label, current data is null." );
+            Log.Info( this, "No Meta Data found, current data is null and label is empty." );
         }
     }
 
