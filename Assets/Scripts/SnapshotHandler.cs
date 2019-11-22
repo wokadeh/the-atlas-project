@@ -4,6 +4,7 @@
 //
 // ************************************************************************
 
+using System.IO;
 using UnityEngine;
 
 public class SnapshotHandler : MonoBehaviour
@@ -59,7 +60,14 @@ public class SnapshotHandler : MonoBehaviour
 
             this.CheckForDuplicate();
 
-            System.IO.File.WriteAllBytes(Globals.SAVE_SNAPSHOTS_PATH + "/" + m_DataName + ".png", byteArray);
+            string snapshotPath = Path.Combine(Directory.GetCurrentDirectory(), Globals.SAVE_SNAPSHOTS_PATH );
+
+            if(!Directory.Exists( snapshotPath ) )
+            {
+                Directory.CreateDirectory( snapshotPath );
+            }
+
+            System.IO.File.WriteAllBytes( snapshotPath + "/" + m_DataName + ".png", byteArray);
             Log.Info(this, "Saved Snapshot");
 
             //cleanup
