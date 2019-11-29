@@ -46,21 +46,11 @@ public class CameraModeUI : MonoBehaviour
             Log.Info( this, "Add " + cameraModeName + " to List" );
             toggle.onValueChanged.AddListener( isOn =>
              {
+                 Utils.ToggleItemsOnClick( isOn, toggle, this.transform );
+
                  if( isOn )
                  {
-                     Log.Info( this, "Toggle is on: " + cameraModeName );
                      this.m_CameraMode.SetCameraMode( cameraModeName );
-                     Toggle[] toggles = this.transform.GetComponentsInChildren<Toggle>();
-                     if( toggles.Length > 1 )
-                     {
-                         foreach( Toggle t in toggles )
-                         {
-                             if( t != toggle )
-                             {
-                                 t.isOn = false;
-                             }
-                         }
-                     }
                  }
              } );
 

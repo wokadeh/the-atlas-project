@@ -51,26 +51,11 @@ public class LevelModeUI : MonoBehaviour
             Log.Info( this, "Add " + levelName + " to List" );
             toggle.onValueChanged.AddListener( isOn =>
              {
-                 if( isOn )
-                 {
-                     Log.Info( this, "Toggle is on: " + levelName );
-
-                     //this.m_CameraMode.SetCameraMode( levelName );
-                     Toggle[] toggles = this.transform.GetComponentsInChildren<Toggle>();
-                     if( toggles.Length > 1 )
-                     {
-                         foreach( Toggle t in toggles )
-                         {
-                             if( t != toggle )
-                             {
-                                 t.isOn = false;
-                             }
-                         }
-                     }
-                 }
+                 Utils.ToggleItemsOnClick( isOn, toggle, this.transform );
              } );
 
             index++;
         }
     }
+
 }

@@ -176,4 +176,23 @@ public static class Utils
         _saveProjectButton.interactable = false;
         _saveProjectAsButton.interactable = true;
     }
+
+    public static void ToggleItemsOnClick( bool _isOn, Toggle _toggle, Transform _transform )
+    {
+        if( _isOn )
+        {
+            //this.m_CameraMode.SetCameraMode( levelName );
+            Toggle[] toggles = _transform.GetComponentsInChildren<Toggle>();
+            if( toggles.Length > 1 )
+            {
+                foreach( Toggle t in toggles )
+                {
+                    if( t != _toggle )
+                    {
+                        t.isOn = false;
+                    }
+                }
+            }
+        }
+    }
 }
