@@ -12155,7 +12155,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1163679452}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e618b1002df14254e93070b84673b912, type: 3}
+  m_Script: {fileID: 11500000, guid: 8d093a9a02f86ee409157502f75d3438, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_SphericalActivateButton: {fileID: 1163679454}
@@ -19813,10 +19813,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1862492008}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a38aa27480dd2864d85444f9b00981e4, type: 3}
+  m_Script: {fileID: 11500000, guid: c367868c0f7eace40a88d1a0b7967f62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_LevelModeTogglePrefab: {fileID: 7051726273880053243, guid: 3845d3d5c0f2bfb46b6f0ecf07ec3833,
+  m_LevelModeTogglePrefab: {fileID: 7051726273880053243, guid: 47de9a22420b1ba45b92def000628898,
     type: 3}
 --- !u!114 &1862492011
 MonoBehaviour:
