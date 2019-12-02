@@ -179,18 +179,16 @@ public static class Utils
 
     public static void ToggleItemsOnClick( bool _isOn, Toggle _toggle, Transform _transform )
     {
-        if( _isOn )
+
+        Log.Info( "Utils", "Toggled " + _toggle.name + ", which is now " + _isOn );
+        Toggle[] toggles = _transform.GetComponentsInChildren<Toggle>();
+        if( toggles.Length > 1 )
         {
-            //this.m_CameraMode.SetCameraMode( levelName );
-            Toggle[] toggles = _transform.GetComponentsInChildren<Toggle>();
-            if( toggles.Length > 1 )
+            foreach( Toggle t in toggles )
             {
-                foreach( Toggle t in toggles )
+                if( t != _toggle )
                 {
-                    if( t != _toggle )
-                    {
-                        t.isOn = false;
-                    }
+                    t.isOn = false;
                 }
             }
         }

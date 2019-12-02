@@ -15,6 +15,8 @@ public class VolumeRenderer : MonoBehaviour
     [SerializeField] private bool m_ShowAltitudeLevels;
 
     private GameObject m_CartesianLevelScalePlane;
+    private GameObject m_CartesianLevelPlane;
+    
 
     public VolumeRendererMode Mode { get; private set; }
 
@@ -126,6 +128,29 @@ public class VolumeRenderer : MonoBehaviour
                 Destroy( level.gameObject );
             }
             m_Levels.Clear();
+        }
+    }
+
+    public void SetLevel(int _index)
+    {
+        if(_index == 0)
+        {
+            if(m_CartesianLevelPlane != null)
+            {
+                m_CartesianLevelPlane.SetActive( false );
+                m_Renderer.enabled = true;
+            }
+        }
+        else 
+        {
+            if( m_CartesianLevelPlane == null )
+            {
+                m_CartesianLevelScalePlane = Instantiate( Singleton.GetCartesianLevelPlanePrefab(), this.transform );
+                m_CartesianLevelPlane.SetActive( false );
+                m_Renderer.enabled = true;
+            }
+
+            m_Renderer.enabled = false;
         }
     }
 }

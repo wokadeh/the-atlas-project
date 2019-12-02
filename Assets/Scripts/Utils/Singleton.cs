@@ -19,6 +19,7 @@ public class Singleton
     private static Material m_SphericalMaterial;
 
     private static GameObject m_CartesianLevelScalePlanePrefab;
+    private static GameObject m_CartesianLevelPlanePrefab;
     private static GameObject m_MainScreenSystem;
     private static GameObject m_MainScreen;
     private static GameObject m_BottomScreen;
@@ -100,6 +101,15 @@ public class Singleton
         }
 
         return m_CartesianLevelScalePlanePrefab;
+    }
+    public static GameObject GetCartesianLevelPlanePrefab()
+    {
+        if( m_CartesianLevelPlanePrefab == null )
+        {
+            m_CartesianLevelPlanePrefab = ( GameObject )Resources.Load( Globals.PREFABS_PATH + "Cartesian_Level_Plane", typeof( GameObject ) );
+        }
+
+        return m_CartesianLevelPlanePrefab;
     }
     public static GameObject GetMainScreenSystem()
     {

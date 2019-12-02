@@ -111,25 +111,32 @@ Shader "Custom/Ray Casting" {
 				float z = 1 - pos[_Axis[2] - 1];
 				float newLogZ = 1 - ( log(z * _MaxPressure) / _LogMaxPressure);
 
-				float3 posTex = float3(pos[_Axis[0] - 1], pos[_Axis[1] - 1], newLogZ);
+				float4 col = float4(1, 1, 1, 1);
 
-				posTex = (posTex - 0.5) * _TexFilling + 0.5;
+				if (newLogZ < 1.5)
+				{
+					float3 posTex = float3(pos[_Axis[0] - 1], pos[_Axis[1] - 1], newLogZ);
 
-				float4 data4 = tex3Dlod(_Data, float4(posTex, 0));
-				float data = _DataChannel[0] * data4.r + _DataChannel[1] * data4.g + _DataChannel[2] * data4.b + _DataChannel[3] * data4.a;
+					posTex = (posTex - 0.5) * _TexFilling + 0.5;
 
-				// slice and threshold
-				data *= step(_SliceAxis1Min, posTex.x);
-				data *= step(_SliceAxis2Min, posTex.y);
-				data *= step(_SliceAxis3Min, posTex.z);
-				data *= step(posTex.x, _SliceAxis1Max);
-				data *= step(posTex.y, _SliceAxis2Max);
-				data *= step(posTex.z, _SliceAxis3Max);
-				data *= step(_DataMin, data);
-				data *= step(data, _DataMax);
+					float4 data4 = tex3Dlod(_Data, float4(posTex, 0));
+					float data = _DataChannel[0] * data4.r + _DataChannel[1] * data4.g + _DataChannel[2] * data4.b + _DataChannel[3] * data4.a;
+
+					// slice and threshold
+					data *= step(_SliceAxis1Min, posTex.x);
+					data *= step(_SliceAxis2Min, posTex.y);
+					data *= step(_SliceAxis3Min, posTex.z);
+					data *= step(posTex.x, _SliceAxis1Max);
+					data *= step(posTex.y, _SliceAxis2Max);
+					data *= step(posTex.z, _SliceAxis3Max);
+					data *= step(_DataMin, data);
+					data *= step(data, _DataMax);
+
+					col = float4(data, data, data, data);
+				}
+				
 
 				// colourize
-				float4 col = float4(data, data, data, data);
 				return col;
 			}
 
@@ -156,7 +163,7 @@ Shader "Custom/Ray Casting" {
 
 			    // calculate eye ray in object space
 				o.ray_d = -ObjSpaceViewDir( i.pos );
-				o.ray_o = i.pos.xyz - o.ray_d;
+				o.ray_o = (i.pos.xyz - o.ray_d);
 				// calculate position on screen (unused)
 				o.pos = UnityObjectToClipPos( i.pos );
 

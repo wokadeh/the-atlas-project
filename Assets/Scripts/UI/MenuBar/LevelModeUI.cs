@@ -6,8 +6,10 @@ using UnityEngine.UI;
 public class LevelModeUI : MonoBehaviour
 {
     [SerializeField] private Toggle m_LevelModeTogglePrefab;
+    [SerializeField] private LevelMode m_LevelMode;
 
     private List<string> m_LevelModeList;
+    private ToggleGroup m_LevelToggleGroup;
 
     public void Show(bool _isShown)
     {
@@ -40,22 +42,31 @@ public class LevelModeUI : MonoBehaviour
         {
 
             Toggle toggle = Instantiate( m_LevelModeTogglePrefab, this.transform );
-            if( index == 0 )
+            if( levelName == "All" )
             {
-                toggle.isOn = this.name == levelName;
+                toggle.isOn = toggle.name != levelName;
             }
 
             TMP_Text label = toggle.transform.Find( "Label" ).GetComponent<TMP_Text>();
-            label.text = levelName;
+            label.text = toggle.name = levelName;
+            toggle.isOn = false;
+            //toggle.group = m_LevelToggleGroup;
 
             Log.Info( this, "Add " + levelName + " to List" );
             toggle.onValueChanged.AddListener( isOn =>
              {
                  Utils.ToggleItemsOnClick( isOn, toggle, this.transform );
+
+                 Log.Info( this, toggle.name );
              } );
 
             index++;
         }
+    }
+
+    private void SetLevelInRenderer( int _index )
+    {
+        Singleton.GetVolumeRenderer().SetLevel( _index );
     }
 
 }
