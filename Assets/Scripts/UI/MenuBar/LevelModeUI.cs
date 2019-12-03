@@ -1,4 +1,10 @@
-﻿using System.Collections.Generic;
+﻿// ****************************** LOCATION ********************************
+//
+// [UI] Level_Mode_Toggle_Panel -> attached
+//
+// ************************************************************************
+
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,62 +12,64 @@ using UnityEngine.UI;
 public class LevelModeUI : MonoBehaviour
 {
     [SerializeField] private Toggle m_LevelModeTogglePrefab;
-    [SerializeField] private LevelMode m_LevelMode;
 
     private List<string> m_LevelModeList;
-    private ToggleGroup m_LevelToggleGroup;
 
-    public void Show(bool _isShown)
+    public void Show( bool _isShown )
     {
         Singleton.GetDataTypeTogglePanel().SetActive( false );
         Singleton.GetCameraModeTogglePanel().SetActive( false );
         Singleton.GetLevelModeTogglePanel().SetActive( _isShown );
     }
 
-    private void Start()
+    private void DeleteChildrenToggles()
     {
-        for (int i = 0; i < this.transform.childCount; i++)
+        for( int i = 0; i < this.transform.childCount; i++ )
         {
             Destroy( this.transform.GetChild( i ).gameObject );
         }
+    }
 
+    private void SetupLevelList()
+    {
         m_LevelModeList = new List<string>();
 
         int[] levelList37 = Globals.LEVEL_LIST_37();
 
         m_LevelModeList.Add( "All" );
 
-        foreach(int i in levelList37)
+        foreach( int i in levelList37 )
         {
             m_LevelModeList.Add( i.ToString() );
         }
+    }
 
-        int index = 0;
+    private void CreateToggle( string _levelName )
+    {
+        Toggle toggle = Instantiate( m_LevelModeTogglePrefab, this.transform );
+        TMP_Text label = toggle.transform.Find( "Label" ).GetComponent<TMP_Text>();
+        label.text = toggle.name = _levelName;
+        toggle.isOn = false;
 
-        foreach( string levelName in this.m_LevelModeList )
+        toggle.onValueChanged.AddListener( isOn =>
         {
+            Utils.ToggleItemsOnClick( isOn, toggle, this.transform );
+        } );
+    }
 
-            Toggle toggle = Instantiate( m_LevelModeTogglePrefab, this.transform );
-            if( levelName == "All" )
-            {
-                toggle.isOn = toggle.name != levelName;
-            }
+    private void Start()
+    {
+        this.DeleteChildrenToggles();
 
-            TMP_Text label = toggle.transform.Find( "Label" ).GetComponent<TMP_Text>();
-            label.text = toggle.name = levelName;
-            toggle.isOn = false;
-            //toggle.group = m_LevelToggleGroup;
+        this.SetupLevelList();
 
-            Log.Info( this, "Add " + levelName + " to List" );
-            toggle.onValueChanged.AddListener( isOn =>
-             {
-                 Utils.ToggleItemsOnClick( isOn, toggle, this.transform );
-
-                 Log.Info( this, toggle.name );
-             } );
-
-            index++;
+        foreach( string levelName in m_LevelModeList )
+        {
+            this.CreateToggle( levelName );
         }
+
+        // Select "All" toggle on start
+        this.transform.GetComponentsInChildren<Toggle>()[0].isOn = true;
     }
 
     private void SetLevelInRenderer( int _index )

@@ -179,7 +179,6 @@ public static class Utils
 
     public static void ToggleItemsOnClick( bool _isOn, Toggle _toggle, Transform _transform )
     {
-
         Log.Info( "Utils", "Toggled " + _toggle.name + ", which is now " + _isOn );
         Toggle[] toggles = _transform.GetComponentsInChildren<Toggle>();
         if( toggles.Length > 1 )
