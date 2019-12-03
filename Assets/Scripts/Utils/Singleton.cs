@@ -106,7 +106,7 @@ public class Singleton
     {
         if( m_CartesianLevelPlanePrefab == null )
         {
-            m_CartesianLevelPlanePrefab = ( GameObject )Resources.Load( Globals.PREFABS_PATH + "Cartesian_Level_Plane", typeof( GameObject ) );
+            m_CartesianLevelPlanePrefab = ( GameObject )Resources.Load( Globals.PREFABS_PATH + "LevelPlane", typeof( GameObject ) );
         }
 
         return m_CartesianLevelPlanePrefab;

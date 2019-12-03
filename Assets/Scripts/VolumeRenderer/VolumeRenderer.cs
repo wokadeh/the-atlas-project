@@ -16,7 +16,7 @@ public class VolumeRenderer : MonoBehaviour
 
     private GameObject m_CartesianLevelScalePlane;
     private GameObject m_CartesianLevelPlane;
-    
+
 
     public VolumeRendererMode Mode { get; private set; }
 
@@ -94,7 +94,7 @@ public class VolumeRenderer : MonoBehaviour
 
     public void Disable()
     {
-        if ( m_Renderer )
+        if( m_Renderer )
         {
             m_Renderer.enabled = false;
         }
@@ -131,25 +131,25 @@ public class VolumeRenderer : MonoBehaviour
         }
     }
 
-    public void SetLevel(int _index)
+    public void SetLevel( int _index )
     {
-        if(_index == 0)
+        if( _index == 0 )
         {
-            if(m_CartesianLevelPlane != null)
+            // Activate Volume Renderer
+            if( m_CartesianLevelPlane != null )
             {
                 m_CartesianLevelPlane.SetActive( false );
-                m_Renderer.enabled = true;
             }
+            m_Renderer.enabled = true;
         }
-        else 
+        else
         {
+            // Activate Level Plane
             if( m_CartesianLevelPlane == null )
             {
-                m_CartesianLevelScalePlane = Instantiate( Singleton.GetCartesianLevelPlanePrefab(), this.transform );
-                m_CartesianLevelPlane.SetActive( false );
-                m_Renderer.enabled = true;
+                m_CartesianLevelPlane = Instantiate( Singleton.GetCartesianLevelPlanePrefab(), this.transform );
             }
-
+            m_CartesianLevelPlane.SetActive( true );
             m_Renderer.enabled = false;
         }
     }

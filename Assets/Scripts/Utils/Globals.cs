@@ -78,6 +78,7 @@ public struct Globals
     public const float LOG_MAX_PRESSURE = 6.907755279F;
 
     // ---------------> CREATE LIST OF PRESSURE LEVELS
+    public static string LEVEL_ALL_NAME = "All";
     public static int[] LEVEL_LIST_37()
     {
         int[] outputLevels = new int[37];
