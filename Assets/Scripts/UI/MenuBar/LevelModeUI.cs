@@ -36,7 +36,7 @@ public class LevelModeUI : MonoBehaviour
 
         int[] levelList37 = Globals.LEVEL_LIST_37();
 
-        m_LevelModeList.Add( "All" );
+        m_LevelModeList.Add( Globals.LEVEL_ALL_NAME );
 
         foreach( int i in levelList37 )
         {
@@ -54,7 +54,21 @@ public class LevelModeUI : MonoBehaviour
         toggle.onValueChanged.AddListener( isOn =>
         {
             Utils.ToggleItemsOnClick( isOn, toggle, this.transform );
+
+            this.SetLevelInRenderer( GetToggleIndex( toggle ) );
         } );
+    }
+
+    private int GetToggleIndex( Toggle toggle )
+    {
+        int toggleIndex = 0;
+
+        if( toggle.name != Globals.LEVEL_ALL_NAME )
+        {
+            toggleIndex = int.Parse( toggle.name );
+        }
+
+        return toggleIndex;
     }
 
     private void Start()
