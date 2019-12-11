@@ -4,7 +4,7 @@
 //
 // ************************************************************************
 
-using TMPro;
+using System.IO;
 using UnityEngine;
 
 public class Singleton
@@ -17,6 +17,7 @@ public class Singleton
 
     private static Material m_CartesianMaterial;
     private static Material m_SphericalMaterial;
+    private static Material m_LevelPlaneMaterial;
 
     private static GameObject m_CartesianLevelScalePlanePrefab;
     private static GameObject m_CartesianLevelPlanePrefab;
@@ -29,7 +30,6 @@ public class Singleton
     private static GameObject m_LevelModeTogglePanel;
     private static GameObject m_CameraModeTogglePanel;
     private static GameObject m_DialogBox;
-    private static TextMeshPro m_DialogBoxText;
 
     public static DataManager GetDataManager()
     {
@@ -70,13 +70,17 @@ public class Singleton
 
         return m_EarthSphere;
     }
+    public static Material GetLevelPlaneMaterial( string _path, string _name )
+    {
+        m_LevelPlaneMaterial = ( Material )Resources.Load( Path.Combine( _path, _name ), typeof( Material ) );
 
+        return m_LevelPlaneMaterial;
+    }
     public static Material GetCartesianMaterial()
     {
         if( m_CartesianMaterial == null )
         {
             m_CartesianMaterial = ( Material )Resources.Load( Globals.MATERIALS_PATH + "VolumetricCartesianRendering", typeof( Material ) );
-            
         }
 
         return m_CartesianMaterial;

@@ -151,6 +151,18 @@ public class VolumeRenderer : MonoBehaviour
             }
             m_CartesianLevelPlane.SetActive( true );
             m_Renderer.enabled = false;
+            CreateTexture();
         }
+    }
+
+    private void CreateTexture()
+    {
+        // Create a new 2x2 texture ARGB32 (32 bit with alpha) and no mipmaps
+        var texture = new Texture2D(2, 2, TextureFormat.ARGB32, false);
+
+        // Get name of image
+
+        // connect texture to material of GameObject this script is attached to
+        m_CartesianLevelPlane.gameObject.GetComponent<Renderer>().material.mainTexture = texture;
     }
 }

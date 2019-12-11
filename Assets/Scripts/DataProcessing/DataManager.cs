@@ -16,7 +16,9 @@ using UnityEngine;
 public class DataManager : MonoBehaviour
 {
     private Dictionary<string, List<TimeStepDataAsset>> m_DataDictionary;
+    private Dictionary<string, List<TimeStepDataAsset>> m_DataLevelDictionary;
     public IReadOnlyList<TimeStepDataAsset> CurrentDataAssetList => m_DataDictionary[CurrentVariableName];
+    public IReadOnlyList<TimeStepDataAsset> CurrentDataLevelAssetList => m_DataLevelDictionary[CurrentVariableName];
 
     public event Action OnNewImport;
     public event Action<TimeStepDataAsset> OnDataAssetChanged;
@@ -26,7 +28,10 @@ public class DataManager : MonoBehaviour
     public double CurrentVariableMin { get; private set; }
     public double CurrentVariableMax { get; private set; }
     public TimeStepDataAsset CurrentTimeStepDataAsset { get; private set; }
+    public TimeStepDataAsset CurrentLevelTimeStepDataAsset { get; private set; }
     private IMetaDataManager m_MetaDataManager;
+
+    private bool m_IsLevelMode = false;
 
     private void Start()
     {
@@ -40,12 +45,11 @@ public class DataManager : MonoBehaviour
     {
         m_MetaDataManager = new MetaDataManager();
         m_DataDictionary = new Dictionary<string, List<TimeStepDataAsset>>();
+        m_DataLevelDictionary = new Dictionary<string, List<TimeStepDataAsset>>();
         this.CurrentVariableName = "";
         this.CurrentVariableMin = 0;
         this.CurrentVariableMax = 0;
         this.MetaData = null;
-
-        //Singleton.GetVolumeRenderer().Show( false );
     }
 
     // Start internal routines to import the data to a new project
@@ -83,10 +87,20 @@ public class DataManager : MonoBehaviour
         this.CurrentVariableMin = _min;
         this.CurrentVariableMax = _max;
 
-        this.SetCurrentAsset( this.CurrentDataAssetList.First() );
+        if( m_IsLevelMode )
+        {
+            this.SetCurrentAsset( this.CurrentDataLevelAssetList.First() );
+            // Set new data
+            Singleton.GetVolumeRenderer().SetData( this.CurrentLevelTimeStepDataAsset );
+        }
+        else
+        {
+            this.SetCurrentAsset( this.CurrentDataAssetList.First() );
+            // Set new data
+            Singleton.GetVolumeRenderer().SetData( this.CurrentTimeStepDataAsset );
+        }
 
-        // Set new data
-        Singleton.GetVolumeRenderer().SetData( this.CurrentTimeStepDataAsset );
+
     }
 
     //private IEnumerator SaveProjectCoroutine( string _projectFileName, string _projectFolderPath, bool _saveOnlyXml, IProgress<float> _progress, Action _callback )
@@ -413,6 +427,18 @@ public class DataManager : MonoBehaviour
             _progress.Report( progression );
             yield return null;
         }
+
+        yield return null;
+    }
+
+    private IEnumerator ImportLevelRoutine( IDataLoader _loader, ITimeStepDataAssetBuilder _timestepDataAssetBuilder, string _projectFolder, List<TimeStepDataAsset> _timestepDataAssetList, Utils.BitDepth _bitDepth, IProgress<float> _progress )
+    {
+        // We assume every directory is a time stamp which contains the level tiffs
+        string[] directories = Directory.GetDirectories( _projectFolder );
+
+        m_DataLevelDictionary[CurrentVariableName] = new List<TimeStepDataAsset>();
+
+        Log.Info( this, "Start variable importing routine" );
 
         yield return null;
     }
