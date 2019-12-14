@@ -58,23 +58,23 @@ public class DataLoaderFromTIFFs : IDataLoader
     private void ImportAllImages(string[] files)
     {
         // Import in all images
-        for( int i = 0; i < files.Length; i++ )
+        for( int level = 0; level < files.Length; level++ )
         {
-            string file = files[ i ];
+            string filePath = files[ level ];
             try
             {
-                this.ConvertImageToBuffer( file, i );
+                this.ConvertImageToBuffer( filePath, level );
             }
             catch( Exception e )
             {
-                Log.Error( this, "Failed to read tiff: " + file + " with exception:\n" + e.GetType().Name + " " + e.Message );
+                Log.Error( this, "Failed to read tiff: " + filePath + " with exception:\n" + e.GetType().Name + " " + e.Message );
             }
         }
     }
 
-    private void ConvertImageToBuffer( string _path, int _level )
+    private void ConvertImageToBuffer( string _filePath, int _level )
     {
-        using( Tiff image = Tiff.Open( _path, "r" ) )
+        using( Tiff image = Tiff.Open( _filePath, "r" ) )
         {
             // Find the width and height of the image
             FieldValue[] value = image.GetField( TiffTag.IMAGEWIDTH );
@@ -125,6 +125,8 @@ public class DataLoaderFromTIFFs : IDataLoader
 
         Log.Info( this, "Write file " + _fileName + " to path " + savePath );
         string filePath = Path.Combine(savePath, _fileName + Globals.SAVE_TIMESTEP_SUFFIX);
+
+        Log.Info( this, "The file " + _fileName + " has a size of " + texture3dBuffer.Length.ToString() );
 
         if( !File.Exists( filePath ) )
         {

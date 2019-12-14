@@ -196,13 +196,14 @@ public static class Utils
     public static byte[] ConvertBufferToBytes( byte[][] _buffer )
     {
         byte[] texture3dBuffer = new byte[_buffer.Length * _buffer[0].Length];
+        Log.Info( "Utils", "The buffer has a size of " + texture3dBuffer.Length.ToString() + " because _buffer.Length is " + _buffer.Length  + " and  _buffer[0].Length is " + _buffer[0].Length );
 
-        for( int x = 0; x < _buffer.Length; x++ )
+        for( int level = 0; level < _buffer.Length; level++ )
         {
-            for( int y = 0; y < _buffer[0].Length; y++ )
+            for( int size = 0; size < _buffer[0].Length; size++ )
             {
-                int index = y * _buffer.Length + x;
-                texture3dBuffer[index] = Utils.GetByteFromTIFF( _buffer[x][y] );
+                int index = size * _buffer.Length + level;
+                texture3dBuffer[index] = Utils.GetByteFromTIFF( _buffer[level][size] );
             }
         }
 
@@ -239,14 +240,22 @@ public static class Utils
 
     public static byte[][] ConvertBytesToBuffer( byte[][] _buffer, byte[] _raster, int _level, int _width, int _height )
     {
+        Log.Info( "Utils", "_buffer.Length is " + _buffer.Length.ToString() + " and _buffer[0].Length is " + _buffer[0].Length + " and _raster.Length is " + _raster.Length );
         // We convert the raster to bytes
-        for( int x = 0; x < _width; x++ )
+        for( int l = 0; l < _level; l++ )
         {
-            for( int y = 0; y < _height; y++ )
+            for( int x = 0; x < _width; x++ )
             {
-                int index= y * _width + x;
+                for( int y = 0; y < _height; y++ )
+                {
+                    
+                    int index = y * _width + x;
 
-                _buffer[_level][index] =  _raster[index];
+                    int ix = index * _level + l;
+
+                    _buffer[l][index] = _raster[ix];
+                    
+                }
             }
         }
 

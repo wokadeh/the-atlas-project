@@ -381,7 +381,7 @@ public class DataManager : MonoBehaviour
             // For each variable there is a list of all textures that are used
             m_DataDictionary[variable.Name] = new List<TimeStepDataAsset>();
 
-            string projectAssetPath = Path.Combine( Globals.RESOURCES, Globals.SAVE_PROJECTS_PATH, metaData.DataName );
+            string projectAssetPath = Path.Combine( Globals.SAVE_PROJECTS_PATH, metaData.DataName );
 
             string variableFolderPath = Path.Combine( projectAssetPath, variable.Name.ToLower() );
             if( Directory.Exists( projectAssetPath ) )
