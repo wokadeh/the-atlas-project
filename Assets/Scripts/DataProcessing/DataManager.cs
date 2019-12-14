@@ -10,7 +10,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-//using UnityEditor;
 using UnityEngine;
 
 public class DataManager : MonoBehaviour
@@ -62,7 +61,7 @@ public class DataManager : MonoBehaviour
     // Start internal routines to save the settings of an open project
     public void SaveProject( string _projectFileName, string _projectFolderPath, bool _saveOnlyXml, IProgress<float> _progress, Action _callback )
     {
-        // this.StartCoroutine( this.SaveProjectCoroutine( _projectFileName, _projectFolderPath, _saveOnlyXml, _progress, _callback ) );
+        this.StartCoroutine( this.SaveProjectCoroutine( _projectFileName, _projectFolderPath, _saveOnlyXml, _progress, _callback ) );
     }
 
     // Start internal routines to load an existing project
@@ -101,6 +100,108 @@ public class DataManager : MonoBehaviour
         }
 
 
+    }
+    private IEnumerator SaveProjectCoroutine( string _projectFileName, string _projectFolderPath, bool _saveOnlyXml, IProgress<float> _progress, Action _callback )
+    {
+        // 1. Write new xml file with all previous data (bitdepth, levels, etc.)
+        if( this.MetaData != null )
+        {
+            // Warning! Make sure always MetaData has been filled by importing/loading!!!!
+            string projectFileAndFolderPath = Path.Combine( _projectFolderPath, _projectFileName );
+
+            try
+            {
+                // Only create if it does not exist, yet
+                if( !Directory.Exists( projectFileAndFolderPath ) )
+                {
+                    Directory.CreateDirectory( projectFileAndFolderPath );
+                }
+                string filePath = Path.Combine( projectFileAndFolderPath, _projectFileName + ".xml" );
+
+                this.MetaData = m_MetaDataManager.SetMetaDataName( _projectFileName, this.MetaData );
+
+                m_MetaDataManager.Write( filePath, this.MetaData, m_DataDictionary );
+
+                Log.Info( this, "Successfully wrote project XML to: " + filePath );
+            }
+            catch( Exception e )
+            {
+                Log.ThrowException( this, "Failed to save meta data: " + projectFileAndFolderPath + " with exception:\n " + e.GetType().Name + "-" + e.Message );
+                _callback?.Invoke();
+                yield break;
+            }
+
+            if( !_saveOnlyXml )
+            {
+                // 2. write 3dTexture assets to folders of variables
+                yield return this.CreateAssets( _progress );
+            }
+        }
+        else
+        {
+            Log.Warn( this, "Cannot save, because no data is loaded!" );
+            yield break;
+        }
+
+        _callback?.Invoke();
+    }
+    private IEnumerator CreateAssets( IProgress<float> _progress )
+    {
+        for( int varIndex = 0; varIndex < this.MetaData.Variables.Count; varIndex++ )
+        {
+            IVariable variable = this.MetaData.Variables[ varIndex ];
+
+            string variablePath = Path.Combine( Globals.RESOURCES, Globals.SAVE_PROJECTS_PATH, this.MetaData.DataName, variable.Name );
+
+            Log.Warn( this, "Save assets to: " + variablePath );
+
+            // Temperature/texture3D
+            if( !Directory.Exists( variablePath ) )
+            {
+                Directory.CreateDirectory( variablePath );
+            }
+
+            yield return this.StartCoroutine( this.SaveVariableRoutine( variable, variablePath, varIndex, new Progress<float>( value =>
+            {
+                // Do overall progress report
+                _progress.Report( Utils.CalculateProgress( varIndex, MetaData.Variables.Count, value ) );
+            } ) ) );
+        }
+    }
+
+    private IEnumerator SaveVariableRoutine( IVariable _variable, string _variablePath, int _varIndex, IProgress<float> _progress )
+    {
+        string textureAssetPath = Path.Combine( _variablePath, Globals.TEXTURE3D_FOLDER_NAME );
+        // Only create if it does not exist, yet
+        if( !Directory.Exists( textureAssetPath ) )
+        {
+            Directory.CreateDirectory( textureAssetPath );
+        }
+
+        List<TimeStepDataAsset> currentVariableTimeStepList = m_DataDictionary[ _variable.Name ];
+
+        string[] variableAssets = new string[currentVariableTimeStepList.Count];
+
+        for( int i = 0; i < currentVariableTimeStepList.Count; i++ )
+        {
+            string dateTimeString = this.MetaData.Timesteps[ _varIndex ][ i ].DateTimeDouble.ToString().Replace( ',', '.' );
+            string assetName = Globals.TEXTURE3D_PREFEX + this.MetaData.DataName + "_" + _variable.Name + "_" + dateTimeString;
+            string assetPath = textureAssetPath + "/";
+
+
+            variableAssets[i] = assetPath + assetName;
+
+            Log.Info( this, "Create asset " + variableAssets[i] );
+
+            TimeStepDataAsset asset = currentVariableTimeStepList[ i ];
+
+            // Report progress
+            _progress.Report( Utils.CalculateProgress( i, currentVariableTimeStepList.Count ) );
+
+            yield return null;
+        }
+
+        yield return null;
     }
 
     //private IEnumerator SaveProjectCoroutine( string _projectFileName, string _projectFolderPath, bool _saveOnlyXml, IProgress<float> _progress, Action _callback )
@@ -196,7 +297,7 @@ public class DataManager : MonoBehaviour
             _callback?.Invoke();
         }
 
-        IDataLoader tiffLoader = new DataLoaderFromTIFFs( metaData.Width, metaData.Height, metaData.Levels );
+        IDataLoader tiffLoader = new DataLoaderFromTIFFs( metaData );
         ITimeStepDataAssetBuilder timeAssetBuilder = new TimeStepDataAssetBuilder( metaData.Width, metaData.Height, metaData.Levels );
 
         int numberOfVariables = metaData.Variables.Count;
@@ -215,7 +316,7 @@ public class DataManager : MonoBehaviour
 
             if( Directory.Exists( folder ) )
             {
-                yield return this.StartCoroutine( this.ImportVariableRoutine( tiffLoader, timeAssetBuilder, folder, m_DataDictionary[variable.Name], bitDepth, new Progress<float>( value =>
+                yield return this.StartCoroutine( this.ImportVariableRoutine( tiffLoader, timeAssetBuilder, variable.Name, i, folder, m_DataDictionary[variable.Name], bitDepth, new Progress<float>( value =>
               {
                   // Do overall progress report
                   _progress.Report( Utils.CalculateProgress( i, numberOfVariables, value ) );
@@ -326,42 +427,42 @@ public class DataManager : MonoBehaviour
         OnNewImport?.Invoke();
     }
 
-    private IEnumerator SaveVariableRoutine( IVariable _variable, string _variablePath, int _varIndex, IProgress<float> _progress )
-    {
-        //string textureAssetPath = Path.Combine( _variablePath, Globals.TEXTURE3D_FOLDER_NAME );
-        //// Only create if it does not exist, yet
-        //if( !Directory.Exists( textureAssetPath ) )
-        //{
-        //    Directory.CreateDirectory( textureAssetPath );
-        //}
+    //private IEnumerator SaveVariableRoutine( IVariable _variable, string _variablePath, int _varIndex, IProgress<float> _progress )
+    //{
+    //    //string textureAssetPath = Path.Combine( _variablePath, Globals.TEXTURE3D_FOLDER_NAME );
+    //    //// Only create if it does not exist, yet
+    //    //if( !Directory.Exists( textureAssetPath ) )
+    //    //{
+    //    //    Directory.CreateDirectory( textureAssetPath );
+    //    //}
 
-        //List<TimeStepDataAsset> currentVariableTimeStepList = m_DataAssets[ _variable.Name ];
+    //    //List<TimeStepDataAsset> currentVariableTimeStepList = m_DataAssets[ _variable.Name ];
 
-        //string[] variableAssets = new string[currentVariableTimeStepList.Count];
+    //    //string[] variableAssets = new string[currentVariableTimeStepList.Count];
 
-        //for( int i = 0; i < currentVariableTimeStepList.Count; i++ )
-        //{
-        //    string dateTimeString = this.MetaData.Timestamps[ _varIndex ][ i ].DateTimeDouble.ToString().Replace( ',', '.' );
-        //    string assetName = Globals.TEXTURE3D_PREFEX + this.MetaData.DataName + "_" + _variable.Name + "_" + dateTimeString;
-        //    string assetPath = textureAssetPath + "/";
-
-
-        //    variableAssets[i] = assetPath + assetName;
-
-        //    Log.Info( this, "Create asset " + variableAssets[i] );
-
-        //    TimeStepDataAsset asset = currentVariableTimeStepList[ i ];
-        //    //AssetDatabase.CreateAsset( asset.DataTexture, assetCompleteName );
-
-        //    // Report progress
-        //    _progress.Report( Utils.CalculateProgress( i, currentVariableTimeStepList.Count ) );
-
-        //    yield return null;
-        //}
+    //    //for( int i = 0; i < currentVariableTimeStepList.Count; i++ )
+    //    //{
+    //    //    string dateTimeString = this.MetaData.Timestamps[ _varIndex ][ i ].DateTimeDouble.ToString().Replace( ',', '.' );
+    //    //    string assetName = Globals.TEXTURE3D_PREFEX + this.MetaData.DataName + "_" + _variable.Name + "_" + dateTimeString;
+    //    //    string assetPath = textureAssetPath + "/";
 
 
-        yield return null;
-    }
+    //    //    variableAssets[i] = assetPath + assetName;
+
+    //    //    Log.Info( this, "Create asset " + variableAssets[i] );
+
+    //    //    TimeStepDataAsset asset = currentVariableTimeStepList[ i ];
+    //    //    //AssetDatabase.CreateAsset( asset.DataTexture, assetCompleteName );
+
+    //    //    // Report progress
+    //    //    _progress.Report( Utils.CalculateProgress( i, currentVariableTimeStepList.Count ) );
+
+    //    //    yield return null;
+    //    //}
+
+
+    //    yield return null;
+    //}
 
 
     private IEnumerator LoadVariableRoutine( string _variableFolder, ITimeStepDataAssetBuilder _timestepDataAssetBuilder, List<TimeStepDataAsset> _timestepDataAssetList, IVariable variable, Utils.BitDepth _bitDepth, IProgress<float> _progress )
@@ -402,7 +503,7 @@ public class DataManager : MonoBehaviour
         yield return null;
     }
 
-    private IEnumerator ImportVariableRoutine( IDataLoader _loader, ITimeStepDataAssetBuilder _timestepDataAssetBuilder, string _projectFolder, List<TimeStepDataAsset> _timestepDataAssetList, Utils.BitDepth _bitDepth, IProgress<float> _progress )
+    private IEnumerator ImportVariableRoutine( IDataLoader _tiffLoader, ITimeStepDataAssetBuilder _timestepDataAssetBuilder, string _variableName, int _varIndex, string _projectFolder, List<TimeStepDataAsset> _timestepDataAssetList, Utils.BitDepth _bitDepth, IProgress<float> _progress )
     {
         // We assume every directory is a time stamp which contains the level tiffs
         string[] directories = Directory.GetDirectories( _projectFolder );
@@ -415,7 +516,7 @@ public class DataManager : MonoBehaviour
 
             Log.Info( this, "Creating asset from image from " + directory );
 
-            TimeStepDataAsset asset = _timestepDataAssetBuilder.BuildTimestepDataAssetFromData( _loader.ImportImageFiles( directory ) );
+            TimeStepDataAsset asset = _timestepDataAssetBuilder.BuildTimestepDataAssetFromData( _tiffLoader.ImportImageFiles( directory, _variableName ) );
 
             if( asset != null )
             {

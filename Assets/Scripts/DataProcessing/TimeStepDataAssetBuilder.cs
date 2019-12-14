@@ -55,11 +55,6 @@ public class TimeStepDataAssetBuilder : ITimeStepDataAssetBuilder
         return new TimeStepDataAsset() { Dimensions = new Vector3( m_Width, m_Height, depth ), DataTexture = _assetTex, HistogramTexture = this.BuildHistogramTexture() };
     }
 
-    public TimeStepDataAsset Build16Bit( short[][] _data )
-    {
-        throw new NotImplementedException();
-    }
-
     private Texture3D BuildDataTexture( byte[][] _data )
     {
         int size2d = m_Width * m_Height;

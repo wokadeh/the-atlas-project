@@ -85,7 +85,7 @@ public class MetaDataReader
             }
         }
 
-        outputMetaData.Timestamps = timestampLisList;
+        outputMetaData.Timesteps = timestampLisList;
         outputMetaData.Variables = variablesList;
 
         return outputMetaData;

@@ -14,7 +14,7 @@ public class MetaDataManager : IMetaDataManager
         public int TimeInterval { get; set; }
 
         public IList<IVariable> Variables { get; set; }
-        public IList<IList<TimeStepDataAsset>> Timestamps { get; set; }
+        public IList<IList<TimeStepDataAsset>> Timesteps { get; set; }
     }
 
     public class Variable : IVariable
@@ -44,7 +44,7 @@ public class MetaDataManager : IMetaDataManager
         newMetaData.TimeInterval = _metaData.TimeInterval;
 
         newMetaData.Variables = _metaData.Variables;
-        newMetaData.Timestamps = _metaData.Timestamps;
+        newMetaData.Timesteps = _metaData.Timesteps;
 
         return newMetaData;
     }

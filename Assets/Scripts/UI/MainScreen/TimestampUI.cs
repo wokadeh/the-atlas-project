@@ -39,7 +39,7 @@ public class TimestampUI : MonoBehaviour
 
                 try
                 {
-                    VarDateFloat = m_CurrentData.Timestamps[ 0 ][ ( int ) _dateIndex ].DateTimeDouble;
+                    VarDateFloat = m_CurrentData.Timesteps[ 0 ][ ( int ) _dateIndex ].DateTimeDouble;
 
                 }
                 catch( Exception e )

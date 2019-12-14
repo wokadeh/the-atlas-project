@@ -11,7 +11,7 @@ public interface IMetaData {
     int TimeInterval { get; }
 
     IList<IVariable> Variables { get; }
-    IList<IList<TimeStepDataAsset>> Timestamps { get; }
+    IList<IList<TimeStepDataAsset>> Timesteps { get; }
 }
 
 public interface IVariable {

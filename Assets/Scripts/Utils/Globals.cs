@@ -22,6 +22,7 @@ public struct Globals
     public const string RESOURCES = "Assets\\Resources\\";
     public const string SAVE_PROJECTS_PATH = "Saved_Projects\\";
     public const string SAVE_ASSETS_PROJECTS_PATH = "Assets\\Saved_Asset_Projects\\";
+    public const string SAVE_ASSET_SUFFIX = ".timestep";
     public const string SAVE_SNAPSHOTS_PATH = "Assets\\Snapshots\\";
     public const string SNAPSHOT_NAME = "camerasnapshot";
 
@@ -62,7 +63,6 @@ public struct Globals
     // ---------------> CAMERA
     public const string CAMERA_ORBIT_TITLE = "Orbit";
     public const string CAMERA_FIRSTP_TITLE = "First Person";
-
 
     // ---------------> REPRESENTATION
     public static Vector3 CARTESIAN_SCALE = new Vector3( 1, 0.2f, -0.75f );

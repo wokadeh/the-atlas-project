@@ -71,7 +71,7 @@ public class MetaDataWriter
     {
         XmlElement timeStepNode = _document.CreateElement( Globals.TIME_STAMP_DATA_ASSET_ELEMENT );
 
-        string currentTimeStamp = _metaData.Timestamps[ _j ][ _i ].DateTimeDouble.ToString();
+        string currentTimeStamp = _metaData.Timesteps[ _j ][ _i ].DateTimeDouble.ToString();
 
         Log.Info( "MetaDataWriter", "Save timestamp to XML: " + currentTimeStamp );
 
