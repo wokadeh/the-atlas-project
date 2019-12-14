@@ -3,7 +3,8 @@
             important classes!
 
 */
-
+using BitMiracle.LibTiff.Classic;
+using System.Text.RegularExpressions;
 using System;
 using System.Xml;
 using System.Globalization;
@@ -190,5 +191,108 @@ public static class Utils
                 }
             }
         }
+    }
+
+    public static byte[] ConvertBufferToBytes( byte[][] _buffer )
+    {
+        byte[] texture3dBuffer = new byte[_buffer.Length * _buffer[0].Length];
+
+        for( int x = 0; x < _buffer.Length; x++ )
+        {
+            for( int y = 0; y < _buffer[0].Length; y++ )
+            {
+                int index = y * _buffer.Length + x;
+                texture3dBuffer[index] = Utils.GetByteFromTIFF( _buffer[x][y] );
+            }
+        }
+
+        return texture3dBuffer;
+    }
+
+    public static byte[][] CreateEmptyBuffer( int _levels, int _size )
+    {
+        byte[][] buffer = new byte[_levels][];
+        // Create empty buffer
+        for( int i = 0; i < _levels; i++ )
+        {
+            buffer[i] = new byte[_size];
+        }
+
+        return buffer;
+    }
+
+    public static byte[][] ConvertBytesToBuffer( byte[][] _buffer, int[] _raster, int _level, int _width, int _height )
+    {
+        // We convert the raster to bytes
+        for( int x = 0; x < _width; x++ )
+        {
+            for( int y = 0; y < _height; y++ )
+            {
+                int index= y * _width + x;
+
+                _buffer[_level][index] = Utils.GetByteFromTIFF( _raster[index] );
+            }
+        }
+
+        return _buffer;
+    }
+
+    public static byte[][] ConvertBytesToBuffer( byte[][] _buffer, byte[] _raster, int _level, int _width, int _height )
+    {
+        // We convert the raster to bytes
+        for( int x = 0; x < _width; x++ )
+        {
+            for( int y = 0; y < _height; y++ )
+            {
+                int index= y * _width + x;
+
+                _buffer[_level][index] =  _raster[index];
+            }
+        }
+
+        return _buffer;
+    }
+
+    public static Texture3D ConvertBytesToTexture( byte[][] _buffer, int _width, int _height, int _bitDepth )
+    {
+         int size2d = _width * _height;
+
+         Color[] colorBuffer3D = new Color[ _width * _height * _bitDepth];
+         Color[] colorBuffer2D = new Color[ _width * _height ];
+
+        // Get color data from all textures
+        for( int i = 0; i < _buffer.Length; i++ )
+        {
+            // Fill 2d color buffer with data
+            for( int x = 0; x < _width; x++ )
+            {
+                for( int y = 0; y < _height; y++ )
+                {
+                    int index = y * _width + x;
+                    byte value = _buffer[ i ][ index ];
+                    colorBuffer2D[index] = new Color32( value, 0, 0, 0 );
+                }
+            }
+
+            colorBuffer2D.CopyTo( colorBuffer3D, i * size2d );
+        }
+
+        Texture3D dataTexture = new Texture3D( _width, _height, _bitDepth, TextureFormat.R8, false );
+        dataTexture.SetPixels( colorBuffer3D );
+        dataTexture.Apply();
+
+        return dataTexture;
+    }
+
+    public static byte GetByteFromTIFF( int _bytes )
+    {
+        // It is not important from which channel (r,g,b) we take the byte
+        // as all three contain the same for a tiff with a bit depth of 8
+        return ( byte )Tiff.GetR( _bytes );
+    }
+
+    public static string PadNumbers( string _input )
+    {
+        return Regex.Replace( _input, "[0-9]+", match => match.Value.PadLeft( 10, '0' ) );
     }
 }

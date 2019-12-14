@@ -6,48 +6,51 @@ public class MetaDataWriter
 {
     public static void Write( string _projectFilePath, IMetaData _metaData, Dictionary<string, List<TimeStepDataAsset>> _dataAssets )
     {
-        try
+        //try
+        //{
+        // Create root
+        XmlDocument document = new XmlDocument();
+        document.CreateXmlDeclaration( "1.0", "utf-8", "" );
+
+        //Create the root element and 
+        //add it to the document.
+        document.AppendChild( document.CreateElement( _metaData.DataName ) );
+        XmlElement root = document.DocumentElement;
+
+        // Set main attributes
+        root.SetAttribute( Globals.BIT_DEPTH_ATTRIBUTE, _metaData.BitDepth.ToString() );
+        root.SetAttribute( Globals.WIDTH_ATTRIBUTE, _metaData.Width.ToString() );
+        root.SetAttribute( Globals.HEIGHT_ATTRIBUTE, _metaData.Height.ToString() );
+        root.SetAttribute( Globals.LEVELS_ATTRIBUTE, _metaData.Levels.ToString() );
+        root.SetAttribute( Globals.START_DATETIME_ATTRIBUTE, _metaData.StartDateTimeNumber.ToString() );
+        root.SetAttribute( Globals.END_DATETIME_ATTRIBUTE, _metaData.EndDateTimeNumber.ToString() );
+        root.SetAttribute( Globals.TIME_INTERVAL_ATTRIBUTE, _metaData.TimeInterval.ToString() );
+
+        int j = 0;
+        // Add node for each variable
+        foreach( MetaDataManager.Variable var in _metaData.Variables )
         {
-            // Create root
-            XmlDocument document = new XmlDocument();
-            document.CreateXmlDeclaration( "1.0", "utf-8", "" );
+            root.AppendChild( MetaDataWriter.WriteVariable( document, var, _metaData, _dataAssets, j ) );
 
-            //Create the root element and 
-            //add it to the document.
-            document.AppendChild( document.CreateElement( _metaData.DataName ) );
-            XmlElement root = document.DocumentElement;
-
-            // Set main attributes
-            root.SetAttribute( Globals.BIT_DEPTH_ATTRIBUTE, _metaData.BitDepth.ToString() );
-            root.SetAttribute( Globals.WIDTH_ATTRIBUTE, _metaData.Width.ToString() );
-            root.SetAttribute( Globals.HEIGHT_ATTRIBUTE, _metaData.Height.ToString() );
-            root.SetAttribute( Globals.LEVELS_ATTRIBUTE, _metaData.Levels.ToString() );
-            root.SetAttribute( Globals.START_DATETIME_ATTRIBUTE, _metaData.StartDateTimeNumber.ToString() );
-            root.SetAttribute( Globals.END_DATETIME_ATTRIBUTE, _metaData.EndDateTimeNumber.ToString() );
-            root.SetAttribute( Globals.TIME_INTERVAL_ATTRIBUTE, _metaData.TimeInterval.ToString() );
-
-            int j = 0;
-            // Add node for each variable
-            foreach( MetaDataManager.Variable var in _metaData.Variables )
-            {
-                root.AppendChild( MetaDataWriter.WriteVariable( document, var, _metaData, _dataAssets, j ) );
-
-                j++;
-            }
-
-            XmlWriterSettings settings = new XmlWriterSettings();
-            settings.Indent = true;
-
-            // Save the document to a file and auto-indent the output.
-            XmlWriter writer = XmlWriter.Create( _projectFilePath, settings );
-
-            document.PreserveWhitespace = true;
-            document.Save( writer );
+            j++;
         }
-        catch( Exception e )
-        {
-            Log.ThrowDataException( "MetaDataWriter", _projectFilePath, e );
-        }
+
+        XmlWriterSettings settings = new XmlWriterSettings();
+        settings.Indent = true;
+
+        Log.Info( "MetaDataWriter", "Save XML at " + _projectFilePath );
+        // Save the document to a file and auto-indent the output.
+        XmlWriter writer = XmlWriter.Create( _projectFilePath, settings );
+
+        document.PreserveWhitespace = true;
+
+        
+        document.Save( writer );
+        //}
+        //catch( Exception e )
+        //{
+        //    Log.ThrowDataException( "MetaDataWriter", _projectFilePath, e );
+        //}
     }
 
     private static XmlElement WriteVariable( XmlDocument _document, MetaDataManager.Variable _var, IMetaData _metaData, Dictionary<string, List<TimeStepDataAsset>> _dataAssets, int _j )

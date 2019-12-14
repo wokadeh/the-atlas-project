@@ -2,7 +2,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 public class DataLoaderFromTIFFs : IDataLoader
 {
@@ -24,26 +23,16 @@ public class DataLoaderFromTIFFs : IDataLoader
         // The raster and buffer for tiff loading can be reused and therefore need only to be created once
         int size = m_MetaData.Width * m_MetaData.Height;
         m_Raster = new int[size];
-        m_Buffer = new byte[m_MetaData.Levels][];
 
-        this.CreateEmptyBuffer( m_MetaData.Levels, size );
-    }
-
-    private void CreateEmptyBuffer( int _levels, int _size )
-    {
-        // Create empty buffer
-        for( int i = 0; i < _levels; i++ )
-        {
-            m_Buffer[i] = new byte[_size];
-        }
+        m_Buffer = Utils.CreateEmptyBuffer( m_MetaData.Levels, size );
     }
 
     public byte[][] ImportImageFiles( string _path, string _varName )
     {
         Log.Info( this, "Import TIFF files from " + _path );
-        
+
         // Get all tiffs in the directory and sort them appropriately
-        string[] files = Directory.GetFiles( _path, "*.*" ).Where( p => p.EndsWith( ".tif" ) || p.EndsWith( ".tiff" ) ).OrderBy( s => PadNumbers( s ) ).ToArray();
+        string[] files = Directory.GetFiles( _path, "*.*" ).Where( p => p.EndsWith( ".tif" ) || p.EndsWith( ".tiff" ) ).OrderBy( s => Utils.PadNumbers( s ) ).ToArray();
 
         Log.Info( this, "Found " + files.Length + " TIFF files." );
 
@@ -59,6 +48,15 @@ public class DataLoaderFromTIFFs : IDataLoader
             return null;
         }
 
+        this.ImportAllImages( files );
+
+        this.SaveBytesToFile( Path.Combine( m_MetaData.DataName, _varName ), Path.GetFileName( _path ) );
+
+        return m_Buffer;
+    }
+
+    private void ImportAllImages(string[] files)
+    {
         // Import in all images
         for( int i = 0; i < files.Length; i++ )
         {
@@ -72,10 +70,6 @@ public class DataLoaderFromTIFFs : IDataLoader
                 Log.Error( this, "Failed to read tiff: " + file + " with exception:\n" + e.GetType().Name + " " + e.Message );
             }
         }
-
-        this.SaveBytesToFile( Path.Combine( m_MetaData.DataName, _varName ), Path.GetFileName( _path ) );
-
-        return m_Buffer;
     }
 
     private void ConvertImageToBuffer( string _path, int _level )
@@ -91,7 +85,7 @@ public class DataLoaderFromTIFFs : IDataLoader
 
             if( TestImageFile( image, width, height ) )
             {
-                this.ReadImageFile( _level, width, height );
+                m_Buffer = Utils.ConvertBytesToBuffer( m_Buffer, m_Raster, _level, width, height );
             }
         }
     }
@@ -117,37 +111,12 @@ public class DataLoaderFromTIFFs : IDataLoader
         return true;
     }
 
-    private void ReadImageFile( int _level, int _width, int _height )
-    {
-        // We convert the raster to bytes
-        for( int x = 0; x < _width; x++ )
-        {
-            for( int y = 0; y < _height; y++ )
-            {
-                int index= y * _width + x;
-
-                //m_Buffer[index + _level * _width * _height] = this.GetByteFromBytes( m_Raster[index] );
-                m_Buffer[_level][index] = this.GetByteFromBytes( m_Raster[index] );
-            }
-        }
-    }
-
     private void SaveBytesToFile( string _varName, string _fileName )
     {
         // Create 1D buffer that can be saved
         // buffer.length == #level, buffer.length[0] == width * height
-        byte[] texture3dBuffer = new byte[m_Buffer.Length * m_Buffer[0].Length];
-
-        for( int x = 0; x < m_Buffer.Length; x++ )
-        {
-            for( int y = 0; y < m_Buffer[0].Length; y++ )
-            {
-                int index = y * m_Buffer.Length + x;
-
-                //m_Buffer[index + _level * _width * _height] = this.GetByteFromBytes( m_Raster[index] );
-                texture3dBuffer[index] = this.GetByteFromBytes( m_Buffer[x][y] );
-            }
-        }
+        byte[] texture3dBuffer = Utils.ConvertBufferToBytes( m_Buffer );
+        
         string savePath = Path.Combine( Globals.SAVE_PROJECTS_PATH, _varName );
         if( !Directory.Exists( savePath ) )
         {
@@ -155,9 +124,9 @@ public class DataLoaderFromTIFFs : IDataLoader
         }
 
         Log.Info( this, "Write file " + _fileName + " to path " + savePath );
-        string filePath = Path.Combine(savePath, _fileName + Globals.SAVE_ASSET_SUFFIX);
+        string filePath = Path.Combine(savePath, _fileName + Globals.SAVE_TIMESTEP_SUFFIX);
 
-        if( !File.Exists(filePath))
+        if( !File.Exists( filePath ) )
         {
             // Write to Save Projects path
             File.WriteAllBytes( filePath, texture3dBuffer );
@@ -166,18 +135,5 @@ public class DataLoaderFromTIFFs : IDataLoader
         {
             Log.Warn( this, "The file " + filePath + " already exists!" );
         }
-        
-    }
-
-    private byte GetByteFromBytes( int _bytes )
-    {
-        // It is not important from which channel (r,g,b) we take the byte
-        // as all three contain the same for a tiff with a bit depth of 8
-        return ( byte )Tiff.GetR( _bytes );
-    }
-
-    private static string PadNumbers( string _input )
-    {
-        return Regex.Replace( _input, "[0-9]+", match => match.Value.PadLeft( 10, '0' ) );
     }
 }

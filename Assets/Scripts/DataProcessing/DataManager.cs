@@ -329,11 +329,24 @@ public class DataManager : MonoBehaviour
             }
         }
 
+        this.SaveProjectXMLFile( metaData );
+
         Log.Info( this, "Loading and creating assets took " + ( stopwatch.ElapsedMilliseconds / 1000.0f ).ToString( "0.00" ) + "seconds." );
 
         this.FinishLoading( metaData, stopwatch );
 
         _callback?.Invoke();
+    }
+
+    private void SaveProjectXMLFile( IMetaData _metaData )
+    {
+        //this.MetaData = m_MetaDataManager.SetMetaDataName( _projectName, this.MetaData );
+        string filePath = Path.Combine( Globals.SAVE_PROJECTS_PATH, _metaData.DataName, _metaData.DataName + ".xml" );
+
+        Log.Info( this, "Try to write new imported project XML file to path " + filePath );
+        m_MetaDataManager.Write( filePath, _metaData, m_DataDictionary );
+
+        Log.Info( this, "Successfully wrote project XML to: " + filePath );
     }
 
     private IEnumerator LoadProjectCoroutine( string _projectFilePath, IProgress<float> _progress, Action _callback )
@@ -373,7 +386,7 @@ public class DataManager : MonoBehaviour
             string variableFolderPath = Path.Combine( projectAssetPath, variable.Name.ToLower() );
             if( Directory.Exists( projectAssetPath ) )
             {
-                yield return this.StartCoroutine( this.LoadVariableRoutine( variableFolderPath, timeAssetBuilder, m_DataDictionary[variable.Name], variable, bitDepth, new Progress<float>( value =>
+                yield return this.StartCoroutine( this.LoadVariableRoutine( metaData, variableFolderPath, timeAssetBuilder, m_DataDictionary[variable.Name], variable, bitDepth, new Progress<float>( value =>
               {
                   // Do overall progress report
                   _progress.Report( Utils.CalculateProgress( i, metaData.Variables.Count, value ) );
@@ -465,27 +478,33 @@ public class DataManager : MonoBehaviour
     //}
 
 
-    private IEnumerator LoadVariableRoutine( string _variableFolder, ITimeStepDataAssetBuilder _timestepDataAssetBuilder, List<TimeStepDataAsset> _timestepDataAssetList, IVariable variable, Utils.BitDepth _bitDepth, IProgress<float> _progress )
+    private IEnumerator LoadVariableRoutine( IMetaData _metaData, string _variableFolder, ITimeStepDataAssetBuilder _timestepDataAssetBuilder, List<TimeStepDataAsset> _timestepDataAssetList, IVariable variable, Utils.BitDepth _bitDepth, IProgress<float> _progress )
     {
-        string assetPath = Path.Combine( _variableFolder, Globals.TEXTURE3D_FOLDER_NAME );
+        string timestepsPath = _variableFolder;
 
-        Log.Info( this, "Look for assets at " + assetPath );
+        Log.Info( this, "Look for timestep files at " + timestepsPath );
 
-        string[] assets = Directory.GetFiles( assetPath );
+        string[] timestepFiles = Directory.GetFiles( timestepsPath );
 
-        Log.Info( this, "Found " + assets.Length + " assets" );
+        Log.Info( this, "Found " + timestepFiles.Length + " timestep files" );
 
         Texture3D timestepTexture3D = null;
-        int assetFileIndex = 0;
-        foreach( string file in assets )
-        {
-            if( file.EndsWith( ".asset" ) )
-            {
-                Log.Info( this, "Found " + file );
-                string trimmedFile = file.TrimEnd( ".asset".ToCharArray() ).TrimStart(Globals.RESOURCES.ToCharArray());
+        byte[][] timestepBuffer = null;
+        byte[] timestepBytes = null;
 
-                // Load asset from Resources folder directly as a Texture3D
-                timestepTexture3D = Resources.Load<Texture3D>( trimmedFile );
+        int assetFileIndex = 0;
+        foreach( string filePath in timestepFiles )
+        {
+            if( filePath.EndsWith( Globals.SAVE_TIMESTEP_SUFFIX ) )
+            {
+                Log.Info( this, "Found " + filePath );
+                string trimmedFile = filePath.TrimEnd( Globals.SAVE_TIMESTEP_SUFFIX.ToCharArray() ).TrimStart(Globals.RESOURCES.ToCharArray());
+                timestepBuffer = Utils.CreateEmptyBuffer( _metaData.Levels, _metaData.Width * _metaData.Height );
+
+                // Load file into byte array
+                timestepBytes = File.ReadAllBytes( filePath );
+                timestepBuffer = Utils.ConvertBytesToBuffer( timestepBuffer, timestepBytes, _metaData.Levels, _metaData.Width, _metaData.Height );
+                timestepTexture3D = Utils.ConvertBytesToTexture( timestepBuffer, _metaData.Width, _metaData.Height, _metaData.BitDepth );
 
                 TimeStepDataAsset timestepAsset = _timestepDataAssetBuilder.BuildTimestepDataAssetFromTexture( timestepTexture3D );
 
@@ -494,7 +513,7 @@ public class DataManager : MonoBehaviour
                 assetFileIndex++;
 
                 // Report progress
-                _progress.Report( Utils.CalculateProgress( assetFileIndex, assets.Length ) );
+                _progress.Report( Utils.CalculateProgress( assetFileIndex, timestepFiles.Length ) );
                 yield return null;
             }
         }
