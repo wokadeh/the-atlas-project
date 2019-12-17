@@ -55,7 +55,9 @@ public class DataManager : MonoBehaviour
     public void ImportData( string _projectFilePath, IProgress<float> _progress, Action _callback )
     {
         this.Clear();
-        this.StartCoroutine( this.ImportDataCoroutine( _projectFilePath, _progress, _callback ) );
+        IMetaData metaData = ImportMetaData(_projectFilePath, _callback );
+        IDataLoader tiffLoader = new TiffLoader( metaData );
+        this.StartCoroutine( this.LoadImportDataCoroutine( _projectFilePath, tiffLoader, metaData, _progress, _callback ) );
     }
 
     // Start internal routines to save the settings of an open project
@@ -68,7 +70,9 @@ public class DataManager : MonoBehaviour
     public void LoadProject( string _projectFilePath, IProgress<float> _progress, Action _callback )
     {
         this.Clear();
-        this.StartCoroutine( this.LoadProjectCoroutine( _projectFilePath, _progress, _callback ) );
+        IMetaData metaData = ImportMetaData(_projectFilePath, _callback );
+        IDataLoader projectFilesLoader = new ProjectFilesLoader( metaData );
+        this.StartCoroutine( this.LoadImportDataCoroutine( _projectFilePath, projectFilesLoader, metaData, _progress, _callback ) );
     }
 
     // Hold on a specific timestep and display the corresponding data
@@ -204,81 +208,6 @@ public class DataManager : MonoBehaviour
         yield return null;
     }
 
-    //private IEnumerator SaveProjectCoroutine( string _projectFileName, string _projectFolderPath, bool _saveOnlyXml, IProgress<float> _progress, Action _callback )
-    //{
-    //// 1. Write new xml file with all previous data (bitdepth, levels, etc.)
-    //if( this.MetaData != null )
-    //{
-    //    // Warning! Make sure always MetaData has been filled by importing/loading!!!!
-    //    string projectFileAndFolderPath = Path.Combine( _projectFolderPath, _projectFileName );
-
-    //    try
-    //    {
-    //        // Only create if it does not exist, yet
-    //        if( !Directory.Exists( projectFileAndFolderPath ) )
-    //        {
-    //            Directory.CreateDirectory( projectFileAndFolderPath );
-    //        }
-    //        string filePath = Path.Combine( projectFileAndFolderPath, _projectFileName + ".xml" );
-
-    //        this.MetaData = m_MetaDataManager.SetMetaDataName( _projectFileName, this.MetaData );
-
-    //        m_MetaDataManager.Write( filePath, this.MetaData, m_DataAssets );
-
-    //        Log.Info( this, "Successfully wrote project XML to: " + filePath );
-    //    }
-    //    catch( Exception e )
-    //    {
-    //        Log.ThrowException( this, "Failed to save meta data: " + projectFileAndFolderPath + " with exception:\n " + e.GetType().Name + "-" + e.Message );
-    //        _callback?.Invoke();
-    //        yield break;
-    //    }
-
-    //    if( !_saveOnlyXml )
-    //    {
-    //        // 2. write 3dTexture assets to folders of variables
-    //        yield return this.CreateAssets( _progress );
-    //    }
-    //}
-    //else
-    //{
-    //    Log.Warn( this, "Cannot save, because no data is loaded!" );
-    //    yield break;
-    //}
-
-    //    _callback?.Invoke();
-    //}
-
-    //private IEnumerator CreateAssets( IProgress<float> _progress )
-    //{
-    //    AssetBundleBuild[] assetMap = new AssetBundleBuild[this.MetaData.Variables.Count];
-
-    //    for( int varIndex = 0; varIndex < this.MetaData.Variables.Count; varIndex++ )
-    //    {
-
-    //        IVariable variable = this.MetaData.Variables[ varIndex ];
-
-    //        string variablePath = Path.Combine( Globals.RESOURCES, Globals.SAVE_PROJECTS_PATH, this.MetaData.DataName, variable.Name );
-
-    //        Log.Warn( this, "Save assets to: " + variablePath );
-
-    //        // Temperature/texture3D
-    //        if( !Directory.Exists( variablePath ) )
-    //        {
-    //            Directory.CreateDirectory( variablePath );
-    //        }
-
-    //        yield return this.StartCoroutine( this.SaveVariableRoutine( assetMap, variable, variablePath, varIndex, new Progress<float>( value =>
-    //        {
-    //            // Do overall progress report
-    //            _progress.Report( Utils.CalculateProgress( varIndex, MetaData.Variables.Count, value ) );
-    //        } ) ) );
-    //    }
-    //    Log.Info( this, "assetMap has a size of " + assetMap.Length );
-
-    //    BuildPipeline.BuildAssetBundle( assetMap, BuildAssetBundleOptions.CompleteAssets,  BuildTarget.StandaloneWindows );
-    //}
-
     IMetaData ImportMetaData( string _dataPath, Action _callback )
     {
         // Read in meta data
@@ -298,39 +227,37 @@ public class DataManager : MonoBehaviour
         return metaData;
     }
 
-    private IEnumerator ImportDataCoroutine( string _projectFilePath, IProgress<float> _progress, Action _callback )
+    private IEnumerator LoadImportDataCoroutine( string _projectFilePath, IDataLoader _dataLoader, IMetaData _metaData, IProgress<float> _progress, Action _callback )
     {
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
         m_DataDictionary.Clear();
 
         // Read in meta data
-        IMetaData metaData = ImportMetaData(_projectFilePath, _callback );
-        IDataLoader tiffLoader = new TiffLoader( metaData );
-        ITimeStepDataAssetBuilder timeAssetBuilder = new TimeStepDataAssetBuilder( metaData.Width, metaData.Height, metaData.Levels );
+        ITimeStepDataAssetBuilder timeAssetBuilder = new TimeStepDataAssetBuilder( _metaData.Width, _metaData.Height, _metaData.Levels );
 
-        Log.Info( this, "Found " + metaData.Variables.Count + " variables" );
+        Log.Info( this, "Found " + _metaData.Variables.Count + " variables" );
 
-        for( int i = 0; i < metaData.Variables.Count; i++ )
+        for( int i = 0; i < _metaData.Variables.Count; i++ )
         {
-            IVariable variable = metaData.Variables[ i ];
+            IVariable variable = _metaData.Variables[ i ];
 
             // For each variable there is a list of all textures that are used
             m_DataDictionary[variable.Name] = new List<TimeStepDataAsset>();
 
             string folder = Path.Combine( Path.GetDirectoryName( _projectFilePath ), variable.Name.ToLower() );
 
-            string[] directories = Directory.GetDirectories( folder );
+            string[] dataSet = _dataLoader.GetDataSet( folder );
 
             Log.Info( this, "Create folders and files for variable " + variable.Name );
 
             if( Directory.Exists( folder ) )
             {
-                yield return this.StartCoroutine( this.LoadImportVariableRoutine( directories, tiffLoader, timeAssetBuilder, variable.Name, "", m_DataDictionary[variable.Name], new Progress<float>( value =>
-              {
-                  // Do overall progress report
-                  _progress.Report( Utils.CalculateProgress( i, metaData.Variables.Count, value ) );
-              } ) ) );
+                yield return this.StartCoroutine( this.LoadImportVariableRoutine( dataSet, _dataLoader, timeAssetBuilder, variable.Name, "", m_DataDictionary[variable.Name], new Progress<float>( value =>
+                {
+                    // Do overall progress report
+                    _progress.Report( Utils.CalculateProgress( i, _metaData.Variables.Count, value ) );
+                } ) ) );
             }
             else
             {
@@ -339,66 +266,11 @@ public class DataManager : MonoBehaviour
             }
         }
 
-        m_MetaDataManager.SaveProjectXMLFile( metaData, m_DataDictionary );
+        m_MetaDataManager.SaveProjectXMLFile( _metaData, m_DataDictionary );
 
         Log.Info( this, "Loading and creating assets took " + ( stopwatch.ElapsedMilliseconds / 1000.0f ).ToString( "0.00" ) + "seconds." );
 
-        this.FinishLoading( metaData, stopwatch );
-
-        _callback?.Invoke();
-    }
-
-    private IEnumerator LoadProjectCoroutine( string _projectFilePath, IProgress<float> _progress, Action _callback )
-    {
-        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-
-        m_DataDictionary.Clear();
-
-        IMetaData metaData = ImportMetaData(_projectFilePath, _callback );
-        IDataLoader projectFilesLoader = new ProjectFilesLoader( metaData );
-        ITimeStepDataAssetBuilder timeAssetBuilder = new TimeStepDataAssetBuilder( metaData.Width, metaData.Height, metaData.Levels );
-
-        bool isSuccess = true;
-
-        for( int i = 0; i < metaData.Variables.Count; i++ )
-        {
-            IVariable variable = metaData.Variables[ i ];
-
-            // For each variable there is a list of all textures that are used
-            m_DataDictionary[variable.Name] = new List<TimeStepDataAsset>();
-
-            string projectAssetPath = Path.Combine( Globals.SAVE_PROJECTS_PATH, metaData.DataName );
-
-            string variableFolderPath = Path.Combine( projectAssetPath, variable.Name.ToLower() );
-
-            string[] files = Directory.GetFiles( variableFolderPath );
-
-            if( Directory.Exists( projectAssetPath ) )
-            {
-                yield return this.StartCoroutine( this.LoadImportVariableRoutine( files, projectFilesLoader, timeAssetBuilder, "", Globals.SAVE_TIMESTEP_SUFFIX, m_DataDictionary[variable.Name], new Progress<float>( value =>
-              {
-                  // Do overall progress report
-                  _progress.Report( Utils.CalculateProgress( i, metaData.Variables.Count, value ) );
-              } ) ) );
-            }
-            else
-            {
-                isSuccess = false;
-                Log.Warn( this, "The directory " + projectAssetPath + " does not exist. The project cannot be loaded." );
-
-                _callback?.Invoke();
-            }
-        }
-
-        if( !isSuccess )
-        {
-            this.Clear();
-            yield break;
-        }
-        else
-        {
-            this.FinishLoading( metaData, stopwatch );
-        }
+        this.FinishLoading( _metaData, stopwatch );
 
         _callback?.Invoke();
     }
@@ -427,77 +299,6 @@ public class DataManager : MonoBehaviour
         }
 
         OnNewImport?.Invoke();
-    }
-
-    //private IEnumerator SaveVariableRoutine( IVariable _variable, string _variablePath, int _varIndex, IProgress<float> _progress )
-    //{
-    //    //string textureAssetPath = Path.Combine( _variablePath, Globals.TEXTURE3D_FOLDER_NAME );
-    //    //// Only create if it does not exist, yet
-    //    //if( !Directory.Exists( textureAssetPath ) )
-    //    //{
-    //    //    Directory.CreateDirectory( textureAssetPath );
-    //    //}
-
-    //    //List<TimeStepDataAsset> currentVariableTimeStepList = m_DataAssets[ _variable.Name ];
-
-    //    //string[] variableAssets = new string[currentVariableTimeStepList.Count];
-
-    //    //for( int i = 0; i < currentVariableTimeStepList.Count; i++ )
-    //    //{
-    //    //    string dateTimeString = this.MetaData.Timestamps[ _varIndex ][ i ].DateTimeDouble.ToString().Replace( ',', '.' );
-    //    //    string assetName = Globals.TEXTURE3D_PREFEX + this.MetaData.DataName + "_" + _variable.Name + "_" + dateTimeString;
-    //    //    string assetPath = textureAssetPath + "/";
-
-
-    //    //    variableAssets[i] = assetPath + assetName;
-
-    //    //    Log.Info( this, "Create asset " + variableAssets[i] );
-
-    //    //    TimeStepDataAsset asset = currentVariableTimeStepList[ i ];
-    //    //    //AssetDatabase.CreateAsset( asset.DataTexture, assetCompleteName );
-
-    //    //    // Report progress
-    //    //    _progress.Report( Utils.CalculateProgress( i, currentVariableTimeStepList.Count ) );
-
-    //    //    yield return null;
-    //    //}
-
-
-    //    yield return null;
-    //}
-
-    private IEnumerator ImportVariableRoutine( IDataLoader _dataLoader, ITimeStepDataAssetBuilder _timestepDataAssetBuilder, string _variableName, string _projectFolder, string _assetEnding, List<TimeStepDataAsset> _timestepDataAssetList, IProgress<float> _progress )
-    {
-        Log.Info( this, "Start variable importing routine" );
-
-        // We assume every directory is a time stamp which contains the level tiffs
-        string[] directories = Directory.GetDirectories( _projectFolder );
-
-        Log.Info( this, "Found " + directories.Length + " directories" );
-
-        int assetFileIndex = 0;
-        foreach( string directoryPath in directories )
-        {
-            if( directoryPath.EndsWith( _assetEnding ) )
-            {
-                Log.Info( this, "Creating asset from image from " + directoryPath );
-
-                TimeStepDataAsset timestepAsset = _timestepDataAssetBuilder.BuildTimestepDataAssetFromData( _dataLoader.Import( directoryPath, _variableName ) );
-
-                if( timestepAsset != null )
-                {
-                    _timestepDataAssetList.Add( timestepAsset );
-                }
-
-                assetFileIndex++;
-
-                // Report progress
-                _progress.Report( Utils.CalculateProgress( assetFileIndex, directories.Length ) );
-                yield return null;
-            }
-        }
-
-        yield return null;
     }
 
     private IEnumerator LoadImportVariableRoutine( string[] _dataSet, IDataLoader _dataLoader, ITimeStepDataAssetBuilder _timestepDataAssetBuilder, string _variableName, string _assetEnding, List<TimeStepDataAsset> _timestepDataAssetList, IProgress<float> _progress )

@@ -138,4 +138,9 @@ public class TiffLoader : IDataLoader
             Log.Warn( this, "The file " + filePath + " already exists!" );
         }
     }
+
+    public string[] GetDataSet( string _path )
+    {
+        return Directory.GetDirectories( _path );
+    }
 }

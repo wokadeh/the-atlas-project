@@ -31,4 +31,9 @@ public class ProjectFilesLoader : IDataLoader
 
         return m_Buffer;
     }
+
+    public string[] GetDataSet( string _path )
+    {
+        return Directory.GetFiles( _path );
+    }
 }
