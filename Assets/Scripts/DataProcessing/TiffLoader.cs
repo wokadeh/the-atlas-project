@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using System.Linq;
 
-public class DataLoaderFromTIFFs : IDataLoader
+public class TiffLoader : IDataLoader
 {
     private class TiffException : Exception
     {
@@ -13,26 +13,26 @@ public class DataLoaderFromTIFFs : IDataLoader
     private IMetaData m_MetaData;
 
     // For performance reasons these arrays are reused and therefore refilled with new data when calling "Load" again
-    private int[] m_Raster;
+    private int[] m_NumberGrid;
     private byte[][] m_Buffer;
 
-    public DataLoaderFromTIFFs( IMetaData _metaData )
+    public TiffLoader( IMetaData _metaData )
     {
         m_MetaData = _metaData;
 
         // The raster and buffer for tiff loading can be reused and therefore need only to be created once
         int size = m_MetaData.Width * m_MetaData.Height;
-        m_Raster = new int[size];
+        m_NumberGrid = new int[size];
 
         m_Buffer = Utils.CreateEmptyBuffer( m_MetaData.Levels, size );
     }
 
-    public byte[][] ImportImageFiles( string _path, string _varName )
+    public byte[][] Import( string _filePath, string _fileName )
     {
-        Log.Info( this, "Import TIFF files from " + _path );
+        Log.Info( this, "Import TIFF files from " + _filePath );
 
         // Get all tiffs in the directory and sort them appropriately
-        string[] files = Directory.GetFiles( _path, "*.*" ).Where( p => p.EndsWith( ".tif" ) || p.EndsWith( ".tiff" ) ).OrderBy( s => Utils.PadNumbers( s ) ).ToArray();
+        string[] files = Directory.GetFiles( _filePath, "*.*" ).Where( p => p.EndsWith( ".tif" ) || p.EndsWith( ".tiff" ) ).OrderBy( s => Utils.PadNumbers( s ) ).ToArray();
 
         Log.Info( this, "Found " + files.Length + " TIFF files." );
 
@@ -50,7 +50,7 @@ public class DataLoaderFromTIFFs : IDataLoader
 
         this.ImportAllImages( files );
 
-        this.SaveBytesToFile( Path.Combine( m_MetaData.DataName, _varName ), Path.GetFileName( _path ) );
+        this.SaveBytesToFile( Path.Combine( m_MetaData.DataName, _fileName ), Path.GetFileName( _filePath ) );
 
         return m_Buffer;
     }
@@ -85,7 +85,7 @@ public class DataLoaderFromTIFFs : IDataLoader
 
             if( TestImageFile( image, width, height ) )
             {
-                m_Buffer = Utils.ConvertBytesToBuffer( m_Buffer, m_Raster, _level, width, height );
+                m_Buffer = Utils.ConvertBytesToBuffer( m_Buffer, m_NumberGrid, _level, width, height );
             }
         }
     }
@@ -103,7 +103,7 @@ public class DataLoaderFromTIFFs : IDataLoader
         }
 
         // Read the image into the raster buffer
-        if( !_image.ReadRGBAImage( _width, _height, m_Raster ) )
+        if( !_image.ReadRGBAImage( _width, _height, m_NumberGrid ) )
         {
             Log.Warn( this, "Failed to read pixels from tiff!" );
             return false;

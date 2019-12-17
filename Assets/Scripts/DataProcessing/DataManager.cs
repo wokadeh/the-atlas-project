@@ -297,7 +297,7 @@ public class DataManager : MonoBehaviour
             _callback?.Invoke();
         }
 
-        IDataLoader tiffLoader = new DataLoaderFromTIFFs( metaData );
+        IDataLoader tiffLoader = new TiffLoader( metaData );
         ITimeStepDataAssetBuilder timeAssetBuilder = new TimeStepDataAssetBuilder( metaData.Width, metaData.Height, metaData.Levels );
 
         int numberOfVariables = metaData.Variables.Count;
@@ -316,7 +316,7 @@ public class DataManager : MonoBehaviour
 
             if( Directory.Exists( folder ) )
             {
-                yield return this.StartCoroutine( this.ImportVariableRoutine( tiffLoader, timeAssetBuilder, variable.Name, i, folder, m_DataDictionary[variable.Name], bitDepth, new Progress<float>( value =>
+                yield return this.StartCoroutine( this.ImportVariableRoutine( tiffLoader, timeAssetBuilder, variable.Name, folder, m_DataDictionary[variable.Name], bitDepth, new Progress<float>( value =>
               {
                   // Do overall progress report
                   _progress.Report( Utils.CalculateProgress( i, numberOfVariables, value ) );
@@ -370,6 +370,7 @@ public class DataManager : MonoBehaviour
             _callback?.Invoke();
         }
 
+        IDataLoader projectFilesLoader = new ProjectFilesLoader( metaData );
         ITimeStepDataAssetBuilder timeAssetBuilder = new TimeStepDataAssetBuilder( metaData.Width, metaData.Height, metaData.Levels );
 
         bool isSuccess = true;
@@ -386,7 +387,7 @@ public class DataManager : MonoBehaviour
             string variableFolderPath = Path.Combine( projectAssetPath, variable.Name.ToLower() );
             if( Directory.Exists( projectAssetPath ) )
             {
-                yield return this.StartCoroutine( this.LoadVariableRoutine( metaData, variableFolderPath, timeAssetBuilder, m_DataDictionary[variable.Name], variable, bitDepth, new Progress<float>( value =>
+                yield return this.StartCoroutine( this.LoadVariableRoutine( projectFilesLoader, variableFolderPath, timeAssetBuilder, m_DataDictionary[variable.Name], new Progress<float>( value =>
               {
                   // Do overall progress report
                   _progress.Report( Utils.CalculateProgress( i, metaData.Variables.Count, value ) );
@@ -478,35 +479,26 @@ public class DataManager : MonoBehaviour
     //}
 
 
-    private IEnumerator LoadVariableRoutine( IMetaData _metaData, string _variableFolder, ITimeStepDataAssetBuilder _timestepDataAssetBuilder, List<TimeStepDataAsset> _timestepDataAssetList, IVariable variable, Utils.BitDepth _bitDepth, IProgress<float> _progress )
+    private IEnumerator LoadVariableRoutine( IDataLoader _projectFilesLoader, string _variableFolder, ITimeStepDataAssetBuilder _timestepDataAssetBuilder, List<TimeStepDataAsset> _timestepDataAssetList, IProgress<float> _progress )
     {
-        string timestepsPath = _variableFolder;
+        Log.Info( this, "Look for timestep files at " + _variableFolder );
 
-        Log.Info( this, "Look for timestep files at " + timestepsPath );
-
-        string[] timestepFiles = Directory.GetFiles( timestepsPath );
+        string[] timestepFiles = Directory.GetFiles( _variableFolder );
 
         Log.Info( this, "Found " + timestepFiles.Length + " timestep files" );
-
-        byte[][] timestepBuffer = null;
-        byte[] timestepBytes = null;
 
         int assetFileIndex = 0;
         foreach( string filePath in timestepFiles )
         {
             if( filePath.EndsWith( Globals.SAVE_TIMESTEP_SUFFIX ) )
             {
-                Log.Info( this, "Found " + filePath );
-                string trimmedFile = filePath.TrimEnd( Globals.SAVE_TIMESTEP_SUFFIX.ToCharArray() ).TrimStart(Globals.RESOURCES.ToCharArray());
-                timestepBuffer = Utils.CreateEmptyBuffer( _metaData.Levels, _metaData.Width * _metaData.Height );
+                Log.Info( this, "Creating asset from image from " + filePath );
+                TimeStepDataAsset timestepAsset = _timestepDataAssetBuilder.BuildTimestepDataAssetFromData( _projectFilesLoader.Import( filePath, filePath ) );
 
-                // Load file into byte array
-                timestepBytes = File.ReadAllBytes( filePath );
-                timestepBuffer = Utils.ConvertBytesToBuffer( timestepBuffer, timestepBytes, _metaData.Levels, _metaData.Width, _metaData.Height );
-
-                TimeStepDataAsset timestepAsset = _timestepDataAssetBuilder.BuildTimestepDataAssetFromData( timestepBuffer );
-
-                _timestepDataAssetList.Add( timestepAsset );
+                if( timestepAsset != null )
+                {
+                    _timestepDataAssetList.Add( timestepAsset );
+                }
 
                 assetFileIndex++;
 
@@ -520,33 +512,31 @@ public class DataManager : MonoBehaviour
         yield return null;
     }
 
-    private IEnumerator ImportVariableRoutine( IDataLoader _tiffLoader, ITimeStepDataAssetBuilder _timestepDataAssetBuilder, string _variableName, int _varIndex, string _projectFolder, List<TimeStepDataAsset> _timestepDataAssetList, Utils.BitDepth _bitDepth, IProgress<float> _progress )
+    private IEnumerator ImportVariableRoutine( IDataLoader _tiffLoader, ITimeStepDataAssetBuilder _timestepDataAssetBuilder, string _variableName, string _projectFolder, List<TimeStepDataAsset> _timestepDataAssetList, Utils.BitDepth _bitDepth, IProgress<float> _progress )
     {
+        Log.Info( this, "Start variable importing routine" );
+
         // We assume every directory is a time stamp which contains the level tiffs
         string[] directories = Directory.GetDirectories( _projectFolder );
 
-        Log.Info( this, "Start variable importing routine" );
+        Log.Info( this, "Found " + directories.Length + " directories" );
 
-        byte[][] timestepBuffer = null;
-
-        for( int i = 0; i < directories.Length; i++ )
+        int assetFileIndex = 0;
+        foreach( string directoryPath in directories )
         {
-            string directory = directories[ i ];
+            Log.Info( this, "Creating asset from image from " + directoryPath );
 
-            Log.Info( this, "Creating asset from image from " + directory );
-
-            timestepBuffer = _tiffLoader.ImportImageFiles( directory, _variableName );
-
-            TimeStepDataAsset timestepAsset = _timestepDataAssetBuilder.BuildTimestepDataAssetFromData( timestepBuffer );
+            TimeStepDataAsset timestepAsset = _timestepDataAssetBuilder.BuildTimestepDataAssetFromData( _tiffLoader.Import( directoryPath, _variableName ) );
 
             if( timestepAsset != null )
             {
                 _timestepDataAssetList.Add( timestepAsset );
             }
 
+            assetFileIndex++;
+
             // Report progress
-            float progression = ( i + 1 ) / ( float ) directories.Length;
-            _progress.Report( progression );
+            _progress.Report( Utils.CalculateProgress( assetFileIndex, directories.Length ) );
             yield return null;
         }
 
