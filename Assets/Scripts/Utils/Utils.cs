@@ -264,10 +264,15 @@ public static class Utils
 
     public static Texture3D ConvertBytesToTexture( byte[][] _buffer, int _width, int _height, int _bitDepth )
     {
+        
          int size2d = _width * _height;
 
          Color[] colorBuffer3D = new Color[ _width * _height * _bitDepth];
          Color[] colorBuffer2D = new Color[ _width * _height ];
+
+        Log.Info( "Utils", "Convert bytes to texture: input buffer length is " + _buffer.Length + " and " + _buffer[0].Length );
+        Log.Info( "Utils", "Convert bytes to texture: new 2D buffer length is " + colorBuffer2D.Length );
+        Log.Info( "Utils", "Convert bytes to texture: new 3D buffer length is " + colorBuffer3D.Length );
 
         // Get color data from all textures
         for( int i = 0; i < _buffer.Length; i++ )

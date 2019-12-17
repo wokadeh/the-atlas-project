@@ -488,7 +488,6 @@ public class DataManager : MonoBehaviour
 
         Log.Info( this, "Found " + timestepFiles.Length + " timestep files" );
 
-        Texture3D timestepTexture3D = null;
         byte[][] timestepBuffer = null;
         byte[] timestepBytes = null;
 
@@ -504,9 +503,8 @@ public class DataManager : MonoBehaviour
                 // Load file into byte array
                 timestepBytes = File.ReadAllBytes( filePath );
                 timestepBuffer = Utils.ConvertBytesToBuffer( timestepBuffer, timestepBytes, _metaData.Levels, _metaData.Width, _metaData.Height );
-                timestepTexture3D = Utils.ConvertBytesToTexture( timestepBuffer, _metaData.Width, _metaData.Height, _metaData.BitDepth );
 
-                TimeStepDataAsset timestepAsset = _timestepDataAssetBuilder.BuildTimestepDataAssetFromTexture( timestepTexture3D );
+                TimeStepDataAsset timestepAsset = _timestepDataAssetBuilder.BuildTimestepDataAssetFromData( timestepBuffer );
 
                 _timestepDataAssetList.Add( timestepAsset );
 
@@ -529,17 +527,21 @@ public class DataManager : MonoBehaviour
 
         Log.Info( this, "Start variable importing routine" );
 
+        byte[][] timestepBuffer = null;
+
         for( int i = 0; i < directories.Length; i++ )
         {
             string directory = directories[ i ];
 
             Log.Info( this, "Creating asset from image from " + directory );
 
-            TimeStepDataAsset asset = _timestepDataAssetBuilder.BuildTimestepDataAssetFromData( _tiffLoader.ImportImageFiles( directory, _variableName ) );
+            timestepBuffer = _tiffLoader.ImportImageFiles( directory, _variableName );
 
-            if( asset != null )
+            TimeStepDataAsset timestepAsset = _timestepDataAssetBuilder.BuildTimestepDataAssetFromData( timestepBuffer );
+
+            if( timestepAsset != null )
             {
-                _timestepDataAssetList.Add( asset );
+                _timestepDataAssetList.Add( timestepAsset );
             }
 
             // Report progress
