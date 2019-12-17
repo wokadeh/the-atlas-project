@@ -1,7 +1,4 @@
-﻿using BitMiracle.LibTiff.Classic;
-using System;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 
 public class ProjectFilesLoader : IDataLoader
 {
@@ -20,13 +17,12 @@ public class ProjectFilesLoader : IDataLoader
         m_Buffer = Utils.CreateEmptyBuffer( m_MetaData.Levels, size );
     }
 
-    public byte[][] Import( string _filePath, string _fileName )
+    public byte[][] Import( string _filePath, string _justImplemented )
     {
         Log.Info( this, "Load project files from " + _filePath );
 
         byte[] timestepBytes;
         
-        string trimmedFile = _filePath.TrimEnd( Globals.SAVE_TIMESTEP_SUFFIX.ToCharArray() ).TrimStart(Globals.RESOURCES.ToCharArray());
         m_Buffer = Utils.CreateEmptyBuffer( m_MetaData.Levels, m_MetaData.Width * m_MetaData.Height );
 
         // Load file into byte array

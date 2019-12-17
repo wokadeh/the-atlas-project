@@ -17,12 +17,6 @@ public class MetaDataReader
 
         return _inputMetaData;
     }
-
-    public static IMetaData Load( string _projectFilePath )
-    {
-        return MetaDataReader.Import( _projectFilePath );
-    }
-
     public static IMetaData Import( string _projectFilePath )
     {
         XmlDocument document = new XmlDocument();

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 
 public class MetaDataManager : IMetaDataManager
 {
@@ -62,5 +63,22 @@ public class MetaDataManager : IMetaDataManager
     public IMetaData Import( string _projectFilePath )
     {
         return MetaDataReader.Import( _projectFilePath );
+    }
+
+    public void SaveProjectXMLFile( IMetaData _metaData, Dictionary<string, List<TimeStepDataAsset>> _dataDictionary )
+    {
+        string directoryPath = Path.Combine( Globals.SAVE_PROJECTS_PATH, _metaData.DataName );
+
+        if( !Directory.Exists( directoryPath ) )
+        {
+            Directory.CreateDirectory( directoryPath );
+        }
+
+        string filePath = Path.Combine( directoryPath, _metaData.DataName + ".xml" );
+
+        Log.Info( this, "Try to write new imported project XML file to path " + filePath );
+        this.Write( filePath, _metaData, _dataDictionary );
+
+        Log.Info( this, "Successfully wrote project XML to: " + filePath );
     }
 }
