@@ -131,9 +131,9 @@ public class VolumeRenderer : MonoBehaviour
         }
     }
 
-    public void SetLevel( int _index )
+    public void SetLevel( int _level )
     {
-        if( _index == 0 )
+        if( _level == 0 )
         {
             // Activate Volume Renderer
             if( m_CartesianLevelPlane != null )
@@ -151,18 +151,23 @@ public class VolumeRenderer : MonoBehaviour
             }
             m_CartesianLevelPlane.SetActive( true );
             m_Renderer.enabled = false;
-            CreateTexture();
+
+            Singleton.GetDataManager().ReloadProject( true, _level );
+            
+            //this.CreateTexture( _level );
         }
     }
 
-    private void CreateTexture()
+    private void CreateTexture( int _level )
     {
         // Create a new 2x2 texture ARGB32 (32 bit with alpha) and no mipmaps
-        var texture = new Texture2D(2, 2, TextureFormat.ARGB32, false);
+        //var texture = new Texture2D(2, 2, TextureFormat.ARGB32, false);
 
-        // Get name of image
+        //// Get name of image
+        //string timeStepName = Singleton.GetDataManager().CurrentTimeStepDataAsset.
+        //string variableName = Singleton.GetDataManager().CurrentVariableName;
 
-        // connect texture to material of GameObject this script is attached to
-        m_CartesianLevelPlane.gameObject.GetComponent<Renderer>().material.mainTexture = texture;
+        //// connect texture to material of GameObject this script is attached to
+        //m_CartesianLevelPlane.gameObject.GetComponent<Renderer>().material.mainTexture = texture;
     }
 }

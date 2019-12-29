@@ -60,15 +60,15 @@ public class ProjectLoadUI : MonoBehaviour
             // This is a little hackey but works for now
             m_TransferFunctionUIPanel.SetActive( false );
 
-            this.StartCoroutine( LoadProjectCoroutine( projectFolderPath ) );
+            this.StartCoroutine( LoadProjectCoroutine( projectFolderPath, false, 0 ) );
         }
     }
 
-    private IEnumerator LoadProjectCoroutine( string _projectFolderPath )
+    public IEnumerator LoadProjectCoroutine( string _projectFolderPath, bool _levelOnly, int _level )
     {
         yield return Utils.SetupProjectCoroutine( m_LoadScreen, Singleton.GetProjectScreen(), m_LoadProgressBar , m_LoadProgressBarText );
 
-        Singleton.GetDataManager().LoadProject( _projectFolderPath, Utils.CreateProgressBarProgress( m_LoadProgressBar, m_LoadProgressBarText ), () =>
+        Singleton.GetDataManager().LoadProject( this, _levelOnly, _level, _projectFolderPath, Utils.CreateProgressBarProgress( m_LoadProgressBar, m_LoadProgressBarText ), () =>
         {
             Utils.SetupScreenWhileProgress( m_LoadScreen, Singleton.GetMainScreenSystem(), Singleton.GetBottomScreen(), m_SaveProjectButton, m_CancelButton );
 

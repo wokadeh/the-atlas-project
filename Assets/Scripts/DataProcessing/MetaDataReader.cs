@@ -19,6 +19,7 @@ public class MetaDataReader
     }
     public static IMetaData Import( string _projectFilePath )
     {
+        Log.Info( "MetaDataReader", "Import meta data" );
         XmlDocument document = new XmlDocument();
         document.Load( _projectFilePath );
 
@@ -36,8 +37,10 @@ public class MetaDataReader
         {
             Log.ThrowValueNotFoundException( "MetaDataReader", root.Name + "is empty" );
         }
+        Log.Info( "MetaDataReader", "Import child nodes..." );
         foreach( XmlNode varNode in root.ChildNodes )
         {
+            Log.Info( "MetaDataReader", "Import " + varNode.Name );
             if( varNode.Name == Globals.VARIABLE_ELEMENT )
             {
                 // Read name from variable node
@@ -51,10 +54,12 @@ public class MetaDataReader
 
                 if( varNodeName != null )
                 {
+                    Log.Info( "MetaDataReader", "Add " + varNode.Name + " to list... " );
                     variablesList.Add( new MetaDataManager.Variable() { Name = varNodeName, Min = varNodeMin, Max = varNodeMax } );
 
                     // Create a new list for timestamps
                     timestampLisList.Add( varTimestampList );
+                    Log.Info( "MetaDataReader", "Successfully added " + varNode.Name + " to list." );
                 }
                 else
                 {
@@ -63,11 +68,13 @@ public class MetaDataReader
 
                 if( varNode.ChildNodes.Count == 0 )
                 {
-                    Log.ThrowValueNotFoundException( "MetaDataReader", varNode.Name );
+                    Log.Warn( "MetaDataReader", "The variable does not contain children!" );
                 }
 
+                Log.Info( "MetaDataReader", "Get ready to load timestampNodes" );
                 foreach( XmlNode timestampNode in varNode.ChildNodes )
                 {
+                    Log.Info( "MetaDataReader", "Import timestampNode " + timestampNode.Name );
                     if( timestampNode.Name == Globals.TIME_STAMP_LIST_ELEMENT )
                     {
                         TimeStepDataAsset newTimestamp = MetaDataReader.ReadTimeStamp( timestampNode );
