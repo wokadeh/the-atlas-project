@@ -292,41 +292,41 @@ public static class Utils
         return _buffer;
     }
 
-    public static Texture3D ConvertBytesToTexture( byte[][] _buffer, int _width, int _height, int _bitDepth )
-    {
+    //public static Texture3D ConvertBytesToTexture( byte[][] _buffer, int _width, int _height, int _bitDepth )
+    //{
         
-         int size2d = _width * _height;
+    //     int size2d = _width * _height;
 
-         Color[] colorBuffer3D = new Color[ _width * _height * _bitDepth];
-         Color[] colorBuffer2D = new Color[ _width * _height ];
+    //     Color[] colorBuffer3D = new Color[ _width * _height * _bitDepth];
+    //     Color[] colorBuffer2D = new Color[ _width * _height ];
 
-        Log.Debg( "Utils", "Convert bytes to texture: input buffer length is " + _buffer.Length + " and " + _buffer[0].Length );
-        Log.Debg( "Utils", "Convert bytes to texture: new 2D buffer length is " + colorBuffer2D.Length );
-        Log.Debg( "Utils", "Convert bytes to texture: new 3D buffer length is " + colorBuffer3D.Length );
+    //    Log.Debg( "Utils", "Convert bytes to texture: input buffer length is " + _buffer.Length + " and " + _buffer[0].Length );
+    //    Log.Debg( "Utils", "Convert bytes to texture: new 2D buffer length is " + colorBuffer2D.Length );
+    //    Log.Debg( "Utils", "Convert bytes to texture: new 3D buffer length is " + colorBuffer3D.Length );
 
-        // Get color data from all textures
-        for( int i = 0; i < _buffer.Length; i++ )
-        {
-            // Fill 2d color buffer with data
-            for( int x = 0; x < _width; x++ )
-            {
-                for( int y = 0; y < _height; y++ )
-                {
-                    int index = y * _width + x;
-                    byte value = _buffer[ i ][ index ];
-                    colorBuffer2D[index] = new Color32( value, 0, 0, 0 );
-                }
-            }
+    //    // Get color data from all textures
+    //    for( int i = 0; i < _buffer.Length; i++ )
+    //    {
+    //        // Fill 2d color buffer with data
+    //        for( int x = 0; x < _width; x++ )
+    //        {
+    //            for( int y = 0; y < _height; y++ )
+    //            {
+    //                int index = y * _width + x;
+    //                byte value = _buffer[ i ][ index ];
+    //                colorBuffer2D[index] = new Color32( value, 0, 0, 0 );
+    //            }
+    //        }
 
-            colorBuffer2D.CopyTo( colorBuffer3D, i * size2d );
-        }
+    //        colorBuffer2D.CopyTo( colorBuffer3D, i * size2d );
+    //    }
 
-        Texture3D dataTexture = new Texture3D( _width, _height, _bitDepth, TextureFormat.R8, false );
-        dataTexture.SetPixels( colorBuffer3D );
-        dataTexture.Apply();
+    //    Texture3D dataTexture = new Texture3D( _width, _height, _bitDepth, TextureFormat.R8, false );
+    //    dataTexture.SetPixels( colorBuffer3D );
+    //    dataTexture.Apply();
 
-        return dataTexture;
-    }
+    //    return dataTexture;
+    //}
 
     public static byte GetByteFromTIFF( int _bytes )
     {

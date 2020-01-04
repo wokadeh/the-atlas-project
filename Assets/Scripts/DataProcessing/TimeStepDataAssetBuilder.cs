@@ -42,7 +42,7 @@ public class TimeStepDataAssetBuilder : ITimeStepDataAssetBuilder
 
         int depth = _data.Length;
 
-        return new TimeStepDataAsset() { Dimensions = new Vector3( m_Width, m_Height, depth ), DataTexture = Utils.ConvertBytesToTexture( _data, m_Width, m_Height, m_Depth ), HistogramTexture = this.BuildHistogramTexture() };
+        return new TimeStepDataAsset() { Dimensions = new Vector3( m_Width, m_Height, depth ), DataTexture = this.ConvertBytesToTexture( _data, m_Width, m_Height, m_Depth ), HistogramTexture = this.BuildHistogramTexture() };
     }
 
     public TimeStepDataAsset BuildTimestepDataAssetFromTexture( Texture3D _assetTex )
@@ -79,5 +79,35 @@ public class TimeStepDataAssetBuilder : ITimeStepDataAssetBuilder
         histogram.Apply();
 
         return histogram;
+    }
+
+    public Texture3D ConvertBytesToTexture( byte[][] _buffer, int _width, int _height, int _bitDepth )
+    {
+
+        int size2d = _width * _height;
+
+
+        // Get color data from all textures
+        for( int i = 0; i < _buffer.Length; i++ )
+        {
+            // Fill 2d color buffer with data
+            for( int x = 0; x < _width; x++ )
+            {
+                for( int y = 0; y < _height; y++ )
+                {
+                    int index = y * _width + x;
+                    byte value = _buffer[ i ][ index ];
+                    m_ColorBuffer2D[index] = new Color32( value, 0, 0, 0 );
+                }
+            }
+
+            m_ColorBuffer2D.CopyTo( m_ColorBuffer3D, i * size2d );
+        }
+
+        Texture3D dataTexture = new Texture3D( _width, _height, _bitDepth, TextureFormat.R8, false );
+        dataTexture.SetPixels( m_ColorBuffer3D );
+        dataTexture.Apply();
+
+        return dataTexture;
     }
 }
