@@ -34,6 +34,8 @@ public class ProjectSaveUI : MonoBehaviour
 
     private void SaveProject()
     {
+        Log.Debg( this, "SAVE PROJECT 1" );
+
         this.SaveProject( Singleton.GetDataManager().MetaData.DataName, m_DefaultProjectDir, true );
     }
 
@@ -53,6 +55,8 @@ public class ProjectSaveUI : MonoBehaviour
 
     private void SaveAsProject()
     {
+        Log.Debg( this, "SAVE PROJECT 2" );
+
         string file = StandaloneFileBrowser.SaveFilePanel( "Save project as...", m_DefaultProjectDir, Singleton.GetDataManager().MetaData.DataName, Globals.XML_FILE_FILTER );
 
         file = Path.GetFileNameWithoutExtension( file );

@@ -238,23 +238,45 @@ public static class Utils
         return _buffer;
     }
 
-    public static byte[][] ConvertBytesToBuffer( byte[][] _buffer, byte[] _raster, int _level, int _width, int _height )
+    public static byte[][] ConvertBytesToBuffer( byte[][] _buffer, byte[] _raster, int _levelMin, int _levelMax, int _width, int _height )
     {
-        Log.Info( "Utils", "_buffer.Length is " + _buffer.Length.ToString() + " and _buffer[0].Length is " + _buffer[0].Length + " and _raster.Length is " + _raster.Length );
+        Log.Info( "Utils", "LEVEL_MIN is " + _levelMin + ", _buffer.Length is " + _buffer.Length.ToString() + " and _buffer[0].Length is " + _buffer[0].Length + " and _raster.Length is " + _raster.Length );
         // We convert the raster to bytes
-        for( int l = 0; l < _level; l++ )
+        for( int l = _levelMin; l < _levelMax; l++ )
         {
             for( int x = 0; x < _width; x++ )
             {
                 for( int y = 0; y < _height; y++ )
                 {
-                    
                     int index = y * _width + x;
+                    int ix = index * _levelMax + l;
 
-                    int ix = index * _level + l;
-
-                    _buffer[l][index] = _raster[ix];
-                    
+                    if(_levelMin != 0)
+                    {
+                        try
+                        {
+                            // We only have one level that we write into index 0. A 1D array could have been used, too
+                            _buffer[0][index] = _raster[ix];
+                        }
+                        catch(Exception e)
+                        {
+                            Log.Warn( "Utils", "LevelMin is not 0. Exception in writing texture _buffer[][]! index/max is " + index + "/" + _buffer[0].Length + " and _raster[] has ix/max " + ix + "/" + _raster.Length + ".... " + e);
+                            Log.ThrowException( "Utils", "Stop" );
+                        }
+                    }
+                    else
+                    {
+                        try
+                        {
+                            // LevelMin == 0 means we show all levels so we fill the first dimension with the index of the level, start with 1
+                            _buffer[l][index] = _raster[ix];
+                        }
+                        catch( Exception e )
+                        {
+                            Log.Warn( "Utils", "LevelMin is 0. Exception in writing texture _buffer[][]! index/max is " + index + "/" + _buffer[l].Length + " and _raster[] has ix/max " + ix + "/" + _raster.Length + ".... " + e );
+                            Log.ThrowException( "Utils", "Stop" );
+                        }
+                    }
                 }
             }
         }

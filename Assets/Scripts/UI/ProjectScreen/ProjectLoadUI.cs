@@ -48,6 +48,7 @@ public class ProjectLoadUI : MonoBehaviour
 
     private void LoadProject()
     {
+        Log.Debg( this, "LOAD PROJECT" );
         string[] files = StandaloneFileBrowser.OpenFilePanel("Load project file...", Directory.GetCurrentDirectory() + "\\" + Globals.RESOURCES + Globals.SAVE_PROJECTS_PATH, FILE_FILTER, false);
 
         // Only continue, if at least one folder was selected
@@ -60,15 +61,17 @@ public class ProjectLoadUI : MonoBehaviour
             // This is a little hackey but works for now
             m_TransferFunctionUIPanel.SetActive( false );
 
-            this.StartCoroutine( LoadProjectCoroutine( projectFolderPath, false, 0 ) );
+            this.StartCoroutine( LoadProjectCoroutine( projectFolderPath, 0 ) );
         }
     }
 
-    public IEnumerator LoadProjectCoroutine( string _projectFolderPath, bool _levelOnly, int _level )
+    public IEnumerator LoadProjectCoroutine( string _projectFolderPath, int _level )
     {
+        Log.Debg( this, "LOAD PROJECT COROUTINE" );
+
         yield return Utils.SetupProjectCoroutine( m_LoadScreen, Singleton.GetProjectScreen(), m_LoadProgressBar , m_LoadProgressBarText );
 
-        Singleton.GetDataManager().LoadProject( this, _levelOnly, _level, _projectFolderPath, Utils.CreateProgressBarProgress( m_LoadProgressBar, m_LoadProgressBarText ), () =>
+        Singleton.GetDataManager().LoadProject( this, _level, _projectFolderPath, Utils.CreateProgressBarProgress( m_LoadProgressBar, m_LoadProgressBarText ), () =>
         {
             Utils.SetupScreenWhileProgress( m_LoadScreen, Singleton.GetMainScreenSystem(), Singleton.GetBottomScreen(), m_SaveProjectButton, m_CancelButton );
 

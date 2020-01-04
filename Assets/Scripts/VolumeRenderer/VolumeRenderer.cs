@@ -133,29 +133,7 @@ public class VolumeRenderer : MonoBehaviour
 
     public void SetLevel( int _level )
     {
-        if( _level == 0 )
-        {
-            // Activate Volume Renderer
-            if( m_CartesianLevelPlane != null )
-            {
-                m_CartesianLevelPlane.SetActive( false );
-            }
-            m_Renderer.enabled = true;
-        }
-        else
-        {
-            // Activate Level Plane
-            if( m_CartesianLevelPlane == null )
-            {
-                m_CartesianLevelPlane = Instantiate( Singleton.GetCartesianLevelPlanePrefab(), this.transform );
-            }
-            m_CartesianLevelPlane.SetActive( true );
-            m_Renderer.enabled = false;
-
-            Singleton.GetDataManager().ReloadProject( true, _level );
-            
-            //this.CreateTexture( _level );
-        }
+        Singleton.GetDataManager().ReloadProject( _level );
     }
 
     private void CreateTexture( int _level )

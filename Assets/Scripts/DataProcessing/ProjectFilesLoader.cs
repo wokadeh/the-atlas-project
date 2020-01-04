@@ -17,17 +17,25 @@ public class ProjectFilesLoader : IDataLoader
         m_Buffer = Utils.CreateEmptyBuffer( m_MetaData.Levels, size );
     }
 
-    public byte[][] Import( string _filePath, string _justImplemented )
+    public byte[][] Import( int _level, string _filePath, string _justImplemented )
     {
         Log.Info( this, "Load project files from " + _filePath );
 
-        byte[] timestepBytes;
-        
-        m_Buffer = Utils.CreateEmptyBuffer( m_MetaData.Levels, m_MetaData.Width * m_MetaData.Height );
-
         // Load file into byte array
-        timestepBytes = File.ReadAllBytes( _filePath );
-        m_Buffer = Utils.ConvertBytesToBuffer( m_Buffer, timestepBytes, m_MetaData.Levels, m_MetaData.Width, m_MetaData.Height );
+        byte[] timestepBytes = File.ReadAllBytes( _filePath );
+
+        if(_level == 0)
+        {
+            // all levels
+            m_Buffer = Utils.CreateEmptyBuffer( m_MetaData.Levels, m_MetaData.Width * m_MetaData.Height );
+            m_Buffer = Utils.ConvertBytesToBuffer( m_Buffer, timestepBytes, 0, m_MetaData.Levels, m_MetaData.Width, m_MetaData.Height );
+        }
+        else
+        {
+            // one level only
+            m_Buffer = Utils.CreateEmptyBuffer( 1, m_MetaData.Width * m_MetaData.Height );
+            m_Buffer = Utils.ConvertBytesToBuffer( m_Buffer, timestepBytes, _level - 1, _level, m_MetaData.Width, m_MetaData.Height );
+        }
 
         return m_Buffer;
     }

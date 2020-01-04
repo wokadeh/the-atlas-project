@@ -1,5 +1,5 @@
 ﻿public interface IDataLoader {
-    byte[][] Import(string _filePath, string _fileName );
+    byte[][] Import( int _level, string _filePath, string _fileName );
 
     string[] GetDataSet( string _path );
 }

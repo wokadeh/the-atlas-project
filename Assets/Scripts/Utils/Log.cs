@@ -9,34 +9,39 @@ public class Log
         public MetaDataException(string message) : base(message) { }
     }
 
+    public static void Debg( object locationClass, string message )
+    {
+        Debug.Log( "<color=magenta>DEBUG: </color> [" + locationClass.ToString() + "]:: " + message );
+    }
+
     public static void Info(object locationClass, string message)
     {
-        Debug.Log("[" + locationClass.ToString() + "]:: " + message);
+        Debug.Log( "<color=cyan>INFO: </color>[" + locationClass.ToString() + "]:: " + message);
     }
 
     public static void Info( string className, string message )
     {
-        Debug.Log( "[" + className + "]:: " + message );
+        Debug.Log( "<color=cyan>INFO: </color>[" + className + "]:: " + message );
     }
 
     public static void Warn(object locationClass, string message)
     {
-        Debug.LogWarning("[" + locationClass.ToString() + "]:: " + message);
+        Debug.LogWarning( "<color=yellow>WARNING: [" + locationClass.ToString() + "]:: " + message + "</color>");
     }
 
     public static void Warn( string className, string message )
     {
-        Debug.LogWarning( "[" + className + "]:: " + message );
+        Debug.LogWarning( "<color=yellow>WARNING: [" + className + "]:: " + message + "</color>" );
     }
 
     public static void Error(object locationClass, string message)
     {
-        Debug.LogError("[" + locationClass.ToString() + "]:: " + message);
+        Debug.LogError( "<color=red>ERROR: [" + locationClass.ToString() + "]:: " + message + "</color>" );
     }
 
     public static void Error( string className, string message )
     {
-        Debug.LogError( "[" + className + "]:: " + message );
+        Debug.LogError( "<color=red>ERROR: [" + className + "]:: " + message + "</color>" );
     }
 
     public static void ThrowMetaDataException(object locationClass, string message)

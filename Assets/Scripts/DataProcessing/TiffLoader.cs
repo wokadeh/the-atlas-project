@@ -27,7 +27,7 @@ public class TiffLoader : IDataLoader
         m_Buffer = Utils.CreateEmptyBuffer( m_MetaData.Levels, size );
     }
 
-    public byte[][] Import( string _filePath, string _fileName )
+    public byte[][] Import( int _level, string _filePath, string _fileName )
     {
         Log.Info( this, "Import TIFF files from " + _filePath );
 

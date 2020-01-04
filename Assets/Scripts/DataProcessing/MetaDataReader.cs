@@ -98,7 +98,7 @@ public class MetaDataReader
 
         newTimestamp.DateTimeDouble = Utils.ReadAttribute( timestampNode, Globals.TIME_STAMP_DATETIME_ATTRIBUTE );
 
-        Debug.Log( "loading timestamps: " + newTimestamp.DateTimeDouble );
+        Log.Debg( "MetaDataReader", "loading timestamps: " + newTimestamp.DateTimeDouble );
 
         Vector3 dim = new Vector3();
         dim.x = Utils.ReadAttribute( timestampNode, Globals.TIME_STAMP_DATA_ASSET_DIM_X_ATTRIBUTE );

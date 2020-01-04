@@ -33,6 +33,7 @@ public class DataManager : MonoBehaviour
     private IMetaDataManager m_MetaDataManager;
 
     private bool m_IsLevelMode = false;
+    private int m_CurrentLevel = 0;
 
     private void Start()
     {
@@ -60,7 +61,7 @@ public class DataManager : MonoBehaviour
         IMetaData metaData = this.ImportMetaData(_projectFilePath, _callback );
         IDataLoader tiffLoader = new TiffLoader( metaData );
         this.CurrentProjectFilePath = _projectFilePath;
-        this.StartCoroutine( this.LoadImportDataCoroutine( false, false, 0, _projectFilePath, tiffLoader, metaData, _progress, _callback ) );
+        this.StartCoroutine( this.LoadImportDataCoroutine( false, 0, _projectFilePath, tiffLoader, metaData, _progress, _callback ) );
     }
 
     // Start internal routines to save the settings of an open project
@@ -70,19 +71,24 @@ public class DataManager : MonoBehaviour
     }
 
     // Start internal routines to load an existing project
-    public void LoadProject( ProjectLoadUI _projectLoader, bool _levelOnly, int _level, string _projectFilePath, IProgress<float> _progress, Action _callback )
+    public void LoadProject( ProjectLoadUI _projectLoader, int _level, string _projectFilePath, IProgress<float> _progress, Action _callback )
     {
+        Log.Debg( this, "LOAD PROJECT" );
         this.Clear();
         this.ProjectLoader = _projectLoader;
         IMetaData metaData = this.ImportMetaData(_projectFilePath, _callback );
         IDataLoader projectFilesLoader = new ProjectFilesLoader( metaData );
         this.CurrentProjectFilePath = _projectFilePath;
-        this.StartCoroutine( this.LoadImportDataCoroutine( true, _levelOnly, _level, _projectFilePath, projectFilesLoader, metaData, _progress, _callback ) );
+        this.StartCoroutine( this.LoadImportDataCoroutine( true, _level, _projectFilePath, projectFilesLoader, metaData, _progress, _callback ) );
     }
 
-    public void ReloadProject( bool _levelOnly, int _level )
+    public void ReloadProject( int _level )
     {
-        StartCoroutine( this.ProjectLoader.LoadProjectCoroutine( this.CurrentProjectFilePath, _levelOnly, _level ) );
+        // Only load again if the selected level is different from the rendered one
+        if( m_CurrentLevel != _level )
+        {
+            StartCoroutine( this.ProjectLoader.LoadProjectCoroutine( this.CurrentProjectFilePath, _level ) );
+        }
     }
 
     // Hold on a specific timestep and display the corresponding data
@@ -236,8 +242,10 @@ public class DataManager : MonoBehaviour
         return metaData;
     }
 
-    private IEnumerator LoadImportDataCoroutine( bool _isLoading, bool _levelOnly, int _level, string _projectFilePath, IDataLoader _dataLoader, IMetaData _metaData, IProgress<float> _progress, Action _callback )
+    private IEnumerator LoadImportDataCoroutine( bool _isLoading, int _level, string _projectFilePath, IDataLoader _dataLoader, IMetaData _metaData, IProgress<float> _progress, Action _callback )
     {
+        Log.Debg( this, "LOAD IMPORT DATA COROUTINE" );
+
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
         m_DataDictionary.Clear();
@@ -262,7 +270,7 @@ public class DataManager : MonoBehaviour
 
             if( Directory.Exists( folder ) )
             {
-                yield return this.StartCoroutine( this.LoadImportVariableRoutine( _levelOnly, _level, dataSet, _dataLoader, timeAssetBuilder, variable.Name, "", m_DataDictionary[variable.Name], new Progress<float>( value =>
+                yield return this.StartCoroutine( this.LoadImportVariableRoutine( _level, dataSet, _dataLoader, timeAssetBuilder, variable.Name, "", m_DataDictionary[variable.Name], new Progress<float>( value =>
                 {
                 // Do overall progress report
                 _progress.Report( Utils.CalculateProgress( i, _metaData.Variables.Count, value ) );
@@ -313,34 +321,32 @@ public class DataManager : MonoBehaviour
         OnNewImport?.Invoke();
     }
 
-    private IEnumerator LoadImportVariableRoutine( bool _levelOnly, int _level, string[] _dataSet, IDataLoader _dataLoader, ITimeStepDataAssetBuilder _timestepDataAssetBuilder, string _variableName, string _assetEnding, List<TimeStepDataAsset> _timestepDataAssetList, IProgress<float> _progress )
+    private IEnumerator LoadImportVariableRoutine( int _level, string[] _dataSet, IDataLoader _dataLoader, ITimeStepDataAssetBuilder _timestepDataAssetBuilder, string _variableName, string _assetEnding, List<TimeStepDataAsset> _timestepDataAssetList, IProgress<float> _progress )
     {
+        Log.Debg( this, "LOAD VARIABLE AT LEVEL " + _level );
+
         Log.Info( this, "Found " + _dataSet.Length + " data items" );
 
         int assetFileIndex = 0;
         foreach( string filePath in _dataSet )
         {
-            bool condistion = ( _levelOnly && (_level - 1) == assetFileIndex ) || !_levelOnly || _level == 0;
-            Log.Warn( this, "LevelOnly is " + _levelOnly + ", level is " + _level + ", cand condition is " + condistion);
-            if( ( _levelOnly && (_level - 1) == assetFileIndex ) || !_levelOnly || _level == 0 )
+            Log.Info( this, "Find asset from variable path  " + filePath );
+
+            if( filePath.EndsWith( _assetEnding ) )
             {
-                Log.Info( this, "Find asset from " + filePath ); 
-                if( filePath.EndsWith( _assetEnding ) )
+                Log.Info( this, "Creating asset from image from " + filePath );
+                TimeStepDataAsset timestepAsset = _timestepDataAssetBuilder.BuildTimestepDataAssetFromData( _dataLoader.Import( _level, filePath, _variableName ) );
+
+                if( timestepAsset != null )
                 {
-                    Log.Info( this, "Creating asset from image from " + filePath );
-                    TimeStepDataAsset timestepAsset = _timestepDataAssetBuilder.BuildTimestepDataAssetFromData( _dataLoader.Import( filePath, _variableName ) );
-
-                    if( timestepAsset != null )
-                    {
-                        _timestepDataAssetList.Add( timestepAsset );
-                    }
-
-                    assetFileIndex++;
-
-                    // Report progress
-                    _progress.Report( Utils.CalculateProgress( assetFileIndex, _dataSet.Length ) );
-                    yield return null;
+                    _timestepDataAssetList.Add( timestepAsset );
                 }
+
+                assetFileIndex++;
+
+                // Report progress
+                _progress.Report( Utils.CalculateProgress( assetFileIndex, _dataSet.Length ) );
+                yield return null;
             }
         }
         Log.Info( this, "Found " + assetFileIndex + " assets" );

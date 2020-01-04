@@ -36,26 +36,45 @@ public class LevelModeUI : MonoBehaviour
 
         int[] levelList37 = Globals.LEVEL_LIST_37();
 
-        m_LevelModeList.Add( Globals.LEVEL_ALL_NAME );
-
         foreach( int i in levelList37 )
         {
             m_LevelModeList.Add( i.ToString() );
+        }
+
+        m_LevelModeList.Add( Globals.LEVEL_ALL_NAME );
+    }
+
+    private void SetupToggles()
+    {
+        // First create toggles....
+        foreach( string levelName in m_LevelModeList )
+        {
+            this.CreateToggle( levelName );
+        }
+        // And second create their listeners only after
+        for( int i = 0; i < m_LevelModeList.Count; i++ )
+        {
+            this.AddListenerToggle( this.transform.GetComponentsInChildren<Toggle>()[i] );
         }
     }
 
     private void CreateToggle( string _levelName )
     {
+        Log.Debg( this, "CREATE TOGGLE FOR " + _levelName );
         Toggle toggle = Instantiate( m_LevelModeTogglePrefab, this.transform );
         TMP_Text label = toggle.transform.Find( "Label" ).GetComponent<TMP_Text>();
         label.text = toggle.name = _levelName;
         toggle.isOn = false;
+    }
 
-        toggle.onValueChanged.AddListener( isOn =>
+    private void AddListenerToggle( Toggle _toggle )
+    {
+        _toggle.onValueChanged.AddListener( isOn =>
         {
-            Utils.ToggleItemsOnClick( isOn, toggle, this.transform );
+            Log.Debg( this, "TRIGGERED " + _toggle.name );
+            Utils.ToggleItemsOnClick( isOn, _toggle, this.transform );
 
-            this.SetLevelInRenderer( GetToggleIndex( toggle ) );
+            this.SetLevelInRenderer( GetToggleIndex( _toggle ) );
         } );
     }
 
@@ -77,13 +96,7 @@ public class LevelModeUI : MonoBehaviour
 
         this.SetupLevelList();
 
-        foreach( string levelName in m_LevelModeList )
-        {
-            this.CreateToggle( levelName );
-        }
-
-        // Select "All" toggle on start
-        this.transform.GetComponentsInChildren<Toggle>()[0].isOn = true;
+        this.SetupToggles();
     }
 
     private void SetLevelInRenderer( int _index )
