@@ -4,6 +4,7 @@
 
 
 using SFB;
+using System.Collections.Generic;
 using Unity;
 using UnityEngine;
 
@@ -78,9 +79,11 @@ public struct Globals
     public const float LOG_MAX_PRESSURE = 6.907755279F;
 
     // ---------------> CREATE LIST OF PRESSURE LEVELS
-    public static string LEVEL_ALL_NAME = "All";
-    public static int[] LEVEL_LIST_37()
+    public static string LEVEL_ALL_NAME = "0";
+    public static Dictionary<string, int> LEVEL_LIST_37()
     {
+        Dictionary<string, int> outputLevelsDict = new Dictionary<string, int>();
+
         int[] outputLevels = new int[37];
 
         outputLevels[ 0 ] = 1;
@@ -94,6 +97,8 @@ public struct Globals
         for( int i = 17; i < 27; i++ ) outputLevels[ i ] = outputLevels[ i - 1 ] + 50;
         for( int i = 27; i < 37; i++ ) outputLevels[ i ] = outputLevels[ i - 1 ] + 25;
 
-        return outputLevels;
+        for( int i = 0; i < outputLevels.Length; i++ ) outputLevelsDict.Add( outputLevels[i].ToString(), i );
+
+        return outputLevelsDict;
     }
 }

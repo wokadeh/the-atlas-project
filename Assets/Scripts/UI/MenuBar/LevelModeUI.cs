@@ -13,7 +13,7 @@ public class LevelModeUI : MonoBehaviour
 {
     [SerializeField] private Toggle m_LevelModeTogglePrefab;
 
-    private List<string> m_LevelModeList;
+    
 
     public void Show( bool _isShown )
     {
@@ -30,29 +30,17 @@ public class LevelModeUI : MonoBehaviour
         }
     }
 
-    private void SetupLevelList()
-    {
-        m_LevelModeList = new List<string>();
 
-        int[] levelList37 = Globals.LEVEL_LIST_37();
-
-        foreach( int i in levelList37 )
-        {
-            m_LevelModeList.Add( i.ToString() );
-        }
-
-        m_LevelModeList.Add( Globals.LEVEL_ALL_NAME );
-    }
 
     private void SetupToggles()
     {
         // First create toggles....
-        foreach( string levelName in m_LevelModeList )
+        foreach( string levelName in Singleton.GetDataManager().LevelModeList.Keys )
         {
             this.CreateToggle( levelName );
         }
         // And second create their listeners only after
-        for( int i = 0; i < m_LevelModeList.Count; i++ )
+        for( int i = 0; i < Singleton.GetDataManager().LevelModeList.Count; i++ )
         {
             this.AddListenerToggle( this.transform.GetComponentsInChildren<Toggle>()[i] );
         }
@@ -74,34 +62,22 @@ public class LevelModeUI : MonoBehaviour
             Log.Debg( this, "TRIGGERED " + _toggle.name );
             Utils.ToggleItemsOnClick( isOn, _toggle, this.transform );
 
-            this.SetLevelInRenderer( GetToggleIndex( _toggle ) );
+            this.SetLevelInRenderer( _toggle.name );
         } );
-    }
-
-    private int GetToggleIndex( Toggle toggle )
-    {
-        int toggleIndex = 0;
-
-        if( toggle.name != Globals.LEVEL_ALL_NAME )
-        {
-            toggleIndex = int.Parse( toggle.name );
-        }
-
-        return toggleIndex;
     }
 
     private void Start()
     {
         this.DeleteChildrenToggles();
 
-        this.SetupLevelList();
+        Singleton.GetDataManager().SetupLevelList();
 
         this.SetupToggles();
     }
 
-    private void SetLevelInRenderer( int _index )
+    private void SetLevelInRenderer( string _level )
     {
-        Singleton.GetVolumeRenderer().SetLevel( _index );
+        Singleton.GetDataManager().ReloadProject( _level );
     }
 
 }

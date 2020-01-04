@@ -155,8 +155,9 @@ public static class Utils
 
         // We are waiting for two frames so that unity has enough time to redraw the ui
         // which apparently it needs or otherwise the positions are off...
-        yield return null;
-        yield return null;
+        yield return null; // frame 0...
+        yield return null; // frame 1...
+
     }
 
     public static void SetupScreenWhileProgress( GameObject _projectStateScreen, GameObject _mainSystemScreen, GameObject _bottomScreen, Button _saveProjectButton, Button _cancelButton )
@@ -240,9 +241,16 @@ public static class Utils
 
     public static byte[][] ConvertBytesToBuffer( byte[][] _buffer, byte[] _raster, int _levelMin, int _levelMax, int _width, int _height )
     {
-        Log.Info( "Utils", "LEVEL_MIN is " + _levelMin + ", _buffer.Length is " + _buffer.Length.ToString() + " and _buffer[0].Length is " + _buffer[0].Length + " and _raster.Length is " + _raster.Length );
+        Log.Debg( "Utils", "LEVEL_MIN is " + _levelMin + ", LEVEL_MAX is " + _levelMax + ", width is " + _width + "height is " + _height + ", _buffer.Length is " + _buffer.Length.ToString() + " and _buffer[0].Length is " + _buffer[0].Length + " and _raster.Length is " + _raster.Length );
+
+        int max = _levelMax;
+        if( _levelMax == _levelMin )
+        {
+            max = _levelMax + 1;
+        }
+
         // We convert the raster to bytes
-        for( int l = _levelMin; l < _levelMax; l++ )
+        for( int l = _levelMin; l < max; l++ )
         {
             for( int x = 0; x < _width; x++ )
             {
@@ -292,9 +300,9 @@ public static class Utils
          Color[] colorBuffer3D = new Color[ _width * _height * _bitDepth];
          Color[] colorBuffer2D = new Color[ _width * _height ];
 
-        Log.Info( "Utils", "Convert bytes to texture: input buffer length is " + _buffer.Length + " and " + _buffer[0].Length );
-        Log.Info( "Utils", "Convert bytes to texture: new 2D buffer length is " + colorBuffer2D.Length );
-        Log.Info( "Utils", "Convert bytes to texture: new 3D buffer length is " + colorBuffer3D.Length );
+        Log.Debg( "Utils", "Convert bytes to texture: input buffer length is " + _buffer.Length + " and " + _buffer[0].Length );
+        Log.Debg( "Utils", "Convert bytes to texture: new 2D buffer length is " + colorBuffer2D.Length );
+        Log.Debg( "Utils", "Convert bytes to texture: new 3D buffer length is " + colorBuffer3D.Length );
 
         // Get color data from all textures
         for( int i = 0; i < _buffer.Length; i++ )

@@ -19,14 +19,13 @@ public class LevelScaleLabels : MonoBehaviour
     void Start()
     {
         m_Camera = Camera.main;
-        int[] levelList = Globals.LEVEL_LIST_37();
         m_LabelList = new List<GameObject>();
 
-        for( int i = 0; i < levelList.Length; i++ )
+        foreach(var levelTuple in Singleton.GetDataManager().LevelModeList )
         {
             GameObject label = Instantiate( m_LevelLabelPrefab );
 
-            float linIdx = (float) i / levelList.Length;
+            float linIdx = (float) levelTuple.Value / Singleton.GetDataManager().LevelModeList.Values.Count;
 
             float logIdx = 0;
 
@@ -36,8 +35,8 @@ public class LevelScaleLabels : MonoBehaviour
                 logIdx = ( Mathf.Log( linIdx * Globals.MAX_PRESSURE ) / Globals.LOG_MAX_PRESSURE );
             }
       
-            label.GetComponent<TextMeshPro>().text = levelList[ i ].ToString();
-            label.name = $"Cartesian_Altitude_Level_" + i;
+            label.GetComponent<TextMeshPro>().text = levelTuple.Key;
+            label.name = $"Cartesian_Altitude_Level_" + levelTuple.Key;
             label.transform.SetParent( this.transform, false );
             label.transform.localScale = new Vector3( 0.005f, 0.01f, 0.1f );
 

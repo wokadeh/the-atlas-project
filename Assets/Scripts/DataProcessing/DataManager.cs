@@ -16,6 +16,8 @@ public class DataManager : MonoBehaviour
 {
     private Dictionary<string, List<TimeStepDataAsset>> m_DataDictionary;
     private Dictionary<string, List<TimeStepDataAsset>> m_DataLevelDictionary;
+    
+
     public IReadOnlyList<TimeStepDataAsset> CurrentDataAssetList => m_DataDictionary[CurrentVariableName];
     public IReadOnlyList<TimeStepDataAsset> CurrentDataLevelAssetList => m_DataLevelDictionary[CurrentVariableName];
 
@@ -30,6 +32,9 @@ public class DataManager : MonoBehaviour
     public ProjectLoadUI ProjectLoader { get; private set; }
     public TimeStepDataAsset CurrentTimeStepDataAsset { get; private set; }
     public TimeStepDataAsset CurrentLevelTimeStepDataAsset { get; private set; }
+
+    public Dictionary<string, int> LevelModeList { get; private set; }
+
     private IMetaDataManager m_MetaDataManager;
 
     private bool m_IsLevelMode = false;
@@ -52,6 +57,8 @@ public class DataManager : MonoBehaviour
         this.CurrentVariableMin = 0;
         this.CurrentVariableMax = 0;
         this.MetaData = null;
+
+        this.SetupLevelList();
     }
 
     // Start internal routines to import the data to a new project
@@ -61,7 +68,7 @@ public class DataManager : MonoBehaviour
         IMetaData metaData = this.ImportMetaData(_projectFilePath, _callback );
         IDataLoader tiffLoader = new TiffLoader( metaData );
         this.CurrentProjectFilePath = _projectFilePath;
-        this.StartCoroutine( this.LoadImportDataCoroutine( false, 0, _projectFilePath, tiffLoader, metaData, _progress, _callback ) );
+        this.StartCoroutine( this.LoadImportDataCoroutine( false, LevelModeList.Count - 1, _projectFilePath, tiffLoader, metaData, _progress, _callback ) );
     }
 
     // Start internal routines to save the settings of an open project
@@ -71,7 +78,7 @@ public class DataManager : MonoBehaviour
     }
 
     // Start internal routines to load an existing project
-    public void LoadProject( ProjectLoadUI _projectLoader, int _level, string _projectFilePath, IProgress<float> _progress, Action _callback )
+    public IEnumerator LoadProject( ProjectLoadUI _projectLoader, int _level, string _projectFilePath, IProgress<float> _progress, Action _callback )
     {
         Log.Debg( this, "LOAD PROJECT" );
         this.Clear();
@@ -79,15 +86,23 @@ public class DataManager : MonoBehaviour
         IMetaData metaData = this.ImportMetaData(_projectFilePath, _callback );
         IDataLoader projectFilesLoader = new ProjectFilesLoader( metaData );
         this.CurrentProjectFilePath = _projectFilePath;
-        this.StartCoroutine( this.LoadImportDataCoroutine( true, _level, _projectFilePath, projectFilesLoader, metaData, _progress, _callback ) );
+        yield return this.StartCoroutine( this.LoadImportDataCoroutine( true, _level, _projectFilePath, projectFilesLoader, metaData, _progress, _callback ) );
     }
 
-    public void ReloadProject( int _level )
+    public void ReloadProject( string _levelName )
     {
+        int level = this.LevelModeList[_levelName];
+        Log.Debg( this, "Current level is " + m_CurrentLevel + " and selected level is " + level );
         // Only load again if the selected level is different from the rendered one
-        if( m_CurrentLevel != _level )
+        if( m_CurrentLevel != level )
         {
-            StartCoroutine( this.ProjectLoader.LoadProjectCoroutine( this.CurrentProjectFilePath, _level ) );
+            Log.Debg( this, "Start loading level " + level );
+            StartCoroutine( this.ProjectLoader.LoadProjectCoroutine( this.CurrentProjectFilePath, level ) );
+            
+        }
+        else
+        {
+            Log.Debg( this, "NOT loading level " + level );
         }
     }
 
@@ -119,6 +134,22 @@ public class DataManager : MonoBehaviour
             Singleton.GetVolumeRenderer().SetData( this.CurrentTimeStepDataAsset );
         }
     }
+
+    public void SetupLevelList()
+    {
+        if( LevelModeList == null)
+        {
+            LevelModeList = new Dictionary<string, int>();
+
+            if( LevelModeList.Count == 0 )
+            {
+                LevelModeList = Globals.LEVEL_LIST_37();
+
+                LevelModeList.Add( Globals.LEVEL_ALL_NAME, LevelModeList.Count );
+            }
+        }
+    }
+
     private IEnumerator SaveProjectCoroutine( string _projectFileName, string _projectFolderPath, bool _saveOnlyXml, IProgress<float> _progress, Action _callback )
     {
         // 1. Write new xml file with all previous data (bitdepth, levels, etc.)
@@ -253,7 +284,7 @@ public class DataManager : MonoBehaviour
         // Read in meta data
         ITimeStepDataAssetBuilder timeAssetBuilder = new TimeStepDataAssetBuilder( _metaData.Width, _metaData.Height, _metaData.Levels );
 
-        Log.Info( this, "Found " + _metaData.Variables.Count + " variables" );
+        Log.Debg( this, "Found " + _metaData.Variables.Count + " variables" );
 
         for( int i = 0; i < _metaData.Variables.Count; i++ )
         {
@@ -266,7 +297,7 @@ public class DataManager : MonoBehaviour
 
             string[] dataSet = _dataLoader.GetDataSet( folder );
 
-            Log.Info( this, "Create folders and files for variable " + variable.Name );
+            Log.Debg( this, "Create folders and files for variable " + variable.Name );
 
             if( Directory.Exists( folder ) )
             {
@@ -287,6 +318,8 @@ public class DataManager : MonoBehaviour
         {
             m_MetaDataManager.SaveProjectXMLFile( _metaData, m_DataDictionary );
         }
+
+        m_CurrentLevel = _level;
 
         Log.Info( this, "Loading and creating assets took " + ( stopwatch.ElapsedMilliseconds / 1000.0f ).ToString( "0.00" ) + "seconds." );
 
@@ -350,18 +383,6 @@ public class DataManager : MonoBehaviour
             }
         }
         Log.Info( this, "Found " + assetFileIndex + " assets" );
-
-        yield return null;
-    }
-    
-    private IEnumerator ImportLevelRoutine( IDataLoader _loader, ITimeStepDataAssetBuilder _timestepDataAssetBuilder, string _projectFolder, List<TimeStepDataAsset> _timestepDataAssetList, Utils.BitDepth _bitDepth, IProgress<float> _progress )
-    {
-        // We assume every directory is a time stamp which contains the level tiffs
-        string[] directories = Directory.GetDirectories( _projectFolder );
-
-        m_DataLevelDictionary[CurrentVariableName] = new List<TimeStepDataAsset>();
-
-        Log.Info( this, "Start variable importing routine" );
 
         yield return null;
     }

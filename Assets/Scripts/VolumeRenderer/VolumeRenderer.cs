@@ -131,10 +131,11 @@ public class VolumeRenderer : MonoBehaviour
         }
     }
 
-    public void SetLevel( int _level )
-    {
-        Singleton.GetDataManager().ReloadProject( _level );
-    }
+    //public void SetLevel( int _level )
+    //{
+    //    Log.Debg( this, "SET NEW LEVEL " + _level );
+    //    Singleton.GetDataManager().ReloadProject( _level );
+    //}
 
     private void CreateTexture( int _level )
     {

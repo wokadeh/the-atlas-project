@@ -19,7 +19,7 @@ public class MetaDataReader
     }
     public static IMetaData Import( string _projectFilePath )
     {
-        Log.Info( "MetaDataReader", "Import meta data" );
+        Log.Debg( "MetaDataReader", "Import meta data" );
         XmlDocument document = new XmlDocument();
         document.Load( _projectFilePath );
 
@@ -40,7 +40,7 @@ public class MetaDataReader
         Log.Info( "MetaDataReader", "Import child nodes..." );
         foreach( XmlNode varNode in root.ChildNodes )
         {
-            Log.Info( "MetaDataReader", "Import " + varNode.Name );
+            Log.Debg( "MetaDataReader", "Import " + varNode.Name );
             if( varNode.Name == Globals.VARIABLE_ELEMENT )
             {
                 // Read name from variable node
@@ -48,18 +48,18 @@ public class MetaDataReader
                 double varNodeMin = Utils.ReadAttribute( varNode, Globals.VARIABLE_MIN_ATTRIBUTE );
                 double varNodeMax = Utils.ReadAttribute( varNode, Globals.VARIABLE_MAX_ATTRIBUTE );
 
-                Debug.Log( "Min and Max are " + varNodeMin + " and " + varNodeMax );
+                Log.Debg( "MetaDataReader", "Min and Max are " + varNodeMin + " and " + varNodeMax );
 
                 List<TimeStepDataAsset> varTimestampList = new List<TimeStepDataAsset>();
 
                 if( varNodeName != null )
                 {
-                    Log.Info( "MetaDataReader", "Add " + varNode.Name + " to list... " );
+                    Log.Debg( "MetaDataReader", "Add " + varNode.Name + " to list... " );
                     variablesList.Add( new MetaDataManager.Variable() { Name = varNodeName, Min = varNodeMin, Max = varNodeMax } );
 
                     // Create a new list for timestamps
                     timestampLisList.Add( varTimestampList );
-                    Log.Info( "MetaDataReader", "Successfully added " + varNode.Name + " to list." );
+                    Log.Debg( "MetaDataReader", "Successfully added " + varNode.Name + " to list." );
                 }
                 else
                 {
@@ -71,10 +71,10 @@ public class MetaDataReader
                     Log.Warn( "MetaDataReader", "The variable does not contain children!" );
                 }
 
-                Log.Info( "MetaDataReader", "Get ready to load timestampNodes" );
+                Log.Debg( "MetaDataReader", "Get ready to load timestampNodes" );
                 foreach( XmlNode timestampNode in varNode.ChildNodes )
                 {
-                    Log.Info( "MetaDataReader", "Import timestampNode " + timestampNode.Name );
+                    Log.Debg( "MetaDataReader", "Import timestampNode " + timestampNode.Name );
                     if( timestampNode.Name == Globals.TIME_STAMP_LIST_ELEMENT )
                     {
                         TimeStepDataAsset newTimestamp = MetaDataReader.ReadTimeStamp( timestampNode );
