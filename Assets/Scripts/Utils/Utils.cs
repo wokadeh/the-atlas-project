@@ -29,7 +29,6 @@ public static class Utils
             default: throw new Exception( "Failed to determine bit depth!" );
         }
     }
-
     public static string TryConvertDoubleToDateTimeString( double dateTimeNumber )
     {
         try
@@ -85,25 +84,6 @@ public static class Utils
             throw new Log.MetaDataException( $"Xml file has no '{_name}' attribute!" );
         }
         return attribute;
-    }
-
-    public static void ReadXml()
-    {
-        XmlDocument document = new XmlDocument();
-        document.Load( "C:\\Users\\wokad\\Documents\\Projects\\Uniy_Clouds_n_Bones\\Data\\2018-01-00061218-1-1000_sdfdsf_8bit\\2018-01-00061218-1-1000_sdfdsf_8bit___META_DATA___.xml" );
-        XmlElement root = document.DocumentElement;
-
-        System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo( "en-US" );
-
-        string startTime = root.Attributes[ "start_datetime" ].Value;
-        Debug.Log( "1st::: Read startTime number: " + startTime );
-        double startTimeValue = double.Parse(startTime);
-        Debug.Log( "2nd::: Parse startTime number: " + startTimeValue );
-
-        string endTime = root.Attributes[ "end_datetime" ].Value;
-        Debug.Log( "1st::: Read endTime number: " + endTime );
-        double endTimeValue = double.Parse( endTime, CultureInfo.InvariantCulture );
-        Debug.Log( "2nd::: Parse endTime number: " + endTimeValue );
     }
 
     public static double ReadDoubleAttribute( XmlElement _relement, string _name )
@@ -248,7 +228,6 @@ public static class Utils
         {
             max = _levelMax + 1;
         }
-
         // We convert the raster to bytes
         for( int l = _levelMin; l < max; l++ )
         {
@@ -259,7 +238,8 @@ public static class Utils
                     int index = y * _width + x;
                     int ix = index * _levelMax + l;
 
-                    if(_levelMin != 0)
+                    //if( _levelMin != 0 )
+                    if( _levelMin == _levelMax )
                     {
                         try
                         {
@@ -291,42 +271,6 @@ public static class Utils
 
         return _buffer;
     }
-
-    //public static Texture3D ConvertBytesToTexture( byte[][] _buffer, int _width, int _height, int _bitDepth )
-    //{
-        
-    //     int size2d = _width * _height;
-
-    //     Color[] colorBuffer3D = new Color[ _width * _height * _bitDepth];
-    //     Color[] colorBuffer2D = new Color[ _width * _height ];
-
-    //    Log.Debg( "Utils", "Convert bytes to texture: input buffer length is " + _buffer.Length + " and " + _buffer[0].Length );
-    //    Log.Debg( "Utils", "Convert bytes to texture: new 2D buffer length is " + colorBuffer2D.Length );
-    //    Log.Debg( "Utils", "Convert bytes to texture: new 3D buffer length is " + colorBuffer3D.Length );
-
-    //    // Get color data from all textures
-    //    for( int i = 0; i < _buffer.Length; i++ )
-    //    {
-    //        // Fill 2d color buffer with data
-    //        for( int x = 0; x < _width; x++ )
-    //        {
-    //            for( int y = 0; y < _height; y++ )
-    //            {
-    //                int index = y * _width + x;
-    //                byte value = _buffer[ i ][ index ];
-    //                colorBuffer2D[index] = new Color32( value, 0, 0, 0 );
-    //            }
-    //        }
-
-    //        colorBuffer2D.CopyTo( colorBuffer3D, i * size2d );
-    //    }
-
-    //    Texture3D dataTexture = new Texture3D( _width, _height, _bitDepth, TextureFormat.R8, false );
-    //    dataTexture.SetPixels( colorBuffer3D );
-    //    dataTexture.Apply();
-
-    //    return dataTexture;
-    //}
 
     public static byte GetByteFromTIFF( int _bytes )
     {
