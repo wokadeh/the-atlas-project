@@ -79,7 +79,7 @@ public struct Globals
     public const float LOG_MAX_PRESSURE = 6.907755279F;
 
     // ---------------> CREATE LIST OF PRESSURE LEVELS
-    public static string LEVEL_ALL_NAME = "0";
+    public static string LEVEL_ALL_NAME = "All Levels";
     public static Dictionary<string, int> LEVEL_LIST_37()
     {
         Dictionary<string, int> outputLevelsDict = new Dictionary<string, int>();

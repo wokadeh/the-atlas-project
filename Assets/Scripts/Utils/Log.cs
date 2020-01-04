@@ -11,7 +11,7 @@ public class Log
 
     public static void Debg( object locationClass, string message )
     {
-        Debug.Log( "<color=magenta>DEBUG: </color> [" + locationClass.ToString() + "]:: " + message );
+        //Debug.Log( "<color=magenta>DEBUG: </color> [" + locationClass.ToString() + "]:: " + message );
     }
 
     public static void Info(object locationClass, string message)

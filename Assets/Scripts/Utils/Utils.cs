@@ -241,7 +241,7 @@ public static class Utils
 
     public static byte[][] ConvertBytesToBuffer( byte[][] _buffer, byte[] _raster, int _levelMin, int _levelMax, int _width, int _height )
     {
-        Log.Debg( "Utils", "LEVEL_MIN is " + _levelMin + ", LEVEL_MAX is " + _levelMax + ", width is " + _width + "height is " + _height + ", _buffer.Length is " + _buffer.Length.ToString() + " and _buffer[0].Length is " + _buffer[0].Length + " and _raster.Length is " + _raster.Length );
+        Log.Debg( "Utils", "LEVEL_MIN is " + _levelMin + ", LEVEL_MAX is " + _levelMax + ", width is " + _width + ", height is " + _height + ", _buffer.Length is " + _buffer.Length.ToString() + " and _buffer[0].Length is " + _buffer[0].Length + " and _raster.Length is " + _raster.Length );
 
         int max = _levelMax;
         if( _levelMax == _levelMin )

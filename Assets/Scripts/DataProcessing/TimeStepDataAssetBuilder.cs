@@ -57,6 +57,8 @@ public class TimeStepDataAssetBuilder : ITimeStepDataAssetBuilder
 
     private Texture2D BuildHistogramTexture()
     {
+        Log.Info( this, "Start building histogram with sample size " + m_HistogramSampleSize + " and ColorBuffer3D size is " + m_ColorBuffer3D.Length );
+
         Texture2D histogram = new Texture2D( m_HistogramSampleSize, 1, TextureFormat.RFloat, false );
 
         int maxFrequency = 0;
