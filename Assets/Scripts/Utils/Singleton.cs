@@ -15,8 +15,9 @@ public class Singleton
     private static MeshRenderer m_Groundplane;
     private static MeshRenderer m_EarthSphere;
 
-    private static Material m_CartesianMaterial;
-    private static Material m_SphericalMaterial;
+    private static Material m_Cartesian2DMaterial;
+    private static Material m_Cartesian3DMaterial;
+    private static Material m_Spherical3DMaterial;
     private static Material m_LevelPlaneMaterial;
 
     private static GameObject m_CartesianLevelScalePlanePrefab;
@@ -76,25 +77,36 @@ public class Singleton
 
         return m_LevelPlaneMaterial;
     }
-    public static Material GetCartesianMaterial()
+
+    public static Material GetCartesian2DMaterial()
     {
-        if( m_CartesianMaterial == null )
+        if( m_Cartesian2DMaterial == null )
         {
-            m_CartesianMaterial = ( Material )Resources.Load( Globals.MATERIALS_PATH + "VolumetricCartesianRendering", typeof( Material ) );
+            m_Cartesian2DMaterial = ( Material )Resources.Load( Globals.MATERIALS_PATH + "CartesianPlaneMaterial", typeof( Material ) );
         }
 
-        return m_CartesianMaterial;
+        return m_Cartesian2DMaterial;
     }
 
-    public static Material GetSphericalMaterial()
+    public static Material GetCartesian3DMaterial()
     {
-        if( m_SphericalMaterial == null )
+        if( m_Cartesian3DMaterial == null )
         {
-            m_SphericalMaterial = ( Material )Resources.Load( Globals.MATERIALS_PATH + "VolumetricSphericalRendering", typeof( Material ) );
+            m_Cartesian3DMaterial = ( Material )Resources.Load( Globals.MATERIALS_PATH + "VolumetricCartesianRendering", typeof( Material ) );
+        }
+
+        return m_Cartesian3DMaterial;
+    }
+
+    public static Material GetSpherical3DMaterial()
+    {
+        if( m_Spherical3DMaterial == null )
+        {
+            m_Spherical3DMaterial = ( Material )Resources.Load( Globals.MATERIALS_PATH + "VolumetricSphericalRendering", typeof( Material ) );
 
         }
 
-        return m_SphericalMaterial;
+        return m_Spherical3DMaterial;
     }
 
     public static GameObject GetCartesianLevelScalePlanePrefab()

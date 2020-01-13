@@ -125,13 +125,13 @@ public class DataManager : MonoBehaviour
         {
             this.SetCurrentAsset( this.CurrentDataLevelAssetList.First() );
             // Set new data
-            Singleton.GetVolumeRenderer().SetData( this.CurrentLevelTimeStepDataAsset );
+            Singleton.GetVolumeRenderer().SetTexture3D( this.CurrentLevelTimeStepDataAsset );
         }
         else
         {
             this.SetCurrentAsset( this.CurrentDataAssetList.First() );
             // Set new data
-            Singleton.GetVolumeRenderer().SetData( this.CurrentTimeStepDataAsset );
+            Singleton.GetVolumeRenderer().SetTexture2D( this.CurrentTimeStepDataAsset );
         }
     }
 
@@ -323,12 +323,12 @@ public class DataManager : MonoBehaviour
 
         Log.Info( this, "Loading and creating assets took " + ( stopwatch.ElapsedMilliseconds / 1000.0f ).ToString( "0.00" ) + "seconds." );
 
-        this.FinishLoading( _metaData, stopwatch );
+        this.FinishLoading( _metaData, stopwatch, _level );
 
         _callback?.Invoke();
     }
 
-    private void FinishLoading( IMetaData _metaData, System.Diagnostics.Stopwatch _stopwatch )
+    private void FinishLoading( IMetaData _metaData, System.Diagnostics.Stopwatch _stopwatch, int _level )
     {
         Log.Info( this, "Loading and creating assets took " + ( _stopwatch.ElapsedMilliseconds / 1000.0f ).ToString( "0.00" ) + "seconds." );
 
@@ -343,7 +343,14 @@ public class DataManager : MonoBehaviour
             this.CurrentTimeStepDataAsset = this.CurrentDataAssetList.First();
 
             // Set new data
-            Singleton.GetVolumeRenderer().SetData( this.CurrentTimeStepDataAsset );
+            if( _level == _metaData.Levels )
+            {
+                Singleton.GetVolumeRenderer().SetTexture3D( this.CurrentTimeStepDataAsset );
+            }
+            else
+            {
+                Singleton.GetVolumeRenderer().SetTexture2D( this.CurrentTimeStepDataAsset );
+            }
 
         }
         else

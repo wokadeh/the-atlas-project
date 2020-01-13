@@ -238,7 +238,6 @@ public static class Utils
                     int index = y * _width + x;
                     int ix = index * _levelMax + l;
 
-                    //if( _levelMin != 0 )
                     if( _levelMin == _levelMax )
                     {
                         try

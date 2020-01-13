@@ -181,7 +181,7 @@ public class TimelineUI : MonoBehaviour
 
         TimeStepDataAsset asset = Singleton.GetDataManager().CurrentDataAssetList[ ( int ) value ];
         Singleton.GetDataManager().SetCurrentAsset( asset );
-        Singleton.GetVolumeRenderer().SetData( asset );
+        Singleton.GetVolumeRenderer().SetTexture3D( asset );
 
         m_TimestampUI.UpdateTimestamp( (uint)value );
     }
