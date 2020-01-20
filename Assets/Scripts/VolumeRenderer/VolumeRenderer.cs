@@ -87,32 +87,24 @@ public class VolumeRenderer : MonoBehaviour
         Singleton.GetSpherical3DMaterial().SetTexture( "_Data", _timeStepDataAsset.DataTexture3D );
     }
 
-    public void SetTexture2D( TimeStepDataAsset _timeStepDataAsset )
-    {
-        Log.Info( this, "Set 2D texture" );
-        if( m_Renderer )
-        {
-            m_Renderer.enabled = false;
-            this.Show( false );
-        }
+    //public void SetTexture2D( TimeStepDataAsset _timeStepDataAsset )
+    //{
+    //    Log.Info( this, "Set 2D texture" );
+    //    if( m_Renderer )
+    //    {
+    //        m_Renderer.enabled = false;
+    //        this.Show( false );
+    //    }
 
-        this.SetCartesianLevelPlaneActive( _timeStepDataAsset.DataTexture2D );
-        //this.SetSphericalLevelOctahedronActive( _timeStepDataAsset.DataTexture2D );
-    }
+    //    this.SetCartesianLevelPlaneActive( _timeStepDataAsset.DataTexture2D );
+    //    //this.SetSphericalLevelOctahedronActive( _timeStepDataAsset.DataTexture2D );
+    //}
 
     public void SetTransferFunction( Texture2D _transferFunction )
     {
         Singleton.GetCartesian3DMaterial().SetTexture( "_TFTex", _transferFunction );
         Singleton.GetSpherical3DMaterial().SetTexture( "_TFTex", _transferFunction );
-        Singleton.GetCartesian2DMaterial().SetTexture( "_TFTex", _transferFunction );
-    }
-
-    public void Disable()
-    {
-        if( m_Renderer )
-        {
-            m_Renderer.enabled = false;
-        }
+       // Singleton.GetCartesian2DMaterial().SetTexture( "_TFTex", _transferFunction );
     }
 
     private void SetAltitudeLevelGridActive( bool _isActive )
@@ -134,30 +126,30 @@ public class VolumeRenderer : MonoBehaviour
         }
     }
 
-    private void SetCartesianLevelPlaneActive( Texture2D _tex2D )
-    {
-        if( m_CartesianLevelPlane )
-        {
-            Log.Debg( this, "Delete cartesian level plane!" );
-            Destroy( m_CartesianLevelPlane );
-        }
+    //private void SetCartesianLevelPlaneActive( Texture2D _tex2D )
+    //{
+    //    if( m_CartesianLevelPlane )
+    //    {
+    //        Log.Debg( this, "Delete cartesian level plane!" );
+    //        Destroy( m_CartesianLevelPlane );
+    //    }
 
-        Log.Debg( this, "Set cartesian plane active!" );
-        if( _tex2D != null )
-        { 
-            Log.Debg( this, "Cartesian plane texture is not null, so initiate plane!" );
-            m_CartesianLevelPlane = Instantiate( Singleton.GetCartesianLevelPlanePrefab(), this.transform );
-            m_CartesianLevelPlane.gameObject.GetComponent<Renderer>().enabled = true;
-            m_CartesianLevelPlane.gameObject.GetComponent<Renderer>().material = Singleton.GetCartesian2DMaterial();
-            m_CartesianLevelPlane.name = $"Cartesian_Level_Plane_Prefab";
-            m_CartesianLevelPlane.transform.rotation = Quaternion.Euler( 180, 0, 0 );
-            Singleton.GetCartesian2DMaterial().SetTexture( "_Data", _tex2D );
-        }
-        else
-        {
-            Log.Debg( this, "Cartesian plane texture is NULL, so drop plane!" );
-        }
-    }
+    //    Log.Debg( this, "Set cartesian plane active!" );
+    //    if( _tex2D != null )
+    //    { 
+    //        Log.Debg( this, "Cartesian plane texture is not null, so initiate plane!" );
+    //        m_CartesianLevelPlane = Instantiate( Singleton.GetCartesianLevelPlanePrefab(), this.transform );
+    //        m_CartesianLevelPlane.gameObject.GetComponent<Renderer>().enabled = true;
+    //        m_CartesianLevelPlane.gameObject.GetComponent<Renderer>().material = Singleton.GetCartesian2DMaterial();
+    //        m_CartesianLevelPlane.name = $"Cartesian_Level_Plane_Prefab";
+    //        m_CartesianLevelPlane.transform.rotation = Quaternion.Euler( 180, 0, 0 );
+    //        Singleton.GetCartesian2DMaterial().SetTexture( "_Data", _tex2D );
+    //    }
+    //    else
+    //    {
+    //        Log.Debg( this, "Cartesian plane texture is NULL, so drop plane!" );
+    //    }
+    //}
 
     private void ClearCartesianLevels()
     {

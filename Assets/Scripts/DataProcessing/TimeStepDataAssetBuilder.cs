@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class TimeStepDataAssetBuilder : ITimeStepDataAssetBuilder
@@ -144,6 +145,9 @@ public class TimeStepDataAssetBuilder : ITimeStepDataAssetBuilder
 
     public Texture2D ConvertBytesToTexture( byte[] _buffer, int _width, int _height )
     {
+        List<Color32> tempList = new List<Color32>();
+        tempList.Add( new Color32( _buffer[0], 0, 0, 0 ) );
+
         // Fill 2d color buffer with data
         for( int x = 0; x < _width; x++ )
         {
@@ -152,11 +156,18 @@ public class TimeStepDataAssetBuilder : ITimeStepDataAssetBuilder
                 int index = y * _width + x;
                 byte value = _buffer[ index ];
                 m_ColorBuffer2D[ index ] = new Color32( value, 0, 0, 0 );
+
+                if( !tempList.Contains(m_ColorBuffer2D[index] ))
+                {
+                    tempList.Add( m_ColorBuffer2D[index] );
+                }
             }
         }
 
+        Log.Info( this, "AAAAAAA The texture contains " + tempList.Count + "/" + m_ColorBuffer2D.Length + " different values. Sample value is " + tempList[0].r);
+
         Texture2D dataTexture = new Texture2D( _width, _height, TextureFormat.R8, false );
-        dataTexture.SetPixels( m_ColorBuffer3D );
+        dataTexture.SetPixels( m_ColorBuffer2D );
         dataTexture.Apply();
 
         return dataTexture;

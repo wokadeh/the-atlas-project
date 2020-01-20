@@ -210,7 +210,6 @@ Shader "Custom/Ray Casting" {
 					float density = voxel_col.r;
 
 					float4 tf_col = get_transfer_function(density);
-
 					tf_col.a = _NormPerStep * length(ray_step) * pow(tf_col.a,_StretchPower);
 
 					ray_col.rgb = ray_col.rgb + (1 - ray_col.a) * tf_col.a * tf_col.rgb;

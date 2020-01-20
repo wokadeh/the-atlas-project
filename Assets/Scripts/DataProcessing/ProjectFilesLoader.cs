@@ -23,18 +23,16 @@ public class ProjectFilesLoader : IDataLoader
 
         // Load file into byte array
         byte[] timestepBytes = File.ReadAllBytes( _filePath );
-
+        m_Buffer = Utils.CreateEmptyBuffer( m_MetaData.Levels, m_MetaData.Width * m_MetaData.Height );
         if( _level == m_MetaData.Levels )
         {
             // all levels
-            m_Buffer = Utils.CreateEmptyBuffer( m_MetaData.Levels, m_MetaData.Width * m_MetaData.Height );
-            m_Buffer = Utils.ConvertBytesToBuffer( m_Buffer, timestepBytes, 0, m_MetaData.Levels, m_MetaData.Width, m_MetaData.Height );
+            m_Buffer = Utils.ConvertBytesToBuffer( m_Buffer, timestepBytes, 0, m_MetaData.Levels, m_MetaData.Width, m_MetaData.Height, false );
         }
         else
         {
             // one level only
-            m_Buffer = Utils.CreateEmptyBuffer( 1, m_MetaData.Width * m_MetaData.Height );
-            m_Buffer = Utils.ConvertBytesToBuffer( m_Buffer, timestepBytes, _level, _level, m_MetaData.Width, m_MetaData.Height );
+            m_Buffer = Utils.ConvertBytesToBuffer( m_Buffer, timestepBytes, _level, m_MetaData.Levels, m_MetaData.Width, m_MetaData.Height, true );
         }
 
         return m_Buffer;

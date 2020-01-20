@@ -121,18 +121,18 @@ public class DataManager : MonoBehaviour
         this.CurrentVariableMin = _min;
         this.CurrentVariableMax = _max;
 
-        if( m_IsLevelMode )
-        {
+        //if( m_IsLevelMode )
+        //{
             this.SetCurrentAsset( this.CurrentDataLevelAssetList.First() );
             // Set new data
             Singleton.GetVolumeRenderer().SetTexture3D( this.CurrentLevelTimeStepDataAsset );
-        }
-        else
-        {
-            this.SetCurrentAsset( this.CurrentDataAssetList.First() );
-            // Set new data
-            Singleton.GetVolumeRenderer().SetTexture2D( this.CurrentTimeStepDataAsset );
-        }
+        //}
+        //else
+        //{
+        //    this.SetCurrentAsset( this.CurrentDataAssetList.First() );
+        //    // Set new data
+        //    Singleton.GetVolumeRenderer().SetTexture2D( this.CurrentTimeStepDataAsset );
+        //}
     }
 
     public void SetupLevelList()
@@ -343,14 +343,14 @@ public class DataManager : MonoBehaviour
             this.CurrentTimeStepDataAsset = this.CurrentDataAssetList.First();
 
             // Set new data
-            if( _level == _metaData.Levels )
-            {
+            //if( _level == _metaData.Levels )
+            //{
                 Singleton.GetVolumeRenderer().SetTexture3D( this.CurrentTimeStepDataAsset );
-            }
-            else
-            {
-                Singleton.GetVolumeRenderer().SetTexture2D( this.CurrentTimeStepDataAsset );
-            }
+            //}
+            //else
+            //{
+            //    Singleton.GetVolumeRenderer().SetTexture2D( this.CurrentTimeStepDataAsset );
+            //}
 
         }
         else

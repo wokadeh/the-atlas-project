@@ -85,7 +85,7 @@ public class TiffLoader : IDataLoader
 
             if( TestImageFile( image, width, height ) )
             {
-                m_Buffer = Utils.ConvertBytesToBuffer( m_Buffer, m_NumberGrid, _level, width, height );
+                m_Buffer = Utils.ConvertBytesFromTIFFToBuffer( m_Buffer, m_NumberGrid, _level, width, height );
             }
         }
     }

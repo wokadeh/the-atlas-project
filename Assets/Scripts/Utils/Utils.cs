@@ -12,6 +12,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public static class Utils
 {
@@ -203,7 +204,7 @@ public static class Utils
         return buffer;
     }
 
-    public static byte[][] ConvertBytesToBuffer( byte[][] _buffer, int[] _raster, int _level, int _width, int _height )
+    public static byte[][] ConvertBytesFromTIFFToBuffer( byte[][] _buffer, int[] _raster, int _level, int _width, int _height )
     {
         // We convert the raster to bytes
         for( int x = 0; x < _width; x++ )
@@ -219,52 +220,39 @@ public static class Utils
         return _buffer;
     }
 
-    public static byte[][] ConvertBytesToBuffer( byte[][] _buffer, byte[] _raster, int _levelMin, int _levelMax, int _width, int _height )
+    public static byte[][] ConvertBytesToBuffer( byte[][] _buffer, byte[] _timeStepBytes, int _selectedLevel, int _levelMax, int _width, int _height, bool _isOneLevel )
     {
-        Log.Debg( "Utils", "LEVEL_MIN is " + _levelMin + ", LEVEL_MAX is " + _levelMax + ", width is " + _width + ", height is " + _height + ", _buffer.Length is " + _buffer.Length.ToString() + " and _buffer[0].Length is " + _buffer[0].Length + " and _raster.Length is " + _raster.Length );
+        Log.Debg( "Utils", "Selected LEVEL is " + _selectedLevel + ", LEVEL_MAX is " + _levelMax + ", width is " + _width + ", height is " + _height + ", _buffer.Length is " + _buffer.Length.ToString() + " and _buffer[0].Length is " + _buffer[0].Length + " and _raster.Length is " + _timeStepBytes.Length );
 
-        int max = _levelMax;
-        if( _levelMax == _levelMin )
-        {
-            max = _levelMax + 1;
-        }
+        List<byte> tempList = new List<byte>();
+        tempList.Add( _timeStepBytes[0] );
+
         // We convert the raster to bytes
-        for( int l = _levelMin; l < max; l++ )
+        for( int level = 0; level < _levelMax; level++ )
         {
-            for( int x = 0; x < _width; x++ )
+            if( _isOneLevel )
             {
-                for( int y = 0; y < _height; y++ )
-                {
-                    int index = y * _width + x;
-                    int ix = index * _levelMax + l;
+                _buffer = Utils.FillBufferWithBytes( _buffer, _timeStepBytes, level, _selectedLevel, _levelMax, _width, _height );
+            }
+            else
+            {
+                _buffer = Utils.FillBufferWithBytes( _buffer, _timeStepBytes, level, level, _levelMax, _width, _height );
+            }
+        }
 
-                    if( _levelMin == _levelMax )
-                    {
-                        try
-                        {
-                            // We only have one level that we write into index 0. A 1D array could have been used, too
-                            _buffer[0][index] = _raster[ix];
-                        }
-                        catch(Exception e)
-                        {
-                            Log.Warn( "Utils", "LevelMin is not 0. Exception in writing texture _buffer[][]! index/max is " + index + "/" + _buffer[0].Length + " and _raster[] has ix/max " + ix + "/" + _raster.Length + ".... " + e);
-                            Log.ThrowException( "Utils", "Stop" );
-                        }
-                    }
-                    else
-                    {
-                        try
-                        {
-                            // LevelMin == 0 means we show all levels so we fill the first dimension with the index of the level, start with 1
-                            _buffer[l][index] = _raster[ix];
-                        }
-                        catch( Exception e )
-                        {
-                            Log.Warn( "Utils", "LevelMin is 0. Exception in writing texture _buffer[][]! index/max is " + index + "/" + _buffer[l].Length + " and _raster[] has ix/max " + ix + "/" + _raster.Length + ".... " + e );
-                            Log.ThrowException( "Utils", "Stop" );
-                        }
-                    }
-                }
+        return _buffer;
+    }
+
+    private static byte[][] FillBufferWithBytes( byte[][] _buffer, byte[] _timeStepBytes, int _levelIndex, int _level, int _levelMax, int _width, int _height )
+    {
+        for( int x = 0; x < _width; x++ )
+        {
+            for( int y = 0; y < _height; y++ )
+            {
+                int tex2DIndex = y * _width + x;
+                int tex3DIndex = tex2DIndex * _levelMax + _level;
+
+                _buffer[_levelIndex][tex2DIndex] = _timeStepBytes[tex3DIndex];
             }
         }
 
